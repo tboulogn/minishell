@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
+#    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/17 14:58:53 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/03/18 14:30:06 by ryada            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,8 +17,9 @@ OBJ_DIR = obj/
 LIBFT_DIR = libft_master/
 INCLUDE_DIR = includes/
 
-SRC_FILES = 
-SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+# SRC_FILES = 
+# SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+SRC = $(SRC_DIR)/main.c \
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
@@ -57,7 +58,7 @@ $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
 $(NAME): $(OBJ) $(LIBFT)
-	@$(CC) $(OBJ) $(LIBFT) -o $(NAME)
+	@$(CC) $(OBJ) $(LIBFT) -o $(NAME) -lreadline -lhistory
 	@echo "$(GREEN)✅ Compilation terminée !$(RESET)"
 
 clean:
@@ -71,3 +72,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
+
