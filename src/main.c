@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/19 14:01:54 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/19 14:52:19 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,12 @@ void	put_prompt(char **envp)
 		ft_exec(envp, cmd_list);
 
 		free_cmd_list(cmd_list);
-		put_prompt(envp);
 		free_token(tokens);
 		free(input);
 	}
 }
+
+
 
 int main(int argc, char **argv, char **envp)
 {
