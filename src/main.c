@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/19 14:01:54 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/19 19:26:40 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,17 @@
 void	put_prompt(char **envp)
 {
 	char		*input;
+	char		**copy_envi;
 	t_token		*tokens;
 	t_cmd		*cmd_list;
-
+	t_env		*env;
+	
+	
 	while (1)
 	{
 		input = readline(PROMPT);
+		env = init_env_list(envp);
+		copy_envi = copy_env(envp);
 		if (!input)
 		{
 			printf("exit\n");
@@ -49,14 +54,15 @@ void	put_prompt(char **envp)
 		}
 
 		print_cmd_list(cmd_list);
-		ft_exec(envp, cmd_list);
+		ft_exec(copy_envi, cmd_list, env);
 
 		free_cmd_list(cmd_list);
-		put_prompt(envp);
 		free_token(tokens);
 		free(input);
 	}
 }
+
+
 
 int main(int argc, char **argv, char **envp)
 {

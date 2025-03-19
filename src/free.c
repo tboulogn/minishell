@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/19 11:02:05 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:53:00 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,7 @@ void	free_cmd_list(t_cmd *cmd)
 		{
 			i = 0;
 			while (cmd->args[i])
-			{
-				free(cmd->args[i]);
-				i++;
-			}
+				free(cmd->args[i++]);
 			free(cmd->args);
 		}
 		if (cmd->infile)
@@ -50,4 +47,14 @@ void	free_cmd_list(t_cmd *cmd)
 	free(cmd);
 	cmd = tmp;
 	}
+}
+
+void	free_env_copy(char **env_copy)
+{
+	int	i;
+	
+	i = 0;
+	while(env_copy[i])
+		free(env_copy[i++]);
+	free(env_copy);
 }

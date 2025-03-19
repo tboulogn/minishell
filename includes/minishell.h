@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/19 14:00:17 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/19 20:05:08 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,10 @@
 # include <string.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <dirent.h>
 # include "../libft_master/libft.h"
 
-# define PROMPT "minishell:~$"
+# define PROMPT "minishell:~$ "
 
 typedef enum e_token_type
 {
@@ -54,6 +55,13 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env 	*next;
+}	t_env;
+
 /* ************************************************************************** */
 /*                                   UTILS                                    */
 /* ************************************************************************** */
@@ -67,6 +75,7 @@ char	*ft_strndup(const char *s, size_t len);
 /* ************************************************************************** */
 void	free_token(t_token *tokens);
 void	free_cmd_list(t_cmd *cmd);
+void	free_env(t_env *env);
 
 /* ************************************************************************** */
 /*                                TOKENIZATION                                */
@@ -79,11 +88,28 @@ t_cmd 	*create_new_cmd(void);
 void	add_arg_to_cmd(t_cmd *cmd, char *arg);
 void	print_cmd_list(t_cmd *cmd);
 
-
 /* ************************************************************************** */
 /*                                  EXEC                                      */
 /* ************************************************************************** */
-void	ft_exec(char **envp, t_cmd *c);
+int		ft_check_buildin(t_cmd *cmd);
+void	ft_exec(char **copy_envi, t_cmd *c, t_env *env);
 
+/* ************************************************************************** */
+/*                                   BUILTIN                                  */
+/* ************************************************************************** */
+int		ft_env(char **envp);
+int		ft_pwd(t_env *env_list);
+int		ft_echo(t_cmd *cmd);
+int		ft_cd(t_env **env, const char *new_path);
+
+/* ************************************************************************** */
+/*                                ENVIRONNEMENT                               */
+/* ************************************************************************** */
+int		count_env(char **envp);
+char	**copy_env(char **envp);
+t_env	*create_env_node(char *env_var);
+t_env	*init_env_list(char **envp);
+char	*get_env_value(t_env *env, const char *key);
+int		set_env_value(t_env **env, const char *key, const char *value);
 
 #endif
