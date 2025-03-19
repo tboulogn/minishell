@@ -6,7 +6,7 @@
 #    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/18 14:30:06 by ryada            ###   ########.fr        #
+#    Updated: 2025/03/19 13:48:45 by ryada            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,11 @@ INCLUDE_DIR = includes/
 
 # SRC_FILES = 
 # SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
-SRC = $(SRC_DIR)/main.c \
+SRC = $(SRC_DIR)main.c\
+	$(SRC_DIR)free.c\
+	$(SRC_DIR)tokenization.c\
+	$(SRC_DIR)utils.c  \
+	$(SRC_DIR)exec.c  \
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
