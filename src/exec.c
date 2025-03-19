@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/19 14:14:52 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/19 15:41:56 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,24 +68,82 @@ char	*ft_get_path(char *cmd, char **envp)
 	return (exec);
 }
 
+
+int ft_check_buildin(t_cmd *cmd)
+{
+    int i;
+
+    i = 0;
+    while(cmd->args[i])
+    {
+        if (ft_strncmp(cmd->args[0], "echo", ft_strlen(cmd->args[0])) == 0
+            || ft_strncmp(cmd->args[0], "cd" , ft_strlen(cmd->args[0])) == 0
+            || ft_strncmp(cmd->args[0], "pwd", ft_strlen(cmd->args[0])) == 0
+            || ft_strncmp(cmd->args[0], "export", ft_strlen(cmd->args[0])) == 0
+            || ft_strncmp(cmd->args[0], "unset", ft_strlen(cmd->args[0])) == 0
+            || ft_strncmp(cmd->args[0], "env", ft_strlen(cmd->args[0])) == 0
+            || ft_strncmp(cmd->args[0], "exit", ft_strlen(cmd->args[0])) == 0)
+            return (0);
+        i++;
+    }
+    return (1);
+}
+
+// void	ft_exec(char **envp, t_cmd *c)
+// {
+// 	char	**cmd_tab;
+// 	char	*cmd_path;
+
+//     if(!ft_check_buildin(c))
+//     {
+//         printf("BUILT_IN CMD\n");//modify this
+//     //     call the built-in functions here!
+//     }
+//     else
+//         printf("EXTERNAL CMD\n");//modify this
+//     printf("================\n");
+//     cmd_tab = c->args;
+// 	// cmd_tab = ft_split(cmd, ' ');
+// 	// if (!cmd_tab || !cmd_tab[0])
+// 	// 	ft_cmd_error_handler(1, cmd_tab, NULL, pid);
+// 	if (ft_strchr(cmd_tab[0], '/'))
+// 		cmd_path = ft_strdup(cmd_tab[0]);
+// 	else
+// 		cmd_path = ft_get_path(cmd_tab[0], envp);
+// 	// if (!cmd_path)
+// 	// 	ft_cmd_error_handler(2, cmd_tab, cmd_path, pid);
+// 	// if (execve(cmd_path, cmd_tab, envp) == -1)
+// 	// 	ft_cmd_error_handler(3, cmd_tab, cmd_path, pid);
+//     if (execve(cmd_path, cmd_tab, envp) == -1)
+//         printf("CMD NOT FOUND\n");
+// 	// free(cmd_path);
+// 	// ft_free_tab(cmd_tab);
+// }
+
+
+
+//without any frees
 void	ft_exec(char **envp, t_cmd *c)
 {
 	char	**cmd_tab;
 	char	*cmd_path;
 
-    cmd_tab = c->args;
-	// cmd_tab = ft_split(cmd, ' ');
-	// if (!cmd_tab || !cmd_tab[0])
-	// 	ft_cmd_error_handler(1, cmd_tab, NULL, pid);
-	if (ft_strchr(cmd_tab[0], '/'))
-		cmd_path = ft_strdup(cmd_tab[0]);
-	else
-		cmd_path = ft_get_path(cmd_tab[0], envp);
-	// if (!cmd_path)
-	// 	ft_cmd_error_handler(2, cmd_tab, cmd_path, pid);
-	// if (execve(cmd_path, cmd_tab, envp) == -1)
-	// 	ft_cmd_error_handler(3, cmd_tab, cmd_path, pid);
-    execve(cmd_path, cmd_tab, envp);
-	// free(cmd_path);
-	// ft_free_tab(cmd_tab);
+    if(!ft_check_buildin(c))
+    {
+        printf("BUILT_IN CMD\n");//modify this
+        printf("================\n");
+    //     call the built-in functions here!
+    }
+    else
+    {
+        printf("EXTERNAL CMD\n");//modify this
+        printf("================\n");
+        cmd_tab = c->args;
+        if (ft_strchr(cmd_tab[0], '/'))
+            cmd_path = ft_strdup(cmd_tab[0]);
+        else
+            cmd_path = ft_get_path(cmd_tab[0], envp);
+        if (execve(cmd_path, cmd_tab, envp) == -1)
+            printf("CMD NOT FOUND\n");
+    }
 }
