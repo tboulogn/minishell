@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/20 16:59:38 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/20 17:26:09 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -377,14 +377,18 @@ void print_cmd_list(t_args *args)
 	i = 0;
 	while (args->cmds && args->cmds[i])
 	{
-		printf("[%s] ", args->cmds[i]);
+		printf("[%s]", args->cmds[i]);
 		i++;
 	}
-	printf("\n============\n");
+	printf("\n");
+	printf("============\n");
+	if (args->pipe > 0)
+		printf("Pipe count : %d\n", args->pipe);
+	printf("============\n");
 	if (args->infile)
-        printf("Input File: %s\n", args->infile);
+        printf("Input File : %s\n", args->infile);
     if (args->outfile)
-        printf("Output File: %s\n", args->outfile);
+        printf("Output File : %s\n", args->outfile);
 	printf("\n");
 }
 
