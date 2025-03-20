@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/19 14:30:16 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/20 16:57:44 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,14 @@
 # include <string.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <dirent.h>
 # include "../libft_master/libft.h"
 
-# define PROMPT "minishell:~$"
+# define PROMPT "minishell:~$ "
 
 typedef enum e_token_type
 {
-	WORD,
+	WORD,//cmd or just a str
 	PIPE,
 	REDIR_IN,
 	REDIR_OUT,
@@ -39,20 +40,37 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
+	struct s_token	*prev;
 	struct s_token	*next;
 }	t_token;
 
 
 //char **arg isn't more like char **cmd? bc we store the table of cmds from args??
-typedef struct s_cmd
+// typedef struct s_cmd
+// {
+// 	char			**args;
+// 	char			*infile;
+// 	char			*outfile;
+// 	int				append;
+// 	int				pipe;
+// 	struct s_cmd	*next;
+// }	t_cmd;
+
+typedef struct s_args
 {
-	char			**args;
+	char			**cmds;
 	char			*infile;
 	char			*outfile;
-	int				append;
 	int				pipe;
-	struct s_cmd	*next;
-}	t_cmd;
+	struct s_args	*next;
+}	t_args;
+
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env 	*next;
+}	t_env;
 
 /* ************************************************************************** */
 /*                                   UTILS                                    */
@@ -61,30 +79,56 @@ void	*ft_secure_malloc(size_t bytes);
 int		is_whitespace(char c);
 int 	is_special_char(char c);
 char	*ft_strndup(const char *s, size_t len);
+char	*ft_strjoin_three(char const *s1, char const *s2, const char *s3);
 
 /* ************************************************************************** */
 /*                                    FREE                                    */
 /* ************************************************************************** */
 void	free_token(t_token *tokens);
-void	free_cmd_list(t_cmd *cmd);
+void	free_cmd_list(t_args *cmd);
+void	free_env(t_env *env);
 
 /* ************************************************************************** */
 /*                                TOKENIZATION                                */
-/* ************************************************************************** */
+// /* ************************************************************************** */
+// t_token	*tokenize(char *input);
+// void	add_token(t_token **tokens, char *value, t_token_type type);
+// char	*extract_word(char *input, int *i);
+// t_cmd	*parse_token(t_token *tokens);
+// t_cmd 	*create_new_cmd(void);
+// void	add_arg_to_cmd(t_cmd *cmd, char *arg);
+// void	print_cmd_list(t_cmd *cmd);
+char	*extract_word(char *input, int *i);
 t_token	*tokenize(char *input);
 void	add_token(t_token **tokens, char *value, t_token_type type);
-char	*extract_word(char *input, int *i);
-t_cmd	*parse_token(t_token *tokens);
-t_cmd 	*create_new_cmd(void);
-void	add_arg_to_cmd(t_cmd *cmd, char *arg);
-void	print_cmd_list(t_cmd *cmd);
-
+t_args	*parse_token(t_token *tokens);
+t_args	*create_new_args(void);
+void	add_file(t_args *args, char *filename, int type);
+void	add_cmds(t_args *args, char *cmd);
+void 	print_cmd_list(t_args *args);
 
 /* ************************************************************************** */
 /*                                  EXEC                                      */
 /* ************************************************************************** */
-int		ft_check_buildin(t_cmd *cmd);
-void	ft_exec(char **envp, t_cmd *c);
+int		ft_check_buildin(t_args *args);
+void	ft_exec(char **copy_envi, t_args *args);
+
+/* ************************************************************************** */
+/*                                   BUILTIN                                  */
+/* ************************************************************************** */
+int		ft_env(char **envp);
+int		ft_pwd(char **envp);
+// int		ft_echo(t_cmd *cmd);
+int		ft_cd(char **env, const char *path);
+
+/* ************************************************************************** */
+/*                                ENVIRONNEMENT                               */
+/* ************************************************************************** */
+int		count_env(char **envp);
+char	**copy_env(char **envp);
+char 	*get_env_value(char **env, const char *name);
+int		find_env_var(char **env, const char *name);
+char	**set_env_value(char **env, const char *key, const char *new_value);
 
 
 #endif

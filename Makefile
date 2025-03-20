@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
+#    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/19 13:48:45 by ryada            ###   ########.fr        #
+#    Updated: 2025/03/20 13:10:52 by tboulogn         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,11 @@ SRC = $(SRC_DIR)main.c\
 	$(SRC_DIR)tokenization.c\
 	$(SRC_DIR)utils.c  \
 	$(SRC_DIR)exec.c  \
+	$(SRC_DIR)env_tab.c \
+	$(SRC_DIR)builtin/ft_cd.c \
+	$(SRC_DIR)builtin/ft_echo.c \
+	$(SRC_DIR)builtin/ft_env.c \
+	$(SRC_DIR)builtin/ft_pwd.c \
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 

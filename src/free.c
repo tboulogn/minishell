@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/19 11:02:05 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:56:08 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,29 +25,29 @@ void	free_token(t_token *tokens)
 	}
 }
 
-void	free_cmd_list(t_cmd *cmd)
+void	free_cmd_list(t_args *args)
 {
-	t_cmd	*tmp;
+	t_args	*tmp;
 	int		i;
 
-	while (cmd)
+	while (args)
 	{
-		tmp = cmd->next;
-		if (cmd->args)
+		tmp = args->next;
+		if (args->cmds)
 		{
 			i = 0;
-			while (cmd->args[i])
+			while (args->cmds[i])
 			{
-				free(cmd->args[i]);
+				free(args->cmds[i]);
 				i++;
 			}
-			free(cmd->args);
+			free(args->cmds);
 		}
-		if (cmd->infile)
-			free(cmd->infile);
-		if  (cmd->outfile)
-			free(cmd->outfile);
-	free(cmd);
-	cmd = tmp;
+		if (args->infile)
+			free(args->infile);
+		if  (args->outfile)
+			free(args->outfile);
+	free(args);
+	args = tmp;
 	}
 }

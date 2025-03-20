@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/19 14:52:19 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/20 16:58:31 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	put_prompt(char **envp)
 {
 	char		*input;
 	t_token		*tokens;
-	t_cmd		*cmd_list;
+	t_args		*args;
 
 	while (1)
 	{
@@ -33,26 +33,25 @@ void	put_prompt(char **envp)
 		if (*input)
 			add_history(input);
 
-		tokens = tokenize(input);
+		tokens = tokenize(input);//read the input line that start with "minishell:~$"
 		if (!tokens)
 		{
 			free(input);
 			continue;
 		}
 
-		cmd_list = parse_token(tokens);
-		if (!cmd_list)
+		args = parse_token(tokens);
+		if (!args)
 		{
 			free_token(tokens);
 			free(input);
 			continue;
 		}
+		print_cmd_list(args);
+		// ft_exec(envp, args);
 
-		print_cmd_list(cmd_list);
-		ft_exec(envp, cmd_list);
-
-		free_cmd_list(cmd_list);
-		free_token(tokens);
+		free_cmd_list(args);
+		// free_token(tokens);
 		free(input);
 	}
 }
