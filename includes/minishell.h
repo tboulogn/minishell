@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/20 16:57:44 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/21 17:08:56 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 
 typedef enum e_token_type
 {
-	WORD,//cmd or just a str
+	WORD,//cmd or just a str or filename
 	PIPE,
 	REDIR_IN,
 	REDIR_OUT,
@@ -130,5 +130,10 @@ char 	*get_env_value(char **env, const char *name);
 int		find_env_var(char **env, const char *name);
 char	**set_env_value(char **env, const char *key, const char *new_value);
 
+
+/* ************************************************************************** */
+/*                                   CHCKER                                   */
+/* ************************************************************************** */
+int		check_syntax_error(t_token *tokens);
 
 #endif

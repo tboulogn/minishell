@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/20 17:26:09 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/21 17:33:50 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,44 +194,60 @@
 //     }
 // }
 
-
 char *extract_word(char *input, int *i)
 {
 	int		start;
-	int		len;
 	char	quote;
 
+	while (input[*i] && is_whitespace(input[*i])) // Skip spaces
+		(*i)++;
+
 	start = *i;
-	len = 0;
 	quote = 0;
-	while(input[*i] && (quote || (!is_whitespace(input[*i]) && !is_special_char(input[*i]))))
+
+	while (input[*i] && (quote || (!is_whitespace(input[*i]) && !is_special_char(input[*i]))))
 	{
 		if (input[*i] == '"' || input[*i] == '\'')
 		{
 			if (quote == 0)
-				quote = input[*i];
+				quote = input[*i];  // Open quote
 			else if (quote == input[*i])
-				quote = 0;
+				quote = 0;  // Close quote
 		}
+		else if (is_special_char(input[*i]) && !quote)
+			break;  // Stop if encountering `|`, `<`, `>` outside of quotes
+
 		(*i)++;
-		len++;
 	}
-	return (ft_strndup(input + start, len));	
+	return ft_strndup(input + start, *i - start);
 }
 
-//this divides the arguments into each cmd, redirection, pipe, or files
+void init_token(t_token *tokens)
+{
+	tokens->next = NULL;
+	tokens->prev = NULL;
+	// tokens->type = NULL;
+	tokens->value = NULL;
+	tokens = NULL;
+}
+
 t_token	*tokenize(char *input)
 {
 	t_token *tokens;
 	int		i;
 
-	tokens = NULL;//initialize as NULL
+	// init_token(tokens);
+	tokens = NULL;
 	i = 0;
-
 	while (input[i])
 	{
-		if (input[i] == '|')
+		while (input[i] && is_whitespace(input[i]))  // Skip spaces
+			i++;
+		if (input[i] == '|') // Detect pipe without needing spaces
+		{
 			add_token(&tokens, "|", PIPE);
+			i++;
+		} 
 		else if (input[i] == '>')
 		{
 			if (input[i + 1] == '>')
@@ -241,6 +257,7 @@ t_token	*tokenize(char *input)
 			}
 			else
 				add_token(&tokens, ">", REDIR_OUT);
+			i++;
 		}
 		else if (input[i] == '<')
 		{
@@ -248,16 +265,20 @@ t_token	*tokenize(char *input)
 			{
 				add_token(&tokens, "<<", HEREDOC);
 				i++;
+				//add_token of "LIMITER"
 			}
 			else
 				add_token(&tokens, "<", REDIR_IN);
+			i++;
 		}
-		else if (!is_whitespace(input[i]))
+		else if (input[i]) // Everything else is a word
 			add_token(&tokens, extract_word(input, &i), WORD);
-		i++;
+		// if (input[i]) 
+		// 	i++; // Move forward only if not at end
 	}
 	return (tokens);
 }
+
 
 //set up the next/cahin-list and types
 void	add_token(t_token **tokens, char *value, t_token_type type)
@@ -294,7 +315,7 @@ t_args *parse_token(t_token *tokens)
 
     while (tokens)
     {
-        if (tokens->type == WORD && tokens->prev->type != REDIR_IN && tokens->prev->type != REDIR_OUT)//cmds or str
+        if (tokens->type == WORD && (!tokens->prev || (tokens->prev && tokens->prev->type != REDIR_IN && tokens->prev->type != REDIR_OUT)))//cmds or str
             add_cmds(args, tokens->value);
 		else if (tokens->type == WORD && tokens->prev->type == REDIR_IN)//infile
 			add_file(args, tokens->value, 0);
@@ -330,9 +351,9 @@ t_args	*create_new_args(void)
 void add_file(t_args *args, char *filename, int type)
 {
 	if (type == 0)
-		args->infile = filename;
+		args->infile = ft_strdup(filename);
 	else if (type == 1)
-		args->outfile = filename;
+		args->outfile = ft_strdup(filename);
 }
 
 void	add_cmds(t_args *args, char *cmd)
@@ -382,13 +403,14 @@ void print_cmd_list(t_args *args)
 	}
 	printf("\n");
 	printf("============\n");
-	if (args->pipe > 0)
-		printf("Pipe count : %d\n", args->pipe);
+	// if (args->pipe > 0)
+	// 	
+	printf("Pipe count : %d\n", args->pipe);
 	printf("============\n");
 	if (args->infile)
         printf("Input File : %s\n", args->infile);
     if (args->outfile)
         printf("Output File : %s\n", args->outfile);
-	printf("\n");
+	// printf("\n");
 }
 

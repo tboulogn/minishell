@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/20 16:16:19 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/21 17:21:05 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ void	ft_exec(char **envp, t_args *args)
     else
     {
         printf("EXTERNAL CMD\n");//modify this
-        printf("================\n");
+        printf("============\n");
         cmd_tab = args->cmds;
         if (ft_strchr(cmd_tab[0], '/'))
             cmd_path = ft_strdup(cmd_tab[0]);

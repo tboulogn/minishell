@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/20 17:09:02 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/21 17:17:20 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,12 @@ void	put_prompt(char **envp)
 			free(input);
 			continue;
 		}
-
+		if (!check_syntax_error(tokens))
+		{
+			free_token(tokens);
+			free(input);
+			continue;
+		}
 		args = parse_token(tokens);
 		if (!args)
 		{
@@ -48,10 +53,10 @@ void	put_prompt(char **envp)
 			continue;
 		}
 		print_cmd_list(args);
-		// ft_exec(envp, args);
+		ft_exec(envp, args);
 
 		free_cmd_list(args);
-		// free_token(tokens);
+		free_token(tokens);
 		free(input);
 	}
 }
