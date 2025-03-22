@@ -6,7 +6,7 @@
 #    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/21 17:09:10 by ryada            ###   ########.fr        #
+#    Updated: 2025/03/22 10:55:42 by ryada            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,8 +23,9 @@ SRC = $(SRC_DIR)main.c\
 	$(SRC_DIR)free.c\
 	$(SRC_DIR)tokenization.c\
 	$(SRC_DIR)utils.c  \
+	$(SRC_DIR)utils_2.c  \
 	$(SRC_DIR)exec.c  \
-	$(SRC_DIR)env_tab.c \
+	$(SRC_DIR)env_list.c \
 	$(SRC_DIR)checker.c \
 	$(SRC_DIR)builtin/ft_cd.c \
 	$(SRC_DIR)builtin/ft_echo.c \

@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/21 17:08:56 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/22 10:53:17 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,14 @@ char	*ft_strndup(const char *s, size_t len);
 char	*ft_strjoin_three(char const *s1, char const *s2, const char *s3);
 
 /* ************************************************************************** */
+/*                                   UTILS_2                                  */
+/* ************************************************************************** */
+int		is_capletter(char c);
+int		ft_strcmp(const char *s1, const char *s2);
+void	ft_free_tab(char **tab);
+char	*ft_strjoin_3(char *s1, char *s2, char *s3);
+
+/* ************************************************************************** */
 /*                                    FREE                                    */
 /* ************************************************************************** */
 void	free_token(t_token *tokens);
@@ -111,24 +119,24 @@ void 	print_cmd_list(t_args *args);
 /*                                  EXEC                                      */
 /* ************************************************************************** */
 int		ft_check_buildin(t_args *args);
-void	ft_exec(char **copy_envi, t_args *args);
+void	ft_exec(t_args *args, t_env *env_list);
 
 /* ************************************************************************** */
 /*                                   BUILTIN                                  */
 /* ************************************************************************** */
-int		ft_env(char **envp);
-int		ft_pwd(char **envp);
-// int		ft_echo(t_cmd *cmd);
-int		ft_cd(char **env, const char *path);
+int		ft_env(t_env *env_list);
+int		ft_pwd(t_env *env_list);
+int		ft_echo(t_args *args);
+int		ft_cd(t_env **env_list, char *path);
 
 /* ************************************************************************** */
 /*                                ENVIRONNEMENT                               */
 /* ************************************************************************** */
-int		count_env(char **envp);
-char	**copy_env(char **envp);
-char 	*get_env_value(char **env, const char *name);
-int		find_env_var(char **env, const char *name);
-char	**set_env_value(char **env, const char *key, const char *new_value);
+t_env	*create_env_node(char *env_var);
+t_env	*init_env_list(char **envp);
+char	*get_env_value(t_env *env, const char *key);
+t_env	*get_env_var(t_env *env, char *key);
+int		set_env_value(t_env **env, const char *key, const char *value);
 
 
 /* ************************************************************************** */

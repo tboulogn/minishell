@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/21 17:17:20 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/22 10:23:22 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 //this is just an example
 //we are doing too many things in this function
 //need to fix a problem which exit the program after executing a cmd
-void	put_prompt(char **envp)
+void	put_prompt(t_env *env_list)
 {
 	char		*input;
 	t_token		*tokens;
@@ -53,7 +53,7 @@ void	put_prompt(char **envp)
 			continue;
 		}
 		print_cmd_list(args);
-		ft_exec(envp, args);
+		ft_exec(args, env_list);
 
 		free_cmd_list(args);
 		free_token(tokens);
@@ -65,6 +65,9 @@ void	put_prompt(char **envp)
 
 int main(int argc, char **argv, char **envp)
 {
-	put_prompt(envp);
+	t_env	*env_list;
+
+	env_list = init_env_list(envp);
+	put_prompt(env_list);
 	return (0);
 }
