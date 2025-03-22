@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/22 10:50:16 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/22 16:41:36 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,27 +121,47 @@ char	*ft_get_path(char *cmd, t_env *env_list)
 	return (exec);
 }
 
+// int ft_check_buildin(t_args *args)
+// {
+//     int i;
+// 	t_cmd *current;
 
-
+//     i = 0;
+// 	current = args->cmd;
+//     while(current)
+//     {
+//         if (ft_strncmp(current->cmd_name, "echo", 4) == 0
+//             || ft_strncmp(current->cmd_name, "cd" , 2) == 0
+//             || ft_strncmp(current->cmd_name, "pwd", 3) == 0
+//             || ft_strncmp(current->cmd_name, "export", 7) == 0
+//             || ft_strncmp(current->cmd_name, "unset", 5) == 0
+//             || ft_strncmp(current->cmd_name, "env", 3) == 0
+//             || ft_strncmp(current->cmd_name, "exit", 4) == 0)
+//             return (0);
+//         current = current->next;
+//     }
+//     return (1);
+// }
 int ft_check_buildin(t_args *args)
 {
-    int i;
+	char *name;
 
-    i = 0;
-    while(args->cmds[i])
-    {
-        if (ft_strncmp(args->cmds[i], "echo", ft_strlen(args->cmds[i])) == 0
-            || ft_strncmp(args->cmds[i], "cd" , ft_strlen(args->cmds[i])) == 0
-            || ft_strncmp(args->cmds[i], "pwd", ft_strlen(args->cmds[i])) == 0
-            || ft_strncmp(args->cmds[i], "export", ft_strlen(args->cmds[i])) == 0
-            || ft_strncmp(args->cmds[i], "unset", ft_strlen(args->cmds[i])) == 0
-            || ft_strncmp(args->cmds[i], "env", ft_strlen(args->cmds[i])) == 0
-            || ft_strncmp(args->cmds[i], "exit", ft_strlen(args->cmds[i])) == 0)
-            return (0);
-        i++;
-    }
-    return (1);
+	if (!args || !args->cmd)
+		return (1);
+	name = args->cmd->cmd_tab[0];
+	if (!name)
+		return (1);
+	if (ft_strncmp(name, "echo", 5) == 0
+		|| ft_strncmp(name, "cd", 3) == 0
+		|| ft_strncmp(name, "pwd", 4) == 0
+		|| ft_strncmp(name, "export", 7) == 0
+		|| ft_strncmp(name, "unset", 6) == 0
+		|| ft_strncmp(name, "env", 4) == 0
+		|| ft_strncmp(name, "exit", 5) == 0)
+		return (0);
+	return (1);
 }
+
 
 // void	ft_exec(char **envp, t_cmd *c)
 // {
@@ -204,38 +224,96 @@ char	**env_list_to_envp(t_env *env)
 	return (envp);
 }
 
+// char **cmd_list_from_tcmd(t_cmd *cmd)
+// {
+// 	int count;
+// 	t_cmd *tmp;
+// 	char **cmds;
+// 	int i;
+
+// 	count = 0;
+// 	tmp = cmd;
+// 	while (tmp)
+// 	{
+// 		count++;
+// 		tmp = tmp->next;
+// 	}
+// 	cmds = malloc(sizeof(char *) * (count + 1));
+// 	tmp = cmd;
+// 	i = 0;
+// 	while (tmp)
+// 	{
+// 		cmds[i++] = ft_strdup(tmp->cmd_name);
+// 		tmp = tmp->next;
+// 	}
+// 	cmds[i] = NULL;
+// 	return (cmds);
+// }
+
+
+void	built_in(t_args *args, t_env *env_list)
+{
+	printf("BUILT_IN CMD\n");//modify this
+	printf("================\n");
+	if (ft_strncmp(args->cmd->cmd_tab[0], "env", 3) == 0)
+		ft_env(env_list);
+	else if (ft_strncmp(args->cmd->cmd_tab[0], "pwd", 3) == 0)
+		ft_pwd(env_list);
+	else if (ft_strncmp(args->cmd->cmd_tab[0], "echo", 4) == 0)
+		ft_echo(args);
+	else if (ft_strncmp(args->cmd->cmd_tab[0], "cd", 2) == 0)	
+		ft_cd(&env_list, args->cmd->next->cmd_tab[0]);
+}
+
+// void	external(t_args *args, t_env *env_list, char *cmd_path, char **cmd_tab)
+// {
+// 	char **envp_arr;
+
+// 	envp_arr = env_list_to_envp(env_list);
+// 	printf("EXTERNAL CMD\n");//modify this
+// 	printf("================\n");
+// 	cmd_tab = args->cmd->cmd_name;
+// 	if (ft_strchr(cmd_tab[0], '/'))
+// 		cmd_path = ft_strdup(cmd_tab[0]);
+// 	else
+// 		cmd_path = ft_get_path(cmd_tab[0], env_list);
+// 	if (execve(cmd_path, cmd_tab, envp_arr) == -1)
+// 		printf("%s: command not found\n", cmd_tab[0]);
+// }
+
+void external(t_args *args, t_env *env_list)
+{
+	char	*cmd_path;
+	char	**cmd_tab;
+	char	**envp_arr;
+
+	envp_arr = env_list_to_envp(env_list);
+	cmd_tab = args->cmd->cmd_tab;
+	if (!cmd_tab || !cmd_tab[0])
+	{
+		printf("command not found\n");
+		exit(127);
+	}
+	if (ft_strchr(cmd_tab[0], '/'))
+		cmd_path = ft_strdup(cmd_tab[0]);
+	else
+		cmd_path = ft_get_path(cmd_tab[0], env_list);
+	if (!cmd_path)
+	{
+		printf("%s: command not found\n", cmd_tab[0]);
+		exit(127);
+	}
+	execve(cmd_path, cmd_tab, envp_arr);
+}
 
 //without any frees
 void	ft_exec(t_args *args, t_env *env_list)
 {
-	char	**envp_arr;
 	char	**cmd_tab;
 	char	*cmd_path;	
 
-	envp_arr = env_list_to_envp(env_list);
     if(!ft_check_buildin(args))
-    {
-        printf("BUILT_IN CMD\n");//modify this
-        printf("================\n");
-        if (ft_strncmp(args->cmds[0], "env", ft_strlen(args->cmds[0])) == 0)
-            ft_env(env_list);
-        else if (ft_strncmp(args->cmds[0], "pwd", ft_strlen(args->cmds[0])) == 0)
-            ft_pwd(env_list);
-		else if (ft_strncmp(args->cmds[0], "echo", ft_strlen(args->cmds[0])) == 0)
-			ft_echo(args);
-		else if (ft_strncmp(args->cmds[0], "cd", ft_strlen(args->cmds[0])) == 0)	
-			ft_cd(&env_list, args->cmds[1]);
-	}
+        built_in(args, env_list);
     else
-    {
-        printf("EXTERNAL CMD\n");//modify this
-        printf("================\n");
-        cmd_tab = args->cmds;
-        if (ft_strchr(cmd_tab[0], '/'))
-            cmd_path = ft_strdup(cmd_tab[0]);
-        else
-            cmd_path = ft_get_path(cmd_tab[0], env_list);
-        if (execve(cmd_path, cmd_tab, envp_arr) == -1)
-            printf("%s: command not found\n", cmd_tab[0]);
-    }
+		external(args, env_list);
 }

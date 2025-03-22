@@ -6,11 +6,13 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/20 16:56:08 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/22 16:41:54 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+//everytime you finish the execution, free EVERYTHING!!
 
 void	free_token(t_token *tokens)
 {
@@ -25,29 +27,70 @@ void	free_token(t_token *tokens)
 	}
 }
 
+// void	free_cmd_list(t_args *args)
+// {
+// 	t_args	*tmp;
+// 	int		i;
+
+// 	while (args)
+// 	{
+// 		tmp = args->next;
+// 		if (args->cmds)
+// 		{
+// 			i = 0;
+// 			while (args->cmds[i])
+// 			{
+// 				free(args->cmds[i]);
+// 				i++;
+// 			}
+// 			free(args->cmds);
+// 		}
+// 		if (args->infile)
+// 			free(args->infile);
+// 		if  (args->outfile)
+// 			free(args->outfile);
+// 		if (args->append_outfile)
+// 			free(args->append_outfile);
+// 	free(args);
+// 	args = tmp;
+// 	}
+// }
+
 void	free_cmd_list(t_args *args)
 {
-	t_args	*tmp;
+	t_cmd	*tmp_cmd;
+	t_cmd	*next_cmd;
 	int		i;
 
-	while (args)
+	if (!args)
+		return;
+	tmp_cmd = args->cmd;
+	while (tmp_cmd)
 	{
-		tmp = args->next;
-		if (args->cmds)
+		next_cmd = tmp_cmd->next;
+		if (tmp_cmd->cmd_tab)
 		{
 			i = 0;
-			while (args->cmds[i])
+			while (tmp_cmd->cmd_tab[i])
 			{
-				free(args->cmds[i]);
+				free(tmp_cmd->cmd_tab[i]);
 				i++;
 			}
-			free(args->cmds);
+			free(tmp_cmd->cmd_tab);
 		}
-		if (args->infile)
-			free(args->infile);
-		if  (args->outfile)
-			free(args->outfile);
-	free(args);
-	args = tmp;
+		if (tmp_cmd->cmd_path)
+			free(tmp_cmd->cmd_path);
+		free(tmp_cmd);
+		tmp_cmd = next_cmd;
 	}
+	if (args->infile)
+		free(args->infile);
+	if (args->outfile)
+		free(args->outfile);
+	if (args->append_outfile)
+		free(args->append_outfile);
+	if (args->limiter)
+		free(args->limiter);
+	free(args);
 }
+
