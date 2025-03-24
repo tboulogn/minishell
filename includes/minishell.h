@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/22 17:14:29 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/24 09:24:34 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,12 @@ typedef struct s_env
 	struct s_env 	*next;
 }	t_env;
 
-// typedef struct s_pipe
-// {
-// 	int		prev[2];
-// 	int		next[2];
-//     pid_t	*pid;
-// }	t_pipe;
+typedef struct s_pipe
+{
+	int		prev[2];
+	int		next[2];
+    pid_t	*pid;
+}	t_pipe;
 
 /* ************************************************************************** */
 /*                                   UTILS                                    */

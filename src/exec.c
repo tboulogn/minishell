@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/22 16:41:36 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/24 11:20:40 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,33 +224,6 @@ char	**env_list_to_envp(t_env *env)
 	return (envp);
 }
 
-// char **cmd_list_from_tcmd(t_cmd *cmd)
-// {
-// 	int count;
-// 	t_cmd *tmp;
-// 	char **cmds;
-// 	int i;
-
-// 	count = 0;
-// 	tmp = cmd;
-// 	while (tmp)
-// 	{
-// 		count++;
-// 		tmp = tmp->next;
-// 	}
-// 	cmds = malloc(sizeof(char *) * (count + 1));
-// 	tmp = cmd;
-// 	i = 0;
-// 	while (tmp)
-// 	{
-// 		cmds[i++] = ft_strdup(tmp->cmd_name);
-// 		tmp = tmp->next;
-// 	}
-// 	cmds[i] = NULL;
-// 	return (cmds);
-// }
-
-
 void	built_in(t_args *args, t_env *env_list)
 {
 	printf("BUILT_IN CMD\n");//modify this
@@ -265,35 +238,19 @@ void	built_in(t_args *args, t_env *env_list)
 		ft_cd(&env_list, args->cmd->next->cmd_tab[0]);
 }
 
-// void	external(t_args *args, t_env *env_list, char *cmd_path, char **cmd_tab)
-// {
-// 	char **envp_arr;
-
-// 	envp_arr = env_list_to_envp(env_list);
-// 	printf("EXTERNAL CMD\n");//modify this
-// 	printf("================\n");
-// 	cmd_tab = args->cmd->cmd_name;
-// 	if (ft_strchr(cmd_tab[0], '/'))
-// 		cmd_path = ft_strdup(cmd_tab[0]);
-// 	else
-// 		cmd_path = ft_get_path(cmd_tab[0], env_list);
-// 	if (execve(cmd_path, cmd_tab, envp_arr) == -1)
-// 		printf("%s: command not found\n", cmd_tab[0]);
-// }
-
 void external(t_args *args, t_env *env_list)
 {
 	char	*cmd_path;
 	char	**cmd_tab;
 	char	**envp_arr;
 
-	envp_arr = env_list_to_envp(env_list);
 	cmd_tab = args->cmd->cmd_tab;
 	if (!cmd_tab || !cmd_tab[0])
 	{
 		printf("command not found\n");
 		exit(127);
 	}
+	envp_arr = env_list_to_envp(env_list);
 	if (ft_strchr(cmd_tab[0], '/'))
 		cmd_path = ft_strdup(cmd_tab[0]);
 	else
@@ -309,9 +266,8 @@ void external(t_args *args, t_env *env_list)
 //without any frees
 void	ft_exec(t_args *args, t_env *env_list)
 {
-	char	**cmd_tab;
-	char	*cmd_path;	
-
+	if (!args || !args->cmd || !args->cmd->cmd_tab || !args->cmd->cmd_tab[0])
+		return ;
     if(!ft_check_buildin(args))
         built_in(args, env_list);
     else
