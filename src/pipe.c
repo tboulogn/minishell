@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/24 11:33:21 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/24 17:11:30 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,6 @@ void single_child(t_args *args, t_env *env_list)
 		dup2(fd_close, STDOUT_FILENO);
 		close(fd_close);
 	}
-	printf("🧪 [single_child] running cmd: %s\n", args->cmd->cmd_tab[0]);
 	ft_exec(args, env_list);
 }
 
