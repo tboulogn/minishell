@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/24 09:24:34 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/24 19:41:03 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,28 +92,23 @@ char	*ft_strjoin_three(char const *s1, char const *s2, const char *s3);
 /* ************************************************************************** */
 /*                                   UTILS_2                                  */
 /* ************************************************************************** */
-int		is_capletter(char c);
 int		ft_strcmp(const char *s1, const char *s2);
 void	ft_free_tab(char **tab);
 char	*ft_strjoin_3(char *s1, char *s2, char *s3);
+int		is_valid_key(const char *key);
 
 /* ************************************************************************** */
 /*                                    FREE                                    */
 /* ************************************************************************** */
 void	free_token(t_token *tokens);
 void	free_cmd_list(t_args *cmd);
-void	free_env(t_env *env);
+void	free_env_array(char **env_array);
+void	free_env_node(t_env *node);
 
 /* ************************************************************************** */
 /*                                  PARSING                                   */
 /* ************************************************************************** */
-// t_token	*tokenize(char *input);
-// void	add_token(t_token **tokens, char *value, t_token_type type);
-// char	*extract_word(char *input, int *i);
-// t_cmd	*parse_token(t_token *tokens);
-// t_cmd 	*create_new_cmd(void);
-// void	add_arg_to_cmd(t_cmd *cmd, char *arg);
-// void	print_cmd_list(t_cmd *cmd);
+
 char	*extract_word(char *input, int *i);
 void init_token(t_token *tokens);
 t_token	*tokenize(char *input);
@@ -138,6 +133,8 @@ int		ft_env(t_env *env_list);
 int		ft_pwd(t_env *env_list);
 int		ft_echo(t_args *args);
 int		ft_cd(t_env **env_list, char *path);
+int		ft_export(t_args *args, t_env **env);
+int		ft_unset(t_args *args, t_env **env);
 
 /* ************************************************************************** */
 /*                                ENVIRONNEMENT                               */
@@ -157,13 +154,6 @@ int		check_syntax_error(t_token *tokens);
 /* ************************************************************************** */
 /*                                     PIPE                                   */
 /* ************************************************************************** */
-// void	ft_close_pipe(int *pipe);
-// void	ft_update_pipe(int *prev, int *next);
-// void	ft_first_child(t_args *args, t_env *env_list, t_pipe pro);
-// void	ft_middle_child(t_args *args, t_env *env_list, t_pipe pro);
-// void	ft_last_child(t_args *args, t_env *env_list, t_pipe pro);
-// void	ft_child_process(t_args *args, t_env *env_list, t_pipe pro, int i);
-// void	ft_create_process(t_args *args, t_env *env_list, t_pipe pro);
 void	pipex(t_args *args, t_env *env_list);
 
 #endif
