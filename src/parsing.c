@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/24 17:12:26 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/24 17:20:29 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,44 +201,6 @@ t_cmd *create_cmd_from_list(t_list *words)
 	return (cmd);
 }
 
-
-//from tokens, we store infos into t_args
-// t_args *parse_token(t_token *tokens)
-// {
-// 	t_args *args;
-// 	t_args *head;
-// 	int		cmd_total;
-
-// 	args = create_new_args();
-// 	head = args;
-// 	cmd_total = 1;
-// 	while (tokens)
-// 	{
-// 		if (tokens->type == PIPE)
-// 		{
-// 			args->pipe = 1;
-// 			args->next = create_new_args();
-// 			args = args->next;
-// 			cmd_total++;
-// 			tokens = tokens->next;
-// 			continue;
-// 		}
-// 		if (tokens->prev && tokens->prev->type == HEREDOC)
-// 			args->limiter = ft_strdup(tokens->value);
-// 		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == APPEND)
-// 			add_file(args, tokens->value, 2);
-// 		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == REDIR_IN)
-// 			add_file(args, tokens->value, 0);
-// 		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == REDIR_OUT)
-// 			add_file(args, tokens->value, 1);
-// 		else if (tokens->type == WORD)
-// 			add_cmd(args, tokens->value);
-// 		tokens = tokens->next;
-// 	}
-// 	head->cmd_count = cmd_total;
-// 	return head;
-// }
-
 t_args *parse_token(t_token *tokens)
 {
 	t_args *args;
@@ -292,48 +254,6 @@ t_args *parse_token(t_token *tokens)
 	return (args);
 }
 
-
-// t_args *parse_token(t_token *tokens)
-// {
-// 	t_args *args;
-// 	t_args *head;
-// 	int		cmd_total;
-// 	int		pipe_total;
-
-// 	cmd_total = 1;
-// 	pipe_total = 0;
-// 	args = create_new_args();
-// 	head = args;
-// 	while (tokens)
-// 	{
-// 		if (tokens->type == PIPE)
-// 		{
-// 			args->pipe = 1;
-// 			args->next = create_new_args();
-// 			args = args->next;
-// 			cmd_total++;
-// 			pipe_total++;
-// 			tokens = tokens->next;
-// 			continue;
-// 		}
-// 		if (tokens->prev && tokens->prev->type == HEREDOC)
-// 			args->limiter = ft_strdup(tokens->value);
-// 		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == APPEND)
-// 			add_file(args, tokens->value, 2);
-// 		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == REDIR_IN)
-// 			add_file(args, tokens->value, 0);
-// 		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == REDIR_OUT)
-// 			add_file(args, tokens->value, 1);
-// 		else if (tokens->type == WORD)
-// 			add_cmd(args, tokens->value);
-// 		tokens = tokens->next;
-// 	}
-// 	head->cmd_count = cmd_total;
-// 	head->pipe = pipe_total;
-// 	return head;
-// }
-
-
 void add_file(t_args *args, char *filename, int type)
 {
 	if (type == 0)
@@ -343,72 +263,6 @@ void add_file(t_args *args, char *filename, int type)
 	else if (type == 2)
 		args->append_outfile = ft_strdup(filename);
 }
-
-// void print_cmd_list(t_args *args)
-// {
-//     int i;
-// 	t_cmd *cmd;
-
-// 	printf("=== Command ===\n");
-// 	printf("Cmd count : %d\n", args->cmd_count);
-// 	cmd = args->cmd;
-// 	printf("Commands: ");
-// 	while (cmd)
-// 	{
-// 		printf("[%s] ", cmd->cmd_name);
-// 		cmd = cmd->next;
-// 	}
-// 	printf("\n");
-// 	printf("============\n");
-// 	printf("Pipe count : %d\n", args->pipe);
-// 	printf("============\n");
-// 	if (args->infile)
-//         printf("Input File : %s\n", args->infile);
-// 	if (args->limiter)
-//         printf("Limiter : %s\n", args->limiter);
-//     if (args->outfile)
-//         printf("Output File : %s\n", args->outfile);
-// 	if (args->append_outfile)
-//         printf("Output File(append) : %s\n", args->append_outfile);
-// 	printf("============\n");
-// 	// printf("\n");
-// }
-
-// void print_cmd_list(t_args *args)
-// {
-// 	int		i;
-// 	t_cmd	*cmd;
-// 	int		stage;
-
-// 	stage = 0;
-// 	while (args)
-// 	{
-// 		printf("=== Command %d ===\n", stage);
-// 		printf("Cmd count : %d\n", args->cmd_count);
-// 		cmd = args->cmd;
-// 		printf("Commands: ");
-// 		i = 0;
-// 		while (cmd)
-// 		{
-// 			printf("[%s] ", cmd->cmd_name);
-// 			cmd = cmd->next;
-// 		}
-// 		printf("\n");
-// 		printf("Pipe to next : %s\n", args->pipe ? "YES" : "NO");
-// 		if (args->infile)
-// 			printf("Input File : %s\n", args->infile);
-// 		if (args->limiter)
-// 			printf("Limiter : %s\n", args->limiter);
-// 		if (args->outfile)
-// 			printf("Output File : %s\n", args->outfile);
-// 		if (args->append_outfile)
-// 			printf("Output File(append) : %s\n", args->append_outfile);
-// 		printf("============\n\n");
-// 		args = args->next;
-// 		stage++;
-// 	}
-// }
-
 
 void print_cmd_list(t_args *args)
 {
