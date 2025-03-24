@@ -6,7 +6,7 @@
 #    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/22 14:52:02 by ryada            ###   ########.fr        #
+#    Updated: 2025/03/24 17:19:16 by ryada            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,14 +28,13 @@ SRC = $(SRC_DIR)builtin/ft_cd.c \
 	$(SRC_DIR)main.c\
 	$(SRC_DIR)parsing.c\
 	$(SRC_DIR)pipe.c\
-	$(SRC_DIR)redirection.c\
 	$(SRC_DIR)utils.c  \
 	$(SRC_DIR)utils_2.c  \
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -I$(LIBFT_DIR) -I$(INCLUDE_DIR) -g
+CFLAGS = -Wall -Wextra -Werror -g -I$(LIBFT_DIR) -I$(INCLUDE_DIR)
 INCLUDES = -I/usr/include -Imlx
 
 LIBFT = $(LIBFT_DIR)/libft_master.a
