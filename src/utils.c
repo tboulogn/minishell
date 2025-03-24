@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:20:17 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/19 10:41:48 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:21:07 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,31 @@ char	*ft_strndup(const char *s, size_t len)
 		new_str[i] = s[i];
 		i++;
 	}
+	new_str[i] = '\0';
+	return (new_str);
+}
+
+char	*ft_strjoin_three(char const *s1, char const *s2, const char *s3)
+{
+	size_t	len_s1;
+	size_t	len_s2;
+	size_t	len_s3;
+	size_t	i;
+	char	*new_str;
+
+	if (!s1 || !s2 || !s3)
+		return (NULL);
+	len_s1 = ft_strlen(s1);
+	len_s2 = ft_strlen(s2);
+	len_s3 = ft_strlen(s3);
+	s3 = ft_secure_malloc((len_s1 + len_s2 + len_s3 + 1) * sizeof(char));
+	i = 0;
+	while (*s1)
+		new_str[i++] = *s1++;
+	while (*s2)
+		new_str[i++] = *s2++;
+	while(*s3)
+		new_str[i++] = *s3++;
 	new_str[i] = '\0';
 	return (new_str);
 }

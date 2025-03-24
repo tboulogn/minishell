@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
+#    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/05 16:38:57 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/17 16:19:53 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/03/22 16:55:26 by ryada            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,10 @@ SRC	=	$(SRC_DIR)/ft_strlen.c $(SRC_DIR)/ft_strdup.c \
 		$(SRC_DIR)/ft_substr.c $(SRC_DIR)/ft_strjoin.c $(SRC_DIR)/ft_strtrim.c \
 		$(SRC_DIR)/ft_split.c $(SRC_DIR)/ft_itoa.c $(SRC_DIR)/ft_strmapi.c \
 		$(SRC_DIR)/ft_striteri.c $(SRC_DIR)/ft_putchar_fd.c $(SRC_DIR)/ft_putstr_fd.c \
+		$(SRC_DIR)/ft_lstadd_back_bonus.c $(SRC_DIR)/ft_lstadd_front_bonus.c \
+		$(SRC_DIR)/ft_lstclear_bonus.c $(SRC_DIR)/ft_lstdelone_bonus.c \
+		$(SRC_DIR)/ft_lstiter_bonus.c $(SRC_DIR)/ft_lstlast_bonus.c $(SRC_DIR)/ft_lstmap_bonus.c \
+		$(SRC_DIR)/ft_lstnew_bonus.c $(SRC_DIR)/ft_lstnew_bonus.c $(SRC_DIR)/ft_lstsize_bonus.c \
 		$(SRC_DIR)/ft_putendl_fd.c $(SRC_DIR)/ft_putnbr_fd.c $(SRC_DIR)/get_next_line.c \
 
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:$(SRC_DIR)/%.c=%.o))
