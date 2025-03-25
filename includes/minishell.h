@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/25 15:38:09 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:53:38 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ struct s_cmd
 {
 	char	**cmd_tab;
 	char	*cmd_path;
+	int		sq;
+	int		dq;
 	t_cmd	*prev;
 	t_cmd	*next;
 };

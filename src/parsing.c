@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/24 17:20:29 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/25 14:01:44 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ char *extract_word(char *input, int *i)
 
 	start = *i;
 	quote = 0;
-
 	while (input[*i] && (quote || (!is_whitespace(input[*i]) && !is_special_char(input[*i]))))
 	{
 		if (input[*i] == '"' || input[*i] == '\'')
@@ -34,18 +33,9 @@ char *extract_word(char *input, int *i)
 		}
 		else if (is_special_char(input[*i]) && !quote)
 			break;  // Stop if encountering `|`, `<`, `>` outside of quotes
-
 		(*i)++;
 	}
 	return ft_strndup(input + start, *i - start);
-}
-
-void init_token(t_token *tokens)
-{
-	tokens->next = NULL;
-	tokens->prev = NULL;
-	tokens->value = NULL;
-	tokens = NULL;
 }
 
 t_token	*tokenize(char *input)
@@ -53,49 +43,47 @@ t_token	*tokenize(char *input)
 	t_token *tokens;
 	int		i;
 
-	// init_token(tokens);
-	tokens = NULL;
+	tokens = NULL;//init t_token
 	i = 0;
 	while (input[i])
 	{
-		while (input[i] && is_whitespace(input[i]))  // Skip spaces
+		while (input[i] && is_whitespace(input[i]))//skip spaces
 			i++;
-		if (input[i] == '|') // Detect pipe without needing spaces
+		if (input[i] == '|')//detect pipe
 		{
 			add_token(&tokens, "|", PIPE);
 			i++;
 		} 
 		else if (input[i] == '>')
 		{
-			if (input[i + 1] == '>')
+			if (input[i + 1] == '>')//append output
 			{
 				add_token(&tokens, ">>", APPEND);
-				// printf("YES THERE IS APPEND\n");
 				i++;
 			}
-			else
+			else//non_append output
 				add_token(&tokens, ">", REDIR_OUT);
 			i++;
 		}
 		else if (input[i] == '<')
 		{
-			if (input[i + 1] == '<')
+			if (input[i + 1] == '<')//here_doc
 			{
 				add_token(&tokens, "<<", HEREDOC);
 				i++;
 			}
-			else
+			else//normal redir_in
 				add_token(&tokens, "<", REDIR_IN);
 			i++;
 		}
-		else if (input[i]) // Everything else is a word
+		else if (input[i])//Everything else is a word(cmd/filename/limiter)
 			add_token(&tokens, extract_word(input, &i), WORD);
 	}
 	return (tokens);
 }
 
 
-//set up the next/cahin-list and types
+//init token, set up the next and prev(cahin-list)
 void	add_token(t_token **tokens, char *value, t_token_type type)
 {
 	t_token *new;
@@ -104,20 +92,19 @@ void	add_token(t_token **tokens, char *value, t_token_type type)
 	new = ft_secure_malloc(sizeof(t_token));
 	if (!new)
 		return ;
-	new->value = ft_strdup(value);
+	new->value = ft_strdup(value);//call strdup for malloc
 	new->type = type;
 	new->next = NULL;
 	new->prev = NULL;
-
-	if (!*tokens)
-		*tokens = new;
+	if (!*tokens)//if it is the new token
+		*tokens = new;//set it as the start of the chain list
 	else
 	{
 		tmp = *tokens;
 		while (tmp->next)
 			tmp = tmp->next;
-		tmp->next = new;
-		new->prev = tmp;
+		tmp->next = new;//add the new one as the next one of the last node
+		new->prev = tmp;//the last node will be the prev of the new node
 	}
 }
 
@@ -137,27 +124,28 @@ t_args	*create_new_args(void)
 	return (new_args);
 }
 
-void add_cmd(t_args *args, char *word)
-{
-	t_cmd *new;
+// void add_cmd(t_args *args, char *word)
+// {
+// 	t_cmd *new;
 
-	new = ft_secure_malloc(sizeof(t_cmd));
-	new->cmd_tab = ft_split(args->cmd->cmd_path, ' ');
-	new->next = NULL;
-	new->prev = NULL;
-	if (!args->cmd)
-		args->cmd = new;
-	else
-	{
-		t_cmd *tmp = args->cmd;
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = new;
-		new->prev = tmp;
-	}
-	args->cmd_count++;
-}
+// 	new = ft_secure_malloc(sizeof(t_cmd));
+// 	new->cmd_tab = ft_split(args->cmd->cmd_path, ' ');
+// 	new->next = NULL;
+// 	new->prev = NULL;
+// 	if (!args->cmd)
+// 		args->cmd = new;
+// 	else
+// 	{
+// 		t_cmd *tmp = args->cmd;
+// 		while (tmp->next)
+// 			tmp = tmp->next;
+// 		tmp->next = new;
+// 		new->prev = tmp;
+// 	}
+// 	args->cmd_count++;
+// }
 
+//to init t_cmd and set prev/next of t_cmd
 void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 {
 	t_cmd	*last;
@@ -166,6 +154,8 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 		return;
 	new_cmd->next = NULL;
 	new_cmd->prev = NULL;
+	new_cmd->sq = 0;
+	new_cmd->dq = 0;
 	if (!args->cmd)
 	{
 		args->cmd = new_cmd;
@@ -178,20 +168,22 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 	new_cmd->prev = last;
 }
 
-
+//set t_cmd cmd_tab by using t_list
 t_cmd *create_cmd_from_list(t_list *words)
 {
-	t_cmd *cmd = ft_secure_malloc(sizeof(t_cmd));
-	int count = ft_lstsize(words);
-	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (count + 1));
-	cmd->prev = NULL;
-	cmd->next = NULL;
-
-	int i = 0;
+	t_cmd	*cmd;
+	t_list	*tmp;
+	int		count;
+	int		i;
+	
+	cmd = ft_secure_malloc(sizeof(t_cmd));
+	count = ft_lstsize(words);
+	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (count + 1));//+ 1 for NULL
+	i = 0;
 	while (words)
 	{
 		cmd->cmd_tab[i] = ft_strdup((char *)words->content);
-		t_list *tmp = words;
+		tmp = words;
 		words = words->next;
 		free(tmp);
 		i++;
@@ -201,19 +193,30 @@ t_cmd *create_cmd_from_list(t_list *words)
 	return (cmd);
 }
 
-t_args *parse_token(t_token *tokens)
+//I can improve this
+void add_file_or_limiter(t_args *args, char *str, t_token_type type)
+{
+	if (type == REDIR_IN)
+		args->infile = ft_strdup(str);
+	else if (type == REDIR_OUT)
+		args->outfile = ft_strdup(str);
+	else if (type == APPEND)
+		args->append_outfile = ft_strdup(str);
+	else if (type == HEREDOC)
+		args->limiter = ft_strdup(str);
+}
+
+t_args *parse_token(t_token *tokens)//store the argument info into t_args by using t_token
 {
 	t_args *args;
 	t_cmd *current_cmd;
-	t_list *word_list;
+	t_list *word_list;//linked chain (char *) of cmds
 	t_cmd *new_cmd;
 	t_cmd *final_cmd;
 
-	args = create_new_args();
+	args = create_new_args();//initialize t_args
 	current_cmd = NULL;
 	word_list = NULL;
-	args->cmd_count = 0;
-	args->pipe = 0;
 	while (tokens)
 	{
 		if (tokens->type == PIPE)
@@ -227,22 +230,16 @@ t_args *parse_token(t_token *tokens)
 			}
 			args->pipe++;
 			tokens = tokens->next;
-			continue;
+			continue;//move to the next loop
 		}
-		else if (tokens->type == WORD && (!tokens->prev || (
-			tokens->prev->type != REDIR_IN && tokens->prev->type != REDIR_OUT &&
-			tokens->prev->type != APPEND && tokens->prev->type != HEREDOC)))
-		{
-			ft_lstadd_back(&word_list, ft_lstnew(ft_strdup(tokens->value)));
-		}
-		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == REDIR_IN)
-			args->infile = ft_strdup(tokens->value);
-		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == REDIR_OUT)
-			args->outfile = ft_strdup(tokens->value);
-		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == APPEND)
-			args->append_outfile = ft_strdup(tokens->value);
-		else if (tokens->type == WORD && tokens->prev && tokens->prev->type == HEREDOC)
-			args->limiter = ft_strdup(tokens->value);
+		else if (tokens->type == WORD && (!tokens->prev || (tokens->prev->type != REDIR_IN
+			&& tokens->prev->type != REDIR_OUT && tokens->prev->type != APPEND
+			&& tokens->prev->type != HEREDOC)))//if it is a cmd
+			ft_lstadd_back(&word_list, ft_lstnew(ft_strdup(tokens->value)));//add to the end of word_list
+		else if (tokens->type == WORD && tokens->prev && (tokens->prev->type == REDIR_IN
+			||tokens->prev->type == REDIR_OUT || tokens->prev->type == APPEND
+			|| tokens->prev->type == HEREDOC))//if there is a file or limiter
+			add_file_or_limiter(args, tokens->value, tokens->prev->type);
 		tokens = tokens->next;
 	}
 	if (word_list)
@@ -252,16 +249,6 @@ t_args *parse_token(t_token *tokens)
 		args->cmd_count++;
 	}
 	return (args);
-}
-
-void add_file(t_args *args, char *filename, int type)
-{
-	if (type == 0)
-		args->infile = ft_strdup(filename);
-	else if (type == 1)
-		args->outfile = ft_strdup(filename);
-	else if (type == 2)
-		args->append_outfile = ft_strdup(filename);
 }
 
 void print_cmd_list(t_args *args)
