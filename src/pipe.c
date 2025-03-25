@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/25 15:43:40 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:09:41 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,11 +134,25 @@ void	pipex(t_args *args, t_env **env_list)
     t_cmd *current;
     t_args temp;
     int i;
+	int fd_in;
+	int fd_out;
 
     if (args->cmd_count == 1 && !ft_check_buildin(args))
     {
         printf("caca");
 		ft_exec(args, env_list);
+		if (args->infile)
+		{
+			fd_in = open(args->infile, O_RDONLY);
+			if (fd_in < 0)
+				perror(args->infile);
+		}
+		if (args->outfile)
+		{
+			fd_out = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (fd_out < 0)
+				perror(args->outfile);
+		}
         return ;
     }
     i = 0;
