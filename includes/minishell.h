@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/24 19:41:03 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:38:09 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void 	print_cmd_list(t_args *args);
 /*                                  EXEC                                      */
 /* ************************************************************************** */
 int		ft_check_buildin(t_args *args);
-void	ft_exec(t_args *args, t_env *env_list);
+void	ft_exec(t_args *args, t_env **env_list);
 
 /* ************************************************************************** */
 /*                                   BUILTIN                                  */
@@ -154,6 +154,6 @@ int		check_syntax_error(t_token *tokens);
 /* ************************************************************************** */
 /*                                     PIPE                                   */
 /* ************************************************************************** */
-void	pipex(t_args *args, t_env *env_list);
+void	pipex(t_args *args, t_env **env_list);
 
 #endif

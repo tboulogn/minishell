@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_list.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 13:07:24 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/22 10:11:00 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/25 14:09:22 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,9 @@ int set_env_value(t_env **env, const char *key, const char *value)
 	current = *env;
 	while(current)
 	{
-		if(ft_strncmp(current->key, key, ft_strlen(key)) == 0)
+		if(ft_strcmp(current->key, key) == 0)
 		{
+			printf("[DEBUG] Adding variable: key='%s', value='%s'\n", key, value);
 			free(current->value);
 			current->value = ft_strdup(value);
 			return (current->value == NULL);
