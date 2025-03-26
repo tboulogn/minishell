@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/24 17:18:43 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/25 16:09:41 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void single_child(t_args *args, t_env *env_list)
 		dup2(fd_close, STDOUT_FILENO);
 		close(fd_close);
 	}
-	ft_exec(args, env_list);
+	ft_exec(args, &env_list);
 }
 
 void	first_child(t_args *args, t_env *env_list, t_pipe pro)
@@ -79,7 +79,7 @@ void	first_child(t_args *args, t_env *env_list, t_pipe pro)
 	}
 	dup2(pro.next[1], STDOUT_FILENO);
 	close(pro.next[1]);
-	ft_exec(args, env_list);
+	ft_exec(args, &env_list);
 }
 
 void	middle_child(t_args *args, t_env *env_list, t_pipe pro)
@@ -90,7 +90,7 @@ void	middle_child(t_args *args, t_env *env_list, t_pipe pro)
 	dup2(pro.next[1], STDOUT_FILENO);
 	close(pro.next[1]);
 	close(pro.next[0]);
-	ft_exec(args, env_list);
+	ft_exec(args, &env_list);
 }
 
 void	last_child(t_args *args, t_env *env_list, t_pipe pro)
@@ -108,7 +108,7 @@ void	last_child(t_args *args, t_env *env_list, t_pipe pro)
 		dup2(fd, STDOUT_FILENO);
 		close(fd);
 	}
-	ft_exec(args, env_list);
+	ft_exec(args, &env_list);
 }
 
 void	child_process(t_args *args, t_env *env_list, t_pipe pro, int i)
@@ -128,42 +128,63 @@ void	child_process(t_args *args, t_env *env_list, t_pipe pro, int i)
 }
 
 
-void pipex(t_args *args, t_env *env_list)
+void	pipex(t_args *args, t_env **env_list)
 {
-	t_pipe pro;
-	t_cmd *current;
-	t_args temp;
-	int i;
+    t_pipe pro;
+    t_cmd *current;
+    t_args temp;
+    int i;
+	int fd_in;
+	int fd_out;
 
-	i = 0;
-	init_pipe_struct(&pro, args->cmd_count);
-	current = args->cmd;
-	while (current)
-	{
-		ft_memset(&temp, 0, sizeof(t_args));
-		temp.cmd = current;
-		temp.cmd_count = args->cmd_count;
-		temp.infile = args->infile;
-		temp.outfile = args->outfile;
-		if (current->next && pipe(pro.next) == -1)
+    if (args->cmd_count == 1 && !ft_check_buildin(args))
+    {
+        printf("caca");
+		ft_exec(args, env_list);
+		if (args->infile)
 		{
-			perror("pipe");
-			exit(EXIT_FAILURE);
+			fd_in = open(args->infile, O_RDONLY);
+			if (fd_in < 0)
+				perror(args->infile);
 		}
-		pro.pid[i] = fork();
-		if (pro.pid[i] == -1)
+		if (args->outfile)
 		{
-			perror("fork");
-			exit(EXIT_FAILURE);
+			fd_out = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (fd_out < 0)
+				perror(args->outfile);
 		}
-		if (pro.pid[i] == 0)
-			child_process(&temp, env_list, pro, i);
-		close_pipe(pro.prev);
-		update_pipe(pro.prev, pro.next);
-		i++;
-		current = current->next;
-	}
-	close_pipe(pro.prev);
-	while (wait(NULL) > 0);
-	free(pro.pid);
+        return ;
+    }
+    i = 0;
+    init_pipe_struct(&pro, args->cmd_count);
+    current = args->cmd;
+    while (current)
+    {
+        ft_memset(&temp, 0, sizeof(t_args));
+        temp.cmd = current;
+        temp.cmd_count = args->cmd_count;
+        temp.infile = args->infile;
+        temp.outfile = args->outfile;
+        if (current->next && pipe(pro.next) == -1)
+        {
+            perror("pipe");
+            exit(EXIT_FAILURE);
+        }
+        // if (!(args->cmd_count == 1 && ft_check_buildin(args)))
+            pro.pid[i] = fork();
+        if (pro.pid[i] == -1)
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        if (pro.pid[i] == 0)
+            child_process(&temp, *env_list, pro, i);
+        close_pipe(pro.prev);
+        update_pipe(pro.prev, pro.next);
+        i++;
+        current = current->next;
+    }
+    close_pipe(pro.prev);
+    while (wait(NULL) > 0);
+    free(pro.pid);
 }

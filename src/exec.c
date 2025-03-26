@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/24 17:18:01 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/25 14:30:12 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,18 +114,30 @@ char	**env_list_to_envp(t_env *env)
 	return (envp);
 }
 
-void	built_in(t_args *args, t_env *env_list)
+void	built_in(t_args *args, t_env **env_list)
 {
 	printf("BUILT_IN CMD\n");//modify this
 	printf("================\n");
 	if (ft_strncmp(args->cmd->cmd_tab[0], "env", 3) == 0)
-		ft_env(env_list);
+		ft_env(*env_list);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "pwd", 3) == 0)
-		ft_pwd(env_list);
+		ft_pwd(*env_list);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "echo", 4) == 0)
 		ft_echo(args);
-	else if (ft_strncmp(args->cmd->cmd_tab[0], "cd", 2) == 0)	
-		ft_cd(&env_list, args->cmd->next->cmd_tab[0]);
+	else if (ft_strncmp(args->cmd->cmd_tab[0], "cd", 2) == 0)
+	{
+		char *path;
+		path = NULL;
+		if (args->cmd->cmd_tab[1])
+			path = args->cmd->cmd_tab[1]; 
+		ft_cd(env_list, path);
+	}
+	else if (ft_strncmp(args->cmd->cmd_tab[0], "export", 6) == 0)	
+		ft_export(args, env_list);
+	else if (ft_strncmp(args->cmd->cmd_tab[0], "unset", 5) == 0)
+		ft_unset(args, env_list);
+	
+	
 }
 
 void external(t_args *args, t_env *env_list)
@@ -154,12 +166,12 @@ void external(t_args *args, t_env *env_list)
 }
 
 //without any frees
-void	ft_exec(t_args *args, t_env *env_list)
+void	ft_exec(t_args *args, t_env **env_list)
 {
 	if (!args || !args->cmd || !args->cmd->cmd_tab || !args->cmd->cmd_tab[0])
 		return ;
     if(!ft_check_buildin(args))
         built_in(args, env_list);
     else
-		external(args, env_list);
+		external(args, *env_list);
 }

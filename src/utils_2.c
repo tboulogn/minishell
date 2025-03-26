@@ -3,21 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   utils_2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:24 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/22 10:53:05 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/24 19:22:07 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-int	is_capletter(char c)
-{
-	if (c >= 'A' && c <= 'Z')
-		return (1);
-	return (0);
-}
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
@@ -62,4 +55,22 @@ char	*ft_strjoin_3(char *s1, char *s2, char *s3)
 	ft_memcpy(res + len1 + len2, s3, len3);
 	res[len1 + len2 + len3] = '\0';
 	return (res);
+}
+
+int	is_valid_key(const char *key)
+{
+	int	i;
+	
+	if (!key || !key[0])
+		return (0);
+	if (ft_isalpha(key[0] && key[0] != '_'))
+		return (0);
+	i = 1;
+	while (key[i])
+	{
+		if (!ft_isalnum(key[i]) && key[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
 }
