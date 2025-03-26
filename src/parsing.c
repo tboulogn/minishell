@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/25 14:01:44 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/26 10:06:19 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,8 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 		return;
 	new_cmd->next = NULL;
 	new_cmd->prev = NULL;
-	new_cmd->sq = 0;
-	new_cmd->dq = 0;
+	new_cmd->sq_count = 0;
+	new_cmd->dq_count = 0;
 	if (!args->cmd)
 	{
 		args->cmd = new_cmd;
@@ -167,6 +167,66 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 	last->next = new_cmd;
 	new_cmd->prev = last;
 }
+
+int	count_char(char *str, char c)
+{
+	int i;
+	int count;
+
+	i = 0;
+	count = 0;
+	while(str[i])
+	{
+		if (str[i] == c)
+			count++;
+		i++;
+	}
+	return (count);
+}
+
+char	*ft_strdup_exept(const char *s, char c)
+{
+	size_t	len;
+	char	*new_str;
+	int		c_count;
+	int		i;
+	int		j;
+
+	i = 0;
+	c_count = 0;
+	while(s[i])
+	{
+		if (s[i] == c)
+			c_count++;
+		i++;
+	}
+	len = ft_strlen(s) - c_count;
+	new_str = malloc(len + 1 * sizeof(char));
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while(s[i])
+	{
+		if (s[i] != c)
+		{
+			new_str[j] = s[i];
+			j++;
+		}
+		i++;
+	}
+	new_str[j] = '\0';
+	return (new_str);
+}
+
+// char	*modify_quates(char *str)
+// {
+// 	int		i;
+// 	int		j;
+// 	char	*modified;
+	
+// }
+
 
 //set t_cmd cmd_tab by using t_list
 t_cmd *create_cmd_from_list(t_list *words)
@@ -182,7 +242,24 @@ t_cmd *create_cmd_from_list(t_list *words)
 	i = 0;
 	while (words)
 	{
-		cmd->cmd_tab[i] = ft_strdup((char *)words->content);
+		//check if there are quates
+		// cmd->cmd_tab[i] = ft_strdup((char *)words->content);
+		cmd->sq_count = count_char((char *)words->content, '\'');
+		cmd->dq_count = count_char((char *)words->content, '"');
+		// if (cmd->sq_count > 2)
+		// {
+		// 	cmd->dq_count = cmd->sq_count / 2;
+		// 	cmd->sq_count = cmd->sq_count % 2;
+		// }
+		printf("singcle quote count %d\n", cmd->sq_count);
+		printf("double quote count %d\n", cmd->dq_count);
+		//change single quates into double if there are even number of them
+		if (cmd->sq_count)
+			cmd->cmd_tab[i] = ft_strdup_exept((char *)words->content, '\'');
+		else if (cmd->dq_count)
+			cmd->cmd_tab[i] = ft_strdup_exept((char *)words->content, '"');
+		else
+			cmd->cmd_tab[i] = ft_strdup((char *)words->content);
 		tmp = words;
 		words = words->next;
 		free(tmp);
@@ -193,7 +270,11 @@ t_cmd *create_cmd_from_list(t_list *words)
 	return (cmd);
 }
 
-//I can improve this
+//change single quates into double if there are even number of them connected,
+//count the quates, store them into the structure
+//depending on the quate numbers, remove the quates from the string
+
+
 void add_file_or_limiter(t_args *args, char *str, t_token_type type)
 {
 	if (type == REDIR_IN)

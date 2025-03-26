@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/25 16:46:22 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/26 08:32:00 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ struct s_cmd
 {
 	char	**cmd_tab;
 	char	*cmd_path;
-	int		sq;
-	int		dq;
+	int		sq_count;//is there are tow single quates, whatever inside will be an absolute string, if there are (even number) of them, it becomes 2 dowble quates
+	int		dq_count;
 	t_cmd	*prev;
 	t_cmd	*next;
 };
