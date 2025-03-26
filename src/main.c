@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 08:21:46 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/26 21:34:43 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,13 @@ void	put_prompt(char **input, t_env *env_list)
 {
 	char *prompt;
 
+	printf(">>> Prompt lance\n");
 	prompt = pwd_str(env_list);
 	*input = readline(prompt);
+	free(prompt);
 	if (!*input)
-		printf("exit\n");
-	if (**input)
+		return ;
+	if (*input && **input)
 		add_history(*input);
 }
 
@@ -73,8 +75,10 @@ void	minishell(t_env **env_list)
 	t_args		*args;
 
 	input = NULL;
+	init_signals();
 	while (1)
 	{
+		args = NULL;
 		put_prompt(&input, *env_list);
 		parsing(input, &tokens, &args);
 		print_cmd_list(args);
@@ -93,7 +97,7 @@ void	minishell(t_env **env_list)
 int main(int argc, char **argv, char **envp)
 {
 	t_env	*env_list;
-
+	
 	env_list = init_env_list(envp);
 	if (ft_strncmp(argv[0], "./minishell", 11) == 0 && argc == 1)
 		minishell(&env_list);

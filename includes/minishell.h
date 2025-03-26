@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 14:15:29 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/26 23:54:12 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,19 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include  <signal.h>
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <string.h>
+# include <wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <dirent.h>
 # include "../libft_master/libft.h"
 
 # define PROMPT "minishell:~"
+
+extern volatile	sig_atomic_t	g_signal;
 
 typedef enum e_token_type
 {
@@ -169,6 +173,12 @@ void	pipex(t_args *args, t_env **env_list);
 /*                                  HERE_OC                                   */
 /* ************************************************************************** */
 
+/* ************************************************************************** */
+/*                                   SIGNAL                                   */
+/* ************************************************************************** */
+void	sigint_handler(int sig);
+void	init_signals(void);
+int		get_exit_status(int status);
 
 
 #endif

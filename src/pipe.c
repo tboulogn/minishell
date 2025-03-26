@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 14:45:42 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/26 23:54:33 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,8 @@ void	last_child(t_args *args, t_env *env_list, t_pipe pro)
 
 void	child_process(t_args *args, t_env *env_list, t_pipe pro, int i)
 {
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (i == 0)
 	{ 
 		if (args->cmd_count == 1)
@@ -134,6 +136,7 @@ void	pipex(t_args *args, t_env **env_list)
     t_cmd *current;
     t_args temp;
     int i;
+	int	j;
 	int fd_in;
 	int fd_out;
 	int status;
@@ -158,6 +161,8 @@ void	pipex(t_args *args, t_env **env_list)
     i = 0;
     init_pipe_struct(&pro, args->cmd_count);
     current = args->cmd;
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
     while (current)
     {
         ft_memset(&temp, 0, sizeof(t_args));
@@ -182,9 +187,16 @@ void	pipex(t_args *args, t_env **env_list)
         update_pipe(pro.prev, pro.next);
         i++;
         current = current->next;
-		waitpid(pro.pid[i], &status, 0);
     }
-    close_pipe(pro.prev);
-	args->e_status = WEXITSTATUS(status);
+    j = -1;
+	while (++j < i)
+	{
+		waitpid(pro.pid[j], &status, 0);
+		if (j == i - 1)
+			args->e_status = get_exit_status(status);
+	}
+	signal(SIGINT, sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
+	close_pipe(pro.prev);
     free(pro.pid);
 }
