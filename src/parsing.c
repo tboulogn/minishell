@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/26 10:06:19 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/26 11:21:19 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,7 +300,22 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 	word_list = NULL;
 	while (tokens)
 	{
-		if (tokens->type == PIPE)
+		if (tokens->next && tokens->next->type == HEREDOC)
+		{
+			printf("here1\n");
+			
+			// if (word_list)
+			// {
+				printf("here2\n");
+				new_cmd = create_cmd_from_list(word_list);
+				add_cmd_back(args, new_cmd);
+				args->cmd_count++;
+				// word_list = NULL;
+			// tokens = tokens->next;
+			// continue;//move to the next loop
+			// }
+		}
+		else if (tokens->type == PIPE)
 		{
 			if (word_list)
 			{
@@ -321,6 +336,7 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 			||tokens->prev->type == REDIR_OUT || tokens->prev->type == APPEND
 			|| tokens->prev->type == HEREDOC))//if there is a file or limiter
 			add_file_or_limiter(args, tokens->value, tokens->prev->type);
+		printf("token value: %s\n", tokens->value);
 		tokens = tokens->next;
 	}
 	if (word_list)
