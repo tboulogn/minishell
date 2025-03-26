@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 11:39:00 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/26 14:45:42 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,8 +185,6 @@ void	pipex(t_args *args, t_env **env_list)
 		waitpid(pro.pid[i], &status, 0);
     }
     close_pipe(pro.prev);
-    // while (wait(NULL) > 0);
-	args->e_status = status;
-	// printf("the last exit status%d\n", WEXITSTATUS(args->e_status));
+	args->e_status = WEXITSTATUS(status);
     free(pro.pid);
 }

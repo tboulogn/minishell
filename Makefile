@@ -6,7 +6,7 @@
 #    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/24 18:02:51 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/03/26 14:14:01 by tboulogn         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ SRC = $(SRC_DIR)builtin/ft_cd.c \
 	$(SRC_DIR)redirection.c\
 	$(SRC_DIR)utils.c  \
 	$(SRC_DIR)utils_2.c  \
+	$(SRC_DIR)utils_3.c \
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
