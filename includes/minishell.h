@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 11:32:57 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/26 14:15:29 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,12 @@ int		ft_strcmp(const char *s1, const char *s2);
 void	ft_free_tab(char **tab);
 char	*ft_strjoin_3(char *s1, char *s2, char *s3);
 int		is_valid_key(const char *key);
+int		get_len(int nb);
+
+/* ************************************************************************** */
+/*                                   UTILS_3                                  */
+/* ************************************************************************** */
+char	*ft_itoa(int nb);
 
 /* ************************************************************************** */
 /*                                    FREE                                    */
@@ -134,7 +140,7 @@ void	ft_exec(t_args *args, t_env **env_list);
 /* ************************************************************************** */
 int		ft_env(t_env *env_list);
 int		ft_pwd(t_env *env_list);
-int		ft_echo(t_args *args);
+int		ft_echo(t_args *args, t_env *env_list);
 int		ft_cd(t_env **env_list, char *path);
 int		ft_export(t_args *args, t_env **env);
 int		ft_unset(t_args *args, t_env **env);

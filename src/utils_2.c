@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:24 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/24 19:22:07 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/26 12:41:02 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,19 @@ int	is_valid_key(const char *key)
 		i++;
 	}
 	return (1);
+}
+
+int	get_len(int nb)
+{
+	int	len;
+
+	len = 0;
+	if (nb <= 0)
+		len++;
+	while (nb != 0)
+	{
+		nb /= 10;
+		len++;
+	}
+	return (len);
 }
