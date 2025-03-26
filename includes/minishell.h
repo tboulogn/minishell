@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 08:32:00 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/26 11:32:57 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ typedef struct s_args
 	char			*append_outfile;
 	char			*limiter;
 	int				pipe;
+	int				e_status;
 	// struct s_args	*next;
 }	t_args;
 
@@ -112,13 +113,13 @@ void	free_env_node(t_env *node);
 /* ************************************************************************** */
 
 char	*extract_word(char *input, int *i);
-void init_token(t_token *tokens);
+void 	init_token(t_token *tokens);
 t_token	*tokenize(char *input);
 void	add_token(t_token **tokens, char *value, t_token_type type);
 t_args	*parse_token(t_token *tokens);
 t_args	*create_new_args(void);
-void add_cmd(t_args *args, char *word);
-t_cmd *create_cmd_from_list(t_list *words);
+void 	add_cmd(t_args *args, char *word);
+t_cmd	*create_cmd_from_list(t_list *words);
 void	add_file(t_args *args, char *filename, int type);
 void 	print_cmd_list(t_args *args);
 
@@ -157,5 +158,11 @@ int		check_syntax_error(t_token *tokens);
 /*                                     PIPE                                   */
 /* ************************************************************************** */
 void	pipex(t_args *args, t_env **env_list);
+
+/* ************************************************************************** */
+/*                                  HERE_OC                                   */
+/* ************************************************************************** */
+
+
 
 #endif

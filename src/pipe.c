@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/25 16:09:41 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/26 11:39:00 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,10 +136,10 @@ void	pipex(t_args *args, t_env **env_list)
     int i;
 	int fd_in;
 	int fd_out;
+	int status;
 
     if (args->cmd_count == 1 && !ft_check_buildin(args))
     {
-        printf("caca");
 		ft_exec(args, env_list);
 		if (args->infile)
 		{
@@ -170,8 +170,7 @@ void	pipex(t_args *args, t_env **env_list)
             perror("pipe");
             exit(EXIT_FAILURE);
         }
-        // if (!(args->cmd_count == 1 && ft_check_buildin(args)))
-            pro.pid[i] = fork();
+        pro.pid[i] = fork();
         if (pro.pid[i] == -1)
         {
             perror("fork");
@@ -183,8 +182,11 @@ void	pipex(t_args *args, t_env **env_list)
         update_pipe(pro.prev, pro.next);
         i++;
         current = current->next;
+		waitpid(pro.pid[i], &status, 0);
     }
     close_pipe(pro.prev);
-    while (wait(NULL) > 0);
+    // while (wait(NULL) > 0);
+	args->e_status = status;
+	// printf("the last exit status%d\n", WEXITSTATUS(args->e_status));
     free(pro.pid);
 }
