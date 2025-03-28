@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 08:21:46 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/28 10:49:05 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,27 +44,32 @@ void	put_prompt(char **input, t_env *env_list)
 		add_history(*input);
 }
 
-void parsing(char *input, t_token **tokens, t_args **args)
+int parsing(char *input, t_token **tokens, t_args **args)
 {
 	*tokens = tokenize(input);
 	if (!*tokens)
 	{
 		free(input);
-		return;
+		return (0);
 	}
 	if (!check_syntax_error(*tokens))
 	{
 		free_token(*tokens);
+		tokens = NULL;
 		free(input);
-		return;
+		return (0);
 	}
 	*args = parse_token(*tokens);
 	if (!*args)
 	{
 		free_token(*tokens);
+		tokens = NULL;
 		free(input);
+		return (0);
 	}
+	return (1);
 }
+
 
 void	minishell(t_env **env_list)
 {
@@ -76,9 +81,11 @@ void	minishell(t_env **env_list)
 	while (1)
 	{
 		put_prompt(&input, *env_list);
-		parsing(input, &tokens, &args);
-		print_cmd_list(args);
-		pipex(args, env_list);
+		if (parsing(input, &tokens, &args))
+		{
+			print_cmd_list(args);
+			pipex(args, env_list);
+		}
 		//ft_exec(args, env_list);
 		if (args)
 			free_cmd_list(args);
@@ -87,7 +94,6 @@ void	minishell(t_env **env_list)
 		if (input)
 			free(input);
 	}
-	
 }
 
 int main(int argc, char **argv, char **envp)

@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 11:39:00 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/28 16:50:48 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,11 @@ void	last_child(t_args *args, t_env *env_list, t_pipe pro)
 
 void	child_process(t_args *args, t_env *env_list, t_pipe pro, int i)
 {
+	if (args->cmd->here_doc_fd != -1)//if there are any here_doc
+	{
+		dup2(args->cmd->here_doc_fd, STDIN_FILENO);
+		close(args->cmd->here_doc_fd);
+	}
 	if (i == 0)
 	{ 
 		if (args->cmd_count == 1)
@@ -127,6 +132,23 @@ void	child_process(t_args *args, t_env *env_list, t_pipe pro, int i)
 	exit(EXIT_SUCCESS);
 }
 
+void	wait_children(t_args *args, t_pipe *pro)
+{
+	int	i;
+	int	status;
+	int	last_exit;
+
+	i = 0;
+	last_exit = 0;
+	while (i < args->cmd_count)
+	{
+		waitpid(pro->pid[i], &status, 0);
+		if (WIFEXITED(status))
+			last_exit = status;
+		i++;
+	}
+	args->e_status = last_exit;
+}
 
 void	pipex(t_args *args, t_env **env_list)
 {
@@ -134,10 +156,13 @@ void	pipex(t_args *args, t_env **env_list)
     t_cmd *current;
     t_args temp;
     int i;
+	int j;
 	int fd_in;
 	int fd_out;
 	int status;
+	int hd_fd;
 
+	//if it is only builtin, we do it manualy.
     if (args->cmd_count == 1 && !ft_check_buildin(args))
     {
 		ft_exec(args, env_list);
@@ -155,6 +180,18 @@ void	pipex(t_args *args, t_env **env_list)
 		}
         return ;
     }
+	//setting the input for here_doc
+	j = 0;
+	if (args->limiter)
+	{
+		while (args->limiter[j])
+		{
+			hd_fd = ft_here_doc(args->limiter[j]);
+			current->here_doc_fd = hd_fd;
+			j++;
+		}
+	}
+	//pipes
     i = 0;
     init_pipe_struct(&pro, args->cmd_count);
     current = args->cmd;
@@ -170,7 +207,8 @@ void	pipex(t_args *args, t_env **env_list)
             perror("pipe");
             exit(EXIT_FAILURE);
         }
-        pro.pid[i] = fork();
+		
+		pro.pid[i] = fork();
         if (pro.pid[i] == -1)
         {
             perror("fork");
@@ -182,11 +220,9 @@ void	pipex(t_args *args, t_env **env_list)
         update_pipe(pro.prev, pro.next);
         i++;
         current = current->next;
-		waitpid(pro.pid[i], &status, 0);
     }
     close_pipe(pro.prev);
-    // while (wait(NULL) > 0);
-	args->e_status = status;
-	// printf("the last exit status%d\n", WEXITSTATUS(args->e_status));
+	wait_children(args, &pro);
+	printf("the last exit status%d\n", WEXITSTATUS(args->e_status));
     free(pro.pid);
 }

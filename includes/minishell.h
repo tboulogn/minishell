@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 11:32:57 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/28 16:12:23 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ struct s_cmd
 	char	*cmd_path;
 	int		sq_count;//is there are tow single quates, whatever inside will be an absolute string, if there are (even number) of them, it becomes 2 dowble quates
 	int		dq_count;
+	int		here_doc_fd;
 	t_cmd	*prev;
 	t_cmd	*next;
 };
@@ -63,7 +64,8 @@ typedef struct s_args
 	char			*infile;
 	char			*outfile;
 	char			*append_outfile;
-	char			*limiter;
+	char			**limiter;
+	int				here_doc_count;
 	int				pipe;
 	int				e_status;
 	// struct s_args	*next;
@@ -162,7 +164,8 @@ void	pipex(t_args *args, t_env **env_list);
 /* ************************************************************************** */
 /*                                  HERE_OC                                   */
 /* ************************************************************************** */
-
+void	ft_handle_here_doc_child(int *pipe_fd, char *limiter);
+int	ft_here_doc(char *limiter);
 
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/26 11:21:19 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/28 16:14:03 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ t_args	*create_new_args(void)
 	new_args->outfile = NULL;
 	new_args->append_outfile = NULL;
 	new_args->limiter = NULL;
+	new_args->here_doc_count = 0;
 	new_args->pipe = 0;
 	new_args->cmd = NULL;
 	return (new_args);
@@ -156,6 +157,7 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 	new_cmd->prev = NULL;
 	new_cmd->sq_count = 0;
 	new_cmd->dq_count = 0;
+	new_cmd->here_doc_fd = -1;
 	if (!args->cmd)
 	{
 		args->cmd = new_cmd;
@@ -283,9 +285,36 @@ void add_file_or_limiter(t_args *args, char *str, t_token_type type)
 		args->outfile = ft_strdup(str);
 	else if (type == APPEND)
 		args->append_outfile = ft_strdup(str);
-	else if (type == HEREDOC)
-		args->limiter = ft_strdup(str);
+	// else if (type == HEREDOC)
+	// 	args->limiter = ft_strdup(str);
 }
+
+char **add_malloc_line(char **tab, char *str, int i)
+{
+	char **new_tab;
+	int j;
+
+	new_tab = malloc(sizeof(char *) * (i + 1));
+	if (!new_tab)
+		return (NULL);
+	j = 0;
+	if (i == 0)
+		new_tab[j] = ft_strdup(str);
+	else
+	{
+		while (j < i)
+		{
+			new_tab[j] = ft_strdup(tab[j]);
+			free(tab[j]);
+			j++;
+		}
+		new_tab[j] = ft_strdup(str);
+		free(tab);
+	}
+	new_tab[j + 1] = NULL;
+	return (new_tab);
+}
+
 
 t_args *parse_token(t_token *tokens)//store the argument info into t_args by using t_token
 {
@@ -294,28 +323,15 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 	t_list *word_list;//linked chain (char *) of cmds
 	t_cmd *new_cmd;
 	t_cmd *final_cmd;
+	int i;
 
 	args = create_new_args();//initialize t_args
 	current_cmd = NULL;
 	word_list = NULL;
+	i = 0;
 	while (tokens)
 	{
-		if (tokens->next && tokens->next->type == HEREDOC)
-		{
-			printf("here1\n");
-			
-			// if (word_list)
-			// {
-				printf("here2\n");
-				new_cmd = create_cmd_from_list(word_list);
-				add_cmd_back(args, new_cmd);
-				args->cmd_count++;
-				// word_list = NULL;
-			// tokens = tokens->next;
-			// continue;//move to the next loop
-			// }
-		}
-		else if (tokens->type == PIPE)
+		if (tokens->type == PIPE)
 		{
 			if (word_list)
 			{
@@ -326,19 +342,30 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 			}
 			args->pipe++;
 			tokens = tokens->next;
-			continue;//move to the next loop
+			continue;
+		}
+		else if (tokens->type == HEREDOC && tokens->next && tokens->next->type == WORD)
+		{
+			args->here_doc_count++;
+			args->limiter = add_malloc_line(args->limiter, tokens->next->value, i);
+			i++;
+			tokens = tokens->next; // skip limiter
 		}
 		else if (tokens->type == WORD && (!tokens->prev || (tokens->prev->type != REDIR_IN
 			&& tokens->prev->type != REDIR_OUT && tokens->prev->type != APPEND
-			&& tokens->prev->type != HEREDOC)))//if it is a cmd
-			ft_lstadd_back(&word_list, ft_lstnew(ft_strdup(tokens->value)));//add to the end of word_list
+			&& tokens->prev->type != HEREDOC)))
+		{
+			ft_lstadd_back(&word_list, ft_lstnew(ft_strdup(tokens->value)));
+		}
 		else if (tokens->type == WORD && tokens->prev && (tokens->prev->type == REDIR_IN
-			||tokens->prev->type == REDIR_OUT || tokens->prev->type == APPEND
-			|| tokens->prev->type == HEREDOC))//if there is a file or limiter
+			||tokens->prev->type == REDIR_OUT || tokens->prev->type == APPEND))
+		{
 			add_file_or_limiter(args, tokens->value, tokens->prev->type);
-		printf("token value: %s\n", tokens->value);
+		}
 		tokens = tokens->next;
 	}
+	// if (args->li)
+	// args->limiter[i] = NULL;
 	if (word_list)
 	{
 		final_cmd = create_cmd_from_list(word_list);
@@ -353,6 +380,7 @@ void print_cmd_list(t_args *args)
 	t_cmd *cmd;
 	int		stage = 0;
 	int		i;
+	int		j;
 
 	if (!args)
 		return;
@@ -363,12 +391,18 @@ void print_cmd_list(t_args *args)
 	if (args->infile)
 		printf("Input File         : %s\n", args->infile);
 	if (args->limiter)
-		printf("Heredoc Limiter    : %s\n", args->limiter);
+	{
+		j = 0;
+		while(args->limiter[j])
+		{
+			printf("[%d]Heredoc Limiter    : %s\n",j, args->limiter[j]);
+			j++;
+		}
+	}
 	if (args->outfile)
 		printf("Output File        : %s\n", args->outfile);
 	if (args->append_outfile)
 		printf("Output File (>>): %s\n", args->append_outfile);
-
 	cmd = args->cmd;
 	while (cmd)
 	{
