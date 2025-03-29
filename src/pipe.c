@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/29 11:42:16 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/29 14:45:17 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,40 +40,48 @@ void update_pipe(int *prev, int *next)
 	prev[1] = next[1];
 }
 
-void single_child(t_args *args, t_env *env_list)
+void single_child(t_args *args, t_cmd *cmd, t_env *env_list)
 {
-	int fd_open;
-	int fd_close;
+	int fd_in;
+	int fd_out;
 
-	if (args->infile)
+	if (cmd->infile)
 	{
-		fd_open = open(args->infile, O_RDONLY);
-		if (fd_open < 0)
-			perror(args->infile);
-		dup2(fd_open, STDIN_FILENO);
-		close(fd_open);
+		fd_in = open(cmd->infile, O_RDONLY);
+		if (fd_in < 0)
+			perror(cmd->infile);
+		dup2(fd_in, STDIN_FILENO);
+		close(fd_in);
 	}
-	if (args->outfile)
+	if (cmd->outfile)
 	{
-		fd_close = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd_close < 0)
-			perror(args->outfile);
-		dup2(fd_close, STDOUT_FILENO);
-		close(fd_close);
+		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (fd_out < 0)
+			perror(cmd->outfile);
+		dup2(fd_out, STDOUT_FILENO);
+		close(fd_out);
+	}
+	if (cmd->append_outfile)
+	{
+		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if (fd_out < 0)
+			perror(cmd->append_outfile);
+		dup2(fd_out, STDOUT_FILENO);
+		close(fd_out);
 	}
 	ft_exec(args, &env_list);
 }
 
-void	first_child(t_args *args, t_env *env_list, t_pipe pro)
+void	first_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 {
 	int	fd;
 
 	close(pro.next[0]);
-	if (args->infile)
+	if (cmd->infile)
 	{
-		fd = open(args->infile, O_RDONLY);
+		fd = open(cmd->infile, O_RDONLY);
 		if (fd < 0)
-			perror(args->infile);
+			perror(cmd->infile);
 		dup2(fd, STDIN_FILENO);
 		close(fd);
 	}
@@ -82,8 +90,35 @@ void	first_child(t_args *args, t_env *env_list, t_pipe pro)
 	ft_exec(args, &env_list);
 }
 
-void	middle_child(t_args *args, t_env *env_list, t_pipe pro)
+void	middle_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 {
+	int fd_in;
+	int fd_out;
+
+	if (cmd->infile)
+	{
+		fd_in = open(cmd->infile, O_RDONLY);
+		if (fd_in < 0)
+			perror(cmd->infile);
+		dup2(fd_in, STDIN_FILENO);
+		close(fd_in);
+	}
+	if (cmd->outfile)
+	{
+		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (fd_out < 0)
+			perror(cmd->outfile);
+		dup2(fd_out, STDOUT_FILENO);
+		close(fd_out);
+	}
+	if (cmd->append_outfile)
+	{
+		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if (fd_out < 0)
+			perror(cmd->append_outfile);
+		dup2(fd_out, STDOUT_FILENO);
+		close(fd_out);
+	}
 	close(pro.prev[1]);
 	dup2(pro.prev[0], STDIN_FILENO);
 	close(pro.prev[0]);
@@ -93,42 +128,60 @@ void	middle_child(t_args *args, t_env *env_list, t_pipe pro)
 	ft_exec(args, &env_list);
 }
 
-void	last_child(t_args *args, t_env *env_list, t_pipe pro)
+void	last_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 {
-	int	fd;
+	int fd_in;
+	int fd_out;
 
 	close(pro.prev[1]);
-	dup2(pro.prev[0], STDIN_FILENO);
-	close(pro.prev[0]);
-	if (args->outfile)
+	if (cmd->infile)
 	{
-		fd = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd < 0)
-			perror(args->outfile);
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
+		fd_in = open(cmd->infile, O_RDONLY);
+		if (fd_in < 0)
+			perror(cmd->infile);
+		dup2(fd_in, STDIN_FILENO);
+		close(fd_in);
+	}
+	else
+		dup2(pro.prev[0], STDIN_FILENO);
+	close(pro.prev[0]);
+	if (cmd->outfile)
+	{
+		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (fd_out < 0)
+			perror(cmd->outfile);
+		dup2(fd_out, STDOUT_FILENO);
+		close(fd_out);
+	}
+	if (cmd->append_outfile)
+	{
+		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if (fd_out < 0)
+			perror(cmd->append_outfile);
+		dup2(fd_out, STDOUT_FILENO);
+		close(fd_out);
 	}
 	ft_exec(args, &env_list);
 }
 
-void	child_process(t_args *args, t_env *env_list, t_pipe pro, int i)
+void	child_process(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro, int i)
 {
-	if (args->cmd->here_doc_fd != -1)//if there are any here_doc
+	if (cmd->here_doc_fd != -1)//if there are any here_doc
 	{
-		dup2(args->cmd->here_doc_fd, STDIN_FILENO);
-		close(args->cmd->here_doc_fd);
+		dup2(cmd->here_doc_fd, STDIN_FILENO);
+		close(cmd->here_doc_fd);
 	}
 	if (i == 0)
 	{ 
 		if (args->cmd_count == 1)
-			single_child(args, env_list);
+			single_child(args, cmd, env_list);
 		else
-			first_child(args, env_list, pro);
+			first_child(args, cmd, env_list, pro);
 	}
 	else if (i == args->cmd_count - 1)
-		last_child(args, env_list, pro);
+		last_child(args, cmd, env_list, pro);
 	else
-		middle_child(args, env_list, pro);
+		middle_child(args, cmd, env_list, pro);
 	exit(EXIT_SUCCESS);
 }
 
@@ -156,18 +209,18 @@ void	single_builtin(t_args *args, t_env **env_list)
 	int fd_out;
 
 	ft_exec(args, env_list);
-	if (args->infile)
-	{
-		fd_in = open(args->infile, O_RDONLY);
-		if (fd_in < 0)
-			perror(args->infile);
-	}
-	if (args->outfile)
-	{
-		fd_out = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd_out < 0)
-			perror(args->outfile);
-	}
+	// if (args->infile)
+	// {
+	// 	fd_in = open(args->infile, O_RDONLY);
+	// 	if (fd_in < 0)
+	// 		perror(args->infile);
+	// }
+	// if (args->outfile)
+	// {
+	// 	fd_out = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	// 	if (fd_out < 0)
+	// 		perror(args->outfile);
+	// }
 }
 
 void	set_here_doc_in(t_args *args, t_cmd *current)
@@ -213,8 +266,6 @@ void	pipex(t_args *args, t_env **env_list)
         ft_memset(&temp, 0, sizeof(t_args));
         temp.cmd = current;
         temp.cmd_count = args->cmd_count;
-        temp.infile = args->infile;
-        temp.outfile = args->outfile;
         if (current->next && pipe(pro.next) == -1)
         {
             perror("pipe");//need to free
@@ -227,7 +278,7 @@ void	pipex(t_args *args, t_env **env_list)
             exit(EXIT_FAILURE);
         }
         if (pro.pid[i] == 0)
-            child_process(&temp, *env_list, pro, i);
+            child_process(&temp, current, *env_list, pro, i);
         close_pipe(pro.prev);
         update_pipe(pro.prev, pro.next);
         i++;
@@ -235,6 +286,6 @@ void	pipex(t_args *args, t_env **env_list)
     }
     close_pipe(pro.prev);
 	wait_children(args, &pro);
-	printf("the last exit status%d\n", WEXITSTATUS(args->e_status));
+	printf("the last exit status: %d\n", WEXITSTATUS(args->e_status));
     free(pro.pid);
 }

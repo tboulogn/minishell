@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/29 11:19:55 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/29 14:29:31 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	minishell(t_env **env_list)
 		}
 		else
 			continue;
-		//ft_exec(args, env_list);
+		// ft_exec(args, env_list);
 		if (args)
 			free_cmd_list(args);
 		if (tokens)

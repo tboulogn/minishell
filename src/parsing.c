@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/29 11:35:29 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/29 14:10:42 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,9 @@ t_args	*create_new_args(void)
 
 	new_args = ft_secure_malloc(sizeof(t_args));
 	new_args->cmd_count = 0;
-	new_args->infile = NULL;
-	new_args->outfile = NULL;
-	new_args->append_outfile = NULL;
+	// new_args->infile = NULL;
+	// new_args->outfile = NULL;
+	// new_args->append_outfile = NULL;
 	new_args->limiter = NULL;
 	new_args->here_doc_count = 0;
 	new_args->pipe = 0;
@@ -158,6 +158,9 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 	new_cmd->sq_count = 0;
 	new_cmd->dq_count = 0;
 	new_cmd->here_doc_fd = -1;
+	new_cmd->infile = NULL;
+	new_cmd->outfile = NULL;
+	new_cmd->append_outfile = NULL;
 	if (!args->cmd)
 	{
 		args->cmd = new_cmd;
@@ -253,8 +256,6 @@ t_cmd *create_cmd_from_list(t_list *words)
 		// 	cmd->dq_count = cmd->sq_count / 2;
 		// 	cmd->sq_count = cmd->sq_count % 2;
 		// }
-		printf("singcle quote count %d\n", cmd->sq_count);
-		printf("double quote count %d\n", cmd->dq_count);
 		//change single quates into double if there are even number of them
 		if (cmd->sq_count)
 			cmd->cmd_tab[i] = ft_strdup_exept((char *)words->content, '\'');
@@ -277,16 +278,16 @@ t_cmd *create_cmd_from_list(t_list *words)
 //depending on the quate numbers, remove the quates from the string
 
 
-void add_file_or_limiter(t_args *args, char *str, t_token_type type)
+void add_file(t_cmd *cmd, char *str, t_token_type type)
 {
+	if (!cmd || !str)
+		return;
 	if (type == REDIR_IN)
-		args->infile = ft_strdup(str);
+		cmd->infile = ft_strdup(str);
 	else if (type == REDIR_OUT)
-		args->outfile = ft_strdup(str);
+		cmd->outfile = ft_strdup(str);
 	else if (type == APPEND)
-		args->append_outfile = ft_strdup(str);
-	// else if (type == HEREDOC)
-	// 	args->limiter = ft_strdup(str);
+		cmd->append_outfile = ft_strdup(str);
 }
 
 char **add_malloc_line(char **tab, char *str, int i)
@@ -321,7 +322,6 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 	t_args *args;
 	t_cmd *current_cmd;
 	t_list *word_list;//linked chain (char *) of cmds
-	t_cmd *new_cmd;
 	t_cmd *final_cmd;
 	int i;
 
@@ -331,45 +331,63 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 	i = 0;
 	while (tokens)
 	{
+		// If it's a pipe, finalize the current command and reset
 		if (tokens->type == PIPE)
 		{
 			if (word_list)
 			{
-				new_cmd = create_cmd_from_list(word_list);
-				add_cmd_back(args, new_cmd);
+				current_cmd = create_cmd_from_list(word_list);
+				add_cmd_back(args, current_cmd);
 				args->cmd_count++;
 				word_list = NULL;
 			}
 			args->pipe++;
 			tokens = tokens->next;
+			current_cmd = NULL;
 			continue;
 		}
-		else if (tokens->type == HEREDOC && tokens->next && tokens->next->type == WORD)
+		// Handle heredoc (collect limiter string)
+		if (tokens->type == HEREDOC && tokens->next && tokens->next->type == WORD)
 		{
 			args->here_doc_count++;
-			args->limiter = add_malloc_line(args->limiter, tokens->next->value, i);
-			i++;
-			tokens = tokens->next; // skip limiter
+			args->limiter = add_malloc_line(args->limiter, tokens->next->value, i++);
+			tokens = tokens->next;
 		}
-		else if (tokens->type == WORD && (!tokens->prev || (tokens->prev->type != REDIR_IN
-			&& tokens->prev->type != REDIR_OUT && tokens->prev->type != APPEND
-			&& tokens->prev->type != HEREDOC)))
-		{
+		// If it's a WORD not used in redirection, store it for command creation
+		else if (tokens->type == WORD && (!tokens->prev ||
+				(tokens->prev->type != REDIR_IN && tokens->prev->type != REDIR_OUT &&
+				tokens->prev->type != APPEND && tokens->prev->type != HEREDOC)))
 			ft_lstadd_back(&word_list, ft_lstnew(ft_strdup(tokens->value)));
-		}
-		else if (tokens->type == WORD && tokens->prev && (tokens->prev->type == REDIR_IN
-			||tokens->prev->type == REDIR_OUT || tokens->prev->type == APPEND))
+		// Handle redirection target (filename after <, >, etc.)
+		else if (tokens->type == WORD && tokens->prev &&
+				(tokens->prev->type == REDIR_IN || tokens->prev->type == REDIR_OUT ||
+				tokens->prev->type == APPEND))
 		{
-			add_file_or_limiter(args, tokens->value, tokens->prev->type);
+			// Make sure current_cmd exists — create if needed
+			if (!current_cmd && word_list)
+			{
+				current_cmd = create_cmd_from_list(word_list);
+				add_cmd_back(args, current_cmd);
+				args->cmd_count++;
+				word_list = NULL;
+			}
+			if (!current_cmd)
+			{
+				current_cmd = ft_secure_malloc(sizeof(t_cmd));
+				ft_bzero(current_cmd, sizeof(t_cmd));
+				current_cmd->here_doc_fd = -1;
+				add_cmd_back(args, current_cmd);
+				args->cmd_count++;
+			}
+			add_file(current_cmd, tokens->value, tokens->prev->type);
 		}
 		tokens = tokens->next;
 	}
-	// if (args->li)
-	// args->limiter[i] = NULL;
+	// If there are remaining command words after the last pipe
 	if (word_list)
 	{
-		final_cmd = create_cmd_from_list(word_list);
-		add_cmd_back(args, final_cmd);
+		current_cmd = create_cmd_from_list(word_list);
+		add_cmd_back(args, current_cmd);
 		args->cmd_count++;
 	}
 	return (args);
@@ -377,7 +395,7 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 
 void print_cmd_list(t_args *args)
 {
-	t_cmd *cmd;
+	t_cmd *current_cmd;
 	int		stage = 0;
 	int		i;
 	int		j;
@@ -389,8 +407,6 @@ void print_cmd_list(t_args *args)
 	printf("Total commands: %d\n", args->cmd_count);
 	printf("Total pipes   : %d\n", args->pipe);
 	printf("Total here_doc   : %d\n", args->here_doc_count);
-	if (args->infile)
-		printf("Input File         : %s\n", args->infile);
 	if (args->limiter)
 	{
 		j = 0;
@@ -400,28 +416,34 @@ void print_cmd_list(t_args *args)
 			j++;
 		}
 	}
-	if (args->outfile)
-		printf("Output File        : %s\n", args->outfile);
-	if (args->append_outfile)
-		printf("Output File (>>): %s\n", args->append_outfile);
-	cmd = args->cmd;
-	while (cmd)
+	
+	current_cmd = args->cmd;
+	while (current_cmd)
 	{
 		printf("=== Command %d ===\n", stage++);
-		if (!cmd->cmd_tab || !cmd->cmd_tab[0])
+		
+		if (!current_cmd->cmd_tab || !current_cmd->cmd_tab[0])
 			printf("  [empty command]\n");
 		else
 		{
 			printf("Cmd tab: ");
 			i = 0;
-			while (cmd->cmd_tab[i])
+			while (current_cmd->cmd_tab[i])
 			{
-				printf("[%s] ", cmd->cmd_tab[i]);
+				printf("[%s] ", current_cmd->cmd_tab[i]);
 				i++;
 			}
 			printf("\n");
 		}
-		cmd = cmd->next;
+		printf("singcle quote count %d\n", current_cmd->sq_count);
+		printf("double quote count %d\n", current_cmd->dq_count);
+		if (current_cmd->infile)
+			printf("Input File         : %s\n",current_cmd->infile);
+		if (current_cmd->outfile)
+			printf("Output File        : %s\n", current_cmd->outfile);
+		if (current_cmd->append_outfile)
+			printf("Output File (>>): %s\n", current_cmd->append_outfile);
+		current_cmd = current_cmd->next;
 	}
 	printf("=======================\n");
 }

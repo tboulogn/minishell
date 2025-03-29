@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/28 16:12:23 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/29 12:06:55 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,9 @@ struct s_cmd
 	int		sq_count;//is there are tow single quates, whatever inside will be an absolute string, if there are (even number) of them, it becomes 2 dowble quates
 	int		dq_count;
 	int		here_doc_fd;
+	char	*infile;
+	char	*outfile;
+	char	*append_outfile;
 	t_cmd	*prev;
 	t_cmd	*next;
 };
@@ -61,9 +64,9 @@ typedef struct s_args
 {
 	t_cmd			*cmd;
 	int				cmd_count;
-	char			*infile;
-	char			*outfile;
-	char			*append_outfile;
+	// char			*infile;
+	// char			*outfile;
+	// char			*append_outfile;
 	char			**limiter;
 	int				here_doc_count;
 	int				pipe;
@@ -122,7 +125,7 @@ t_args	*parse_token(t_token *tokens);
 t_args	*create_new_args(void);
 void 	add_cmd(t_args *args, char *word);
 t_cmd	*create_cmd_from_list(t_list *words);
-void	add_file(t_args *args, char *filename, int type);
+void	add_file(t_cmd *cmd, char *str, t_token_type type);
 void 	print_cmd_list(t_args *args);
 
 /* ************************************************************************** */
