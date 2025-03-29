@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:44:18 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 13:58:10 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/29 11:20:38 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,14 @@ int check_syntax_error(t_token *tokens)
         return (1);
     if (current->type == PIPE)
     {
-        printf("Syntax error: pipe at start\n\n");
+        printf("Syntax error: pipe at start\n");
         return (0);
     }
     while (current)
     {
         if ((current->type == PIPE) && (!current->next || current->next->type != WORD))
         {
-            printf("Syntax error: invalid pipe placement\n\n");
+            printf("Syntax error: invalid pipe placement\n");
             return (0);
         }
         // else if ((current->type == WORD && current->prev->type == HEREDOC) && (current->next->type != PIPE && current->next->type == WORD))
@@ -55,7 +55,7 @@ int check_syntax_error(t_token *tokens)
         {
             if (!current->next || current->next->type != WORD)
             {
-                printf("Syntax error: redirection with no target\n\n");
+                printf("Syntax error: redirection with no target\n");
                 return (0);
             }
         }

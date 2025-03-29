@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/28 16:14:03 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/29 11:35:29 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -388,6 +388,7 @@ void print_cmd_list(t_args *args)
 	printf("=== Parsing Summary ===\n");
 	printf("Total commands: %d\n", args->cmd_count);
 	printf("Total pipes   : %d\n", args->pipe);
+	printf("Total here_doc   : %d\n", args->here_doc_count);
 	if (args->infile)
 		printf("Input File         : %s\n", args->infile);
 	if (args->limiter)

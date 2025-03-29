@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/28 16:50:48 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/29 11:42:16 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,40 @@ void	wait_children(t_args *args, t_pipe *pro)
 	args->e_status = last_exit;
 }
 
+void	single_builtin(t_args *args, t_env **env_list)
+{
+	int fd_in;
+	int fd_out;
+
+	ft_exec(args, env_list);
+	if (args->infile)
+	{
+		fd_in = open(args->infile, O_RDONLY);
+		if (fd_in < 0)
+			perror(args->infile);
+	}
+	if (args->outfile)
+	{
+		fd_out = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (fd_out < 0)
+			perror(args->outfile);
+	}
+}
+
+void	set_here_doc_in(t_args *args, t_cmd *current)
+{
+	int j;
+	int hd_fd;
+
+	j = 0;
+	while (args->limiter[j])
+	{
+		hd_fd = ft_here_doc(args->limiter[j]);
+		current->here_doc_fd = hd_fd;
+		j++;
+	}
+}
+
 void	pipex(t_args *args, t_env **env_list)
 {
     t_pipe pro;
@@ -157,44 +191,23 @@ void	pipex(t_args *args, t_env **env_list)
     t_args temp;
     int i;
 	int j;
-	int fd_in;
-	int fd_out;
 	int status;
 	int hd_fd;
 
-	//if it is only builtin, we do it manualy.
+	//if it is only one builtin, we do it manualy, we dont pass it to pipes.
     if (args->cmd_count == 1 && !ft_check_buildin(args))
     {
-		ft_exec(args, env_list);
-		if (args->infile)
-		{
-			fd_in = open(args->infile, O_RDONLY);
-			if (fd_in < 0)
-				perror(args->infile);
-		}
-		if (args->outfile)
-		{
-			fd_out = open(args->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			if (fd_out < 0)
-				perror(args->outfile);
-		}
+		single_builtin(args, env_list);
         return ;
     }
 	//setting the input for here_doc
 	j = 0;
+	current = args->cmd;
 	if (args->limiter)
-	{
-		while (args->limiter[j])
-		{
-			hd_fd = ft_here_doc(args->limiter[j]);
-			current->here_doc_fd = hd_fd;
-			j++;
-		}
-	}
+		set_here_doc_in(args, current);
 	//pipes
     i = 0;
     init_pipe_struct(&pro, args->cmd_count);
-    current = args->cmd;
     while (current)
     {
         ft_memset(&temp, 0, sizeof(t_args));
@@ -204,14 +217,13 @@ void	pipex(t_args *args, t_env **env_list)
         temp.outfile = args->outfile;
         if (current->next && pipe(pro.next) == -1)
         {
-            perror("pipe");
+            perror("pipe");//need to free
             exit(EXIT_FAILURE);
         }
-		
 		pro.pid[i] = fork();
         if (pro.pid[i] == -1)
         {
-            perror("fork");
+            perror("fork");//need to free
             exit(EXIT_FAILURE);
         }
         if (pro.pid[i] == 0)
