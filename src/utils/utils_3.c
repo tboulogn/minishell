@@ -1,29 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_env.c                                           :+:      :+:    :+:   */
+/*   utils_3.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/20 09:32:35 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/31 16:04:08 by tboulogn         ###   ########.fr       */
+/*   Created: 2025/03/31 17:06:31 by tboulogn          #+#    #+#             */
+/*   Updated: 2025/03/31 17:08:39 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	ft_env(t_env *env_list)
+int	redirect_and_close(int old_fd, int new_fd)
 {
-	t_env	*current;
-
-	current = env_list;
-	if (!current)
-		return (1);
-	while (current)
+	if (dup2(old_fd, new_fd) == -1)
 	{
-		if (current->value != NULL)
-			printf("%s=%s\n", current->key, current->value);
-		current = current->next;
+		perror("dup2");
+		close(old_fd);
+		return (-1);
 	}
-	return (0);
+	return (close(old_fd));
 }

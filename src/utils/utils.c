@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:20:17 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/21 14:21:07 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/31 16:07:08 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
-
+#include "../../includes/minishell.h"
 
 void	*ft_secure_malloc(size_t bytes)
 {
@@ -28,7 +27,7 @@ int	is_whitespace(char c)
 	return (c == ' ' || c == '\t');
 }
 
-int is_special_char(char c)
+int	is_special_char(char c)
 {
 	return (c == '|' || c == '<' || c == '>');
 }
@@ -49,27 +48,16 @@ char	*ft_strndup(const char *s, size_t len)
 	return (new_str);
 }
 
-char	*ft_strjoin_three(char const *s1, char const *s2, const char *s3)
+int	nb_len(int nb)
 {
-	size_t	len_s1;
-	size_t	len_s2;
-	size_t	len_s3;
-	size_t	i;
-	char	*new_str;
+	int	len;
 
-	if (!s1 || !s2 || !s3)
-		return (NULL);
-	len_s1 = ft_strlen(s1);
-	len_s2 = ft_strlen(s2);
-	len_s3 = ft_strlen(s3);
-	s3 = ft_secure_malloc((len_s1 + len_s2 + len_s3 + 1) * sizeof(char));
-	i = 0;
-	while (*s1)
-		new_str[i++] = *s1++;
-	while (*s2)
-		new_str[i++] = *s2++;
-	while(*s3)
-		new_str[i++] = *s3++;
-	new_str[i] = '\0';
-	return (new_str);
+	len = 0;
+	if (nb <= 0)
+		len++;
+	while (nb != 0)
+	{
+		nb /= 10;
+		len++;
+	}
 }

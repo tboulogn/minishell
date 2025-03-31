@@ -3,26 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/29 14:10:42 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/31 17:02:36 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-char *extract_word(char *input, int *i)
+char	*extract_word(char *input, int *i)
 {
 	int		start;
 	char	quote;
 
 	while (input[*i] && is_whitespace(input[*i])) // Skip spaces
 		(*i)++;
-
 	start = *i;
 	quote = 0;
-	while (input[*i] && (quote || (!is_whitespace(input[*i]) && !is_special_char(input[*i]))))
+	while (input[*i] && (quote || (!is_whitespace(input[*i])
+				&& !is_special_char(input[*i]))))
 	{
 		if (input[*i] == '"' || input[*i] == '\'')
 		{
@@ -32,15 +32,15 @@ char *extract_word(char *input, int *i)
 				quote = 0;  // Close quote
 		}
 		else if (is_special_char(input[*i]) && !quote)
-			break;  // Stop if encountering `|`, `<`, `>` outside of quotes
+			break ;  // Stop if encountering `|`, `<`, `>` outside of quotes
 		(*i)++;
 	}
-	return ft_strndup(input + start, *i - start);
+	return (ft_strndup(input + start, *i - start));
 }
 
 t_token	*tokenize(char *input)
 {
-	t_token *tokens;
+	t_token	*tokens;
 	int		i;
 
 	tokens = NULL;//init t_token
@@ -53,7 +53,7 @@ t_token	*tokenize(char *input)
 		{
 			add_token(&tokens, "|", PIPE);
 			i++;
-		} 
+		}
 		else if (input[i] == '>')
 		{
 			if (input[i + 1] == '>')//append output
@@ -86,8 +86,8 @@ t_token	*tokenize(char *input)
 //init token, set up the next and prev(cahin-list)
 void	add_token(t_token **tokens, char *value, t_token_type type)
 {
-	t_token *new;
-	t_token *tmp;
+	t_token	*new;
+	t_token	*tmp;
 
 	new = ft_secure_malloc(sizeof(t_token));
 	if (!new)
@@ -152,7 +152,7 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 	t_cmd	*last;
 
 	if (!args || !new_cmd)
-		return;
+		return ;
 	new_cmd->next = NULL;
 	new_cmd->prev = NULL;
 	new_cmd->sq_count = 0;
@@ -164,7 +164,7 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 	if (!args->cmd)
 	{
 		args->cmd = new_cmd;
-		return;
+		return ;
 	}
 	last = args->cmd;
 	while (last->next)
@@ -199,7 +199,7 @@ char	*ft_strdup_exept(const char *s, char c)
 
 	i = 0;
 	c_count = 0;
-	while(s[i])
+	while (s[i])
 	{
 		if (s[i] == c)
 			c_count++;
@@ -278,7 +278,7 @@ t_cmd *create_cmd_from_list(t_list *words)
 //depending on the quate numbers, remove the quates from the string
 
 
-void add_file(t_cmd *cmd, char *str, t_token_type type)
+void	add_file(t_cmd *cmd, char *str, t_token_type type)
 {
 	if (!cmd || !str)
 		return;
@@ -290,10 +290,10 @@ void add_file(t_cmd *cmd, char *str, t_token_type type)
 		cmd->append_outfile = ft_strdup(str);
 }
 
-char **add_malloc_line(char **tab, char *str, int i)
+char	**add_malloc_line(char **tab, char *str, int i)
 {
-	char **new_tab;
-	int j;
+	char	**new_tab;
+	int		j;
 
 	new_tab = malloc(sizeof(char *) * (i + 1));
 	if (!new_tab)
@@ -393,9 +393,9 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 	return (args);
 }
 
-void print_cmd_list(t_args *args)
+void	print_cmd_list(t_args *args)
 {
-	t_cmd *current_cmd;
+	t_cmd	*current_cmd;
 	int		stage = 0;
 	int		i;
 	int		j;
@@ -410,13 +410,12 @@ void print_cmd_list(t_args *args)
 	if (args->limiter)
 	{
 		j = 0;
-		while(args->limiter[j])
+		while (args->limiter[j])
 		{
 			printf("[%d]Heredoc Limiter    : %s\n",j, args->limiter[j]);
 			j++;
 		}
 	}
-	
 	current_cmd = args->cmd;
 	while (current_cmd)
 	{

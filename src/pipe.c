@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/29 14:45:17 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/31 17:18:47 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void init_pipe_struct(t_pipe *pro, int cmd_count)
+void	init_pipe_struct(t_pipe *pro, int cmd_count)
 {
 	pro->pid = malloc(sizeof(pid_t) * cmd_count);
 	if (!pro->pid)
@@ -26,7 +26,7 @@ void init_pipe_struct(t_pipe *pro, int cmd_count)
 	pro->next[1] = -1;
 }
 
-void close_pipe(int *pipefd)
+void	close_pipe(int *pipefd)
 {
 	if (pipefd[0] != -1)
 		close(pipefd[0]);
@@ -34,13 +34,13 @@ void close_pipe(int *pipefd)
 		close(pipefd[1]);
 }
 
-void update_pipe(int *prev, int *next)
+void	update_pipe(int *prev, int *next)
 {
 	prev[0] = next[0];
 	prev[1] = next[1];
 }
 
-void single_child(t_args *args, t_cmd *cmd, t_env *env_list)
+void	single_child(t_args *args, t_cmd *cmd, t_env *env_list)
 {
 	int fd_in;
 	int fd_out;
@@ -50,24 +50,21 @@ void single_child(t_args *args, t_cmd *cmd, t_env *env_list)
 		fd_in = open(cmd->infile, O_RDONLY);
 		if (fd_in < 0)
 			perror(cmd->infile);
-		dup2(fd_in, STDIN_FILENO);
-		close(fd_in);
+		redirect_and_close(fd_in, STDIN_FILENO);
 	}
 	if (cmd->outfile)
 	{
 		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (fd_out < 0)
 			perror(cmd->outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
+		redirect_and_close(fd_out, STDOUT_FILENO);
 	}
 	if (cmd->append_outfile)
 	{
 		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd_out < 0)
 			perror(cmd->append_outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
+		redirect_and_close(fd_out, STDOUT_FILENO);
 	}
 	ft_exec(args, &env_list);
 }
@@ -82,11 +79,9 @@ void	first_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 		fd = open(cmd->infile, O_RDONLY);
 		if (fd < 0)
 			perror(cmd->infile);
-		dup2(fd, STDIN_FILENO);
-		close(fd);
+		redirect_and_close(fd, STDIN_FILENO);
 	}
-	dup2(pro.next[1], STDOUT_FILENO);
-	close(pro.next[1]);
+	redirect_and_close(pro.next[1], STDOUT_FILENO);
 	ft_exec(args, &env_list);
 }
 
@@ -100,24 +95,21 @@ void	middle_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 		fd_in = open(cmd->infile, O_RDONLY);
 		if (fd_in < 0)
 			perror(cmd->infile);
-		dup2(fd_in, STDIN_FILENO);
-		close(fd_in);
+		redirect_and_close(fd_in, STDIN_FILENO);
 	}
 	if (cmd->outfile)
 	{
 		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (fd_out < 0)
 			perror(cmd->outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
+		redirect_and_close(fd_out, STDOUT_FILENO);
 	}
 	if (cmd->append_outfile)
 	{
 		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd_out < 0)
 			perror(cmd->append_outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
+		redirect_and_close(fd_in, STDOUT_FILENO);
 	}
 	close(pro.prev[1]);
 	dup2(pro.prev[0], STDIN_FILENO);
@@ -139,8 +131,7 @@ void	last_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 		fd_in = open(cmd->infile, O_RDONLY);
 		if (fd_in < 0)
 			perror(cmd->infile);
-		dup2(fd_in, STDIN_FILENO);
-		close(fd_in);
+		redirect_and_close(fd_in, STDIN_FILENO);
 	}
 	else
 		dup2(pro.prev[0], STDIN_FILENO);
@@ -150,16 +141,14 @@ void	last_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (fd_out < 0)
 			perror(cmd->outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
+		redirect_and_close(fd_out, STDOUT_FILENO);
 	}
 	if (cmd->append_outfile)
 	{
 		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd_out < 0)
 			perror(cmd->append_outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
+		redirect_and_close(fd_out, STDOUT_FILENO);
 	}
 	ft_exec(args, &env_list);
 }

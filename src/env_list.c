@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 13:07:24 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/25 14:09:22 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/31 16:37:36 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 t_env	*create_env_node(char *env_var)
 {
 	char	*equal_pos;
-	t_env 	*node;
-	
+	t_env	*node;
+
 	node = ft_secure_malloc(sizeof(t_env));
 	equal_pos = ft_strchr(env_var, '=');
 	if (equal_pos)
@@ -30,7 +30,7 @@ t_env	*create_env_node(char *env_var)
 		node->value = NULL;
 	}
 	node->next = NULL;
-	return (node);		
+	return (node);
 }
 
 //initialize and set the next/chain list
@@ -40,7 +40,7 @@ t_env	*init_env_list(char **envp)
 	t_env	*current;
 	t_env	*new_node;
 	int		i;
-	
+
 	head = NULL;
 	i = 0;
 	while (envp[i])
@@ -81,15 +81,15 @@ t_env	*get_env_var(t_env *env, char *key)
 	return (NULL);
 }
 
-int set_env_value(t_env **env, const char *key, const char *value)
+int	set_env_value(t_env **env, const char *key, const char *value)
 {
 	t_env	*current;
 	t_env	*new_node;
 
 	current = *env;
-	while(current)
+	while (current)
 	{
-		if(ft_strcmp(current->key, key) == 0)
+		if (ft_strcmp(current->key, key) == 0)
 		{
 			printf("[DEBUG] Adding variable: key='%s', value='%s'\n", key, value);
 			free(current->value);
@@ -105,4 +105,3 @@ int set_env_value(t_env **env, const char *key, const char *value)
 	*env = new_node;
 	return (0);
 }
-

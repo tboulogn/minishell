@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/29 14:29:31 by ryada            ###   ########.fr       */
+/*   Updated: 2025/03/31 16:55:46 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*pwd_str(t_env *env_list)
 {
 	char	*pwd;
 	char	*prompt;
-	char 	*user;
+	char	*user;
 
 	pwd = get_env_value(env_list, "PWD");
 	user = get_env_value(env_list, "USER");// ->ryada
@@ -29,12 +29,12 @@ char	*pwd_str(t_env *env_list)
 	prompt = ft_strjoin(prompt, "$ ");
 	if (!pwd)
 		return (NULL);
-	return (prompt);	
+	return (prompt);
 }
 
 void	put_prompt(char **input, t_env *env_list)
 {
-	char *prompt;
+	char	*prompt;
 
 	prompt = pwd_str(env_list);
 	*input = readline(prompt);
@@ -44,7 +44,7 @@ void	put_prompt(char **input, t_env *env_list)
 		add_history(*input);
 }
 
-int parsing(char *input, t_token **tokens, t_args **args)
+int	parsing(char *input, t_token **tokens, t_args **args)
 {
 	*tokens = tokenize(input);
 	if (!*tokens)
@@ -70,7 +70,6 @@ int parsing(char *input, t_token **tokens, t_args **args)
 	return (1);
 }
 
-
 void	minishell(t_env **env_list)
 {
 	char		*input;
@@ -87,7 +86,7 @@ void	minishell(t_env **env_list)
 			pipex(args, env_list);
 		}
 		else
-			continue;
+			continue ;
 		// ft_exec(args, env_list);
 		if (args)
 			free_cmd_list(args);
@@ -98,7 +97,7 @@ void	minishell(t_env **env_list)
 	}
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env_list;
 

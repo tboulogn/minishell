@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/25 14:30:12 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/31 16:50:00 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,22 +65,22 @@ char	*ft_get_path(char *cmd, t_env *env_list)
 	return (exec);
 }
 
-int ft_check_buildin(t_args *args)
+int	ft_check_buildin(t_args *args)
 {
-	char *name;
+	char	*name;
 
 	if (!args || !args->cmd)
 		return (1);
 	name = args->cmd->cmd_tab[0];
 	if (!name)
 		return (1);
-	if (ft_strncmp(name, "echo", 5) == 0
-		|| ft_strncmp(name, "cd", 3) == 0
-		|| ft_strncmp(name, "pwd", 4) == 0
-		|| ft_strncmp(name, "export", 7) == 0
-		|| ft_strncmp(name, "unset", 6) == 0
-		|| ft_strncmp(name, "env", 4) == 0
-		|| ft_strncmp(name, "exit", 5) == 0)
+	if (ft_strcmp(name, "echo") == 0
+		|| ft_strcmp(name, "cd") == 0
+		|| ft_strcmp(name, "pwd") == 0
+		|| ft_strcmp(name, "export") == 0
+		|| ft_strcmp(name, "unset") == 0
+		|| ft_strcmp(name, "env") == 0
+		|| ft_strcmp(name, "exit") == 0)
 		return (0);
 	return (1);
 }
@@ -116,6 +116,8 @@ char	**env_list_to_envp(t_env *env)
 
 void	built_in(t_args *args, t_env **env_list)
 {
+	char	*path;
+
 	printf("BUILT_IN CMD\n");//modify this
 	printf("================\n");
 	if (ft_strncmp(args->cmd->cmd_tab[0], "env", 3) == 0)
@@ -126,21 +128,18 @@ void	built_in(t_args *args, t_env **env_list)
 		ft_echo(args);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "cd", 2) == 0)
 	{
-		char *path;
 		path = NULL;
 		if (args->cmd->cmd_tab[1])
-			path = args->cmd->cmd_tab[1]; 
+			path = args->cmd->cmd_tab[1];
 		ft_cd(env_list, path);
 	}
-	else if (ft_strncmp(args->cmd->cmd_tab[0], "export", 6) == 0)	
+	else if (ft_strncmp(args->cmd->cmd_tab[0], "export", 6) == 0)
 		ft_export(args, env_list);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "unset", 5) == 0)
 		ft_unset(args, env_list);
-	
-	
 }
 
-void external(t_args *args, t_env *env_list)
+void	external(t_args *args, t_env *env_list)
 {
 	char	*cmd_path;
 	char	**cmd_tab;
@@ -170,8 +169,8 @@ void	ft_exec(t_args *args, t_env **env_list)
 {
 	if (!args || !args->cmd || !args->cmd->cmd_tab || !args->cmd->cmd_tab[0])
 		return ;
-    if(!ft_check_buildin(args))
-        built_in(args, env_list);
-    else
+	if (!ft_check_buildin(args))
+		built_in(args, env_list);
+	else
 		external(args, *env_list);
 }
