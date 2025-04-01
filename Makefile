@@ -6,7 +6,7 @@
 #    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/31 17:11:03 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/04/01 12:06:44 by tboulogn         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,7 @@ SRC = $(SRC_DIR)builtin/ft_cd.c \
 	$(SRC_DIR)parsing.c \
 	$(SRC_DIR)pipe.c \
 	$(SRC_DIR)redirection.c \
+	$(SRC_DIR)signals.c \
 	$(SRC_DIR)utils\utils.c \
 	$(SRC_DIR)utils\utils_2.c \
 	$(SRC_DIR)utils\utils_3.c \
