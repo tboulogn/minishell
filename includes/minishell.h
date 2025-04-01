@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/31 17:25:04 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/01 13:52:03 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void	ft_exec(t_args *args, t_env **env_list);
 /* ************************************************************************** */
 int		ft_env(t_env *env_list);
 int		ft_pwd(t_env *env_list);
-int		ft_echo(t_args *args);
+int		ft_echo(t_args *args, t_env *env_list);
 int		ft_cd(t_env **env_list, char *path);
 int		ft_export(t_args *args, t_env **env);
 int		ft_unset(t_args *args, t_env **env);
@@ -177,5 +177,10 @@ void	pipex(t_args *args, t_env **env_list);
 /* ************************************************************************** */
 void	ft_handle_here_doc_child(int *pipe_fd, char *limiter);
 int		ft_here_doc(char *limiter);
+
+/* ************************************************************************** */
+/*                                  SIGNALS                                   */
+/* ************************************************************************** */
+void	sigint_handler(int sig);
 
 #endif

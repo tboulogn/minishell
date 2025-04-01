@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:24 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/31 16:07:30 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/01 13:52:18 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ char	*ft_itoa(int nb)
 	int		i;
 
 	nbr = nb;
-	i = get_len(nbr);
+	i = nb_len(nbr);
 	str = ft_secure_malloc((i + 1) * sizeof(char));
 	str[i] = '\0';
 	if (nbr == 0)
