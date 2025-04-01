@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/01 13:52:03 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/01 15:34:28 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ struct s_cmd
 	char	**cmd_tab;
 	char	*cmd_path;
 	int		sq_count;//is there are tow single quates, whatever inside will be an absolute string, if there are (even number) of them, it becomes 2 dowble quates
-	int		dq_count;
+	int		dq_count;//1 for there is quate, 0 for not
 	int		here_doc_fd;
 	char	*infile;
 	char	*outfile;

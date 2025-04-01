@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
+#    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/04/01 13:50:30 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/04/01 15:16:55 by ryada            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,19 +23,18 @@ SRC = $(SRC_DIR)builtin/ft_cd.c \
 	$(SRC_DIR)builtin/ft_pwd.c \
 	$(SRC_DIR)builtin/ft_export.c \
 	$(SRC_DIR)builtin/ft_unset.c \
-	$(SRC_DIR)checker.c \
-	$(SRC_DIR)env_list.c \
-	$(SRC_DIR)exec.c \
-	$(SRC_DIR)free.c \
-	$(SRC_DIR)here_doc.c \
-	$(SRC_DIR)main.c \
-	$(SRC_DIR)parsing.c \
-	$(SRC_DIR)pipe.c \
-	$(SRC_DIR)redirection.c \
-	$(SRC_DIR)signals.c \
+	$(SRC_DIR)env/env_list.c \
+	$(SRC_DIR)execution/exec.c \
+	$(SRC_DIR)free/free.c \
+	$(SRC_DIR)parsing/checker.c \
+	$(SRC_DIR)parsing/parsing.c \
+	$(SRC_DIR)pipe/here_doc.c \
+	$(SRC_DIR)pipe/pipe.c \
+	$(SRC_DIR)signals/signals.c \
 	$(SRC_DIR)utils/utils.c \
 	$(SRC_DIR)utils/utils_2.c \
 	$(SRC_DIR)utils/utils_3.c \
+	$(SRC_DIR)main.c \
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 

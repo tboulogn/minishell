@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 10:18:11 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/31 16:52:42 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/01 15:13:40 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
+
 
 void	ft_handle_here_doc_child(int *pipe_fd, char *limiter)
 {
