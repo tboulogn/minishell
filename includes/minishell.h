@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/02 09:32:20 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/02 10:57:23 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,9 +107,11 @@ int		is_valid_key(const char *key);
 char	*ft_itoa(int nb);
 
 /* ************************************************************************** */
-/*                                   UTILS_2                                  */
+/*                                   UTILS_3                                 */
 /* ************************************************************************** */
-int		redirect_and_close(int old_fd, int new_fd);
+int			redirect_and_close(int old_fd, int new_fd);
+int			is_number(const char *str);
+long long	ft_atoll(const char *str);
 
 /* ************************************************************************** */
 /*                                    FREE                                    */
@@ -149,6 +151,7 @@ int		ft_echo(t_args *args, t_env *env_list);
 int		ft_cd(t_env **env_list, char *path);
 int		ft_export(t_args *args, t_env **env);
 int		ft_unset(t_args *args, t_env **env);
+int		ft_exit(t_args *args);
 
 /* ************************************************************************** */
 /*                                ENVIRONNEMENT                               */
