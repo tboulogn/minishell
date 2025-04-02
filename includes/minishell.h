@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/02 10:57:23 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/02 12:13:01 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ struct s_cmd
 {
 	char		**cmd_tab;
 	char		*cmd_path;
-	bool		sq;//check with "if(cmd->sq)"-> it means the cmd has well closed single quote
-	bool		dq;
+	bool		*sq;//check with "if(cmd->sq)"-> it means the cmd has well closed single quote
+	bool		*dq;
 	int			here_doc_fd;
 	char		*infile;
 	char		*outfile;

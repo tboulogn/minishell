@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/02 10:58:04 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/02 12:55:22 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	*extract_word(char *input, int *i)
 			else if (quote == input[*i])
 				quote = 0;
 		}
-		else if (is_special_char(input[*i]) && !quote)
+		if (is_special_char(input[*i]) && !quote)
 			break ;
 		(*i)++;
 	}
@@ -56,9 +56,9 @@ char	*extract_word(char *input, int *i)
 // 			add_token(&tokens, ">", REDIR_OUT);
 // 		i++;
 // 	}
-// 	else if (inpstut[i] == '<')
+// 	else if (str[i] == '<')
 // 	{
-// 		if (input[i + 1] == '<')//here_doc
+// 		if (str[i + 1] == '<')//here_doc
 // 		{
 // 			add_token(&tokens, "<<", HEREDOC);
 // 			i++;
@@ -67,6 +67,8 @@ char	*extract_word(char *input, int *i)
 // 			add_token(&tokens, "<", REDIR_IN);
 // 		i++;
 // 	}
+// 	else if (str[i])//Everything else is a word(cmd/filename/limiter)
+// 		add_token(&tokens, extract_word(str, &i), WORD);
 // }
 
 t_token	*tokenize(char *input)
@@ -146,9 +148,6 @@ t_args	*create_new_args(void)
 
 	new_args = ft_secure_malloc(sizeof(t_args));
 	new_args->cmd_count = 0;
-	// new_args->infile = NULL;
-	// new_args->outfile = NULL;
-	// new_args->append_outfile = NULL;
 	new_args->limiter = NULL;
 	new_args->here_doc_count = 0;
 	new_args->pipe = 0;
@@ -295,7 +294,48 @@ char	*ft_strdup_exept(const char *s, char c)
 // 	return (!s_open && !d_open);
 // }
 
-bool	quotes_closed(t_cmd *cmd, const char *str)
+// bool	quotes_closed(t_cmd *cmd, const char *str)
+// {
+// 	bool	s_open = false;
+// 	bool	d_open = false;
+// 	bool	has_single_content = false;
+// 	bool	has_double_content = false;
+// 	int		i = 0;
+
+// 	cmd->sq = false;
+// 	cmd->dq = false;
+
+// 	while (str[i])
+// 	{
+// 		if (str[i] == '\'' && !d_open)
+// 		{
+// 			if (s_open && has_single_content)
+// 				cmd->sq = true;
+// 			s_open = !s_open;
+// 			if (!s_open)
+// 				has_single_content = false;
+// 		}
+// 		else if (str[i] == '"' && !s_open)
+// 		{
+// 			if (d_open && has_double_content)
+// 				cmd->dq = true;
+// 			d_open = !d_open;
+// 			if (!d_open)
+// 				has_double_content = false;
+// 		}
+// 		else
+// 		{
+// 			if (s_open)
+// 				has_single_content = true;
+// 			if (d_open)
+// 				has_double_content = true;
+// 		}
+// 		i++;
+// 	}
+// 	return (!s_open && !d_open);
+// }
+
+bool	quotes_closed_str(const char *str, bool *has_sq, bool *has_dq)
 {
 	bool	s_open = false;
 	bool	d_open = false;
@@ -303,15 +343,15 @@ bool	quotes_closed(t_cmd *cmd, const char *str)
 	bool	has_double_content = false;
 	int		i = 0;
 
-	cmd->sq = false;
-	cmd->dq = false;
+	*has_sq = false;
+	*has_dq = false;
 
 	while (str[i])
 	{
 		if (str[i] == '\'' && !d_open)
 		{
 			if (s_open && has_single_content)
-				cmd->sq = true;
+				*has_sq = true;
 			s_open = !s_open;
 			if (!s_open)
 				has_single_content = false;
@@ -319,7 +359,7 @@ bool	quotes_closed(t_cmd *cmd, const char *str)
 		else if (str[i] == '"' && !s_open)
 		{
 			if (d_open && has_double_content)
-				cmd->dq = true;
+				*has_dq = true;
 			d_open = !d_open;
 			if (!d_open)
 				has_double_content = false;
@@ -336,15 +376,31 @@ bool	quotes_closed(t_cmd *cmd, const char *str)
 	return (!s_open && !d_open);
 }
 
+
 char *clean_word_quotes(const char *str)
 {
-	if ((ft_strncmp(str, "''", 3) == 0) || (ft_strncmp(str, "\"\"", 3) == 0))
+	size_t len;
+	char *tmp;
+	char *cleaned;
+	char *final;
+
+	len = ft_strlen(str);
+	if ((ft_strcmp(str, "''") == 0) || (ft_strcmp(str, "\"\"") == 0))
 		return (ft_strdup(""));
-	if (str[0] == '\'' && str[ft_strlen(str) - 1] == '\'' && ft_strlen(str) > 2)
-		return ft_strdup_exept(str, '\'');
-	else if (str[0] == '"' && str[ft_strlen(str) - 1] == '"' && ft_strlen(str) > 2)
-		return ft_strdup_exept(str, '"');
-	return ft_strdup(str);
+	if (str[0] == '\'' && str[len - 1] == '\'' && len >= 2)
+		return (ft_strdup_exept(str, '\''));
+	else if (str[0] == '"' && str[len - 1] == '"' && len >= 2)
+		return (ft_strdup_exept(str, '"'));
+	if (ft_strnstr(str, "''", len) || ft_strnstr(str, "\"\"", len))
+	{
+		tmp = ft_strdup(str);
+		cleaned = ft_strdup_exept(tmp, '\'');
+		final = ft_strdup_exept(cleaned, '"');
+		free(tmp);
+		free(cleaned);
+		return final;
+	}
+	return (ft_strdup(str));
 }
 
 
@@ -355,20 +411,25 @@ t_cmd *create_cmd_from_list(t_list *words)
 	int		count;
 	int		i;
 	char 	*content;
+	bool	has_sq, has_dq;
 	
 	cmd = ft_secure_malloc(sizeof(t_cmd));
 	count = ft_lstsize(words);
-	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (count + 1));//+ 1 for NULL
+	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (count + 1));
+	cmd->sq = ft_calloc(count, sizeof(bool));
+	cmd->dq = ft_calloc(count, sizeof(bool));
 	i = 0;
 	while (words)
 	{
 		content = (char *)words->content;
-		if (!quotes_closed(cmd, content))
+		if (!quotes_closed_str(content, &has_sq, &has_dq))
 		{
 			ft_putstr_fd("Syntax error: unclosed quote\n", 2);
 			//think about free
-			return (cmd);
+			return (NULL);
 		}
+		cmd->sq[i] = has_sq;
+		cmd->dq[i] = has_dq;
 		cmd->cmd_tab[i] = clean_word_quotes(content);
 		tmp = words;
 		words = words->next;
@@ -376,9 +437,43 @@ t_cmd *create_cmd_from_list(t_list *words)
 		i++;
 	}
 	cmd->cmd_tab[i] = NULL;
-	cmd->cmd_path = NULL;
 	return (cmd);
 }
+
+
+// t_cmd *create_cmd_from_list(t_list *words)
+// {
+// 	t_cmd	*cmd;
+// 	t_list	*tmp;
+// 	int		count;
+// 	int		i;
+// 	char 	*content;
+	
+// 	cmd = ft_secure_malloc(sizeof(t_cmd));
+// 	count = ft_lstsize(words);
+// 	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (count + 1));//+ 1 for NULL
+// 	cmd->sq = ft_calloc(count, sizeof(bool));
+// 	cmd->dq = ft_calloc(count, sizeof(bool));
+// 	i = 0;
+// 	while (words)
+// 	{
+// 		content = (char *)words->content;
+// 		if (!quotes_closed(cmd, content))
+// 		{
+// 			ft_putstr_fd("Syntax error: unclosed quote\n", 2);
+// 			//think about free
+// 			return (cmd);
+// 		}
+// 		cmd->cmd_tab[i] = clean_word_quotes(content);
+// 		tmp = words;
+// 		words = words->next;
+// 		free(tmp);
+// 		i++;
+// 	}
+// 	cmd->cmd_tab[i] = NULL;
+// 	cmd->cmd_path = NULL;
+// 	return (cmd);
+// }
 
 void	add_file(t_cmd *cmd, char *str, t_token_type type)
 {
@@ -527,19 +622,19 @@ void	print_cmd_list(t_args *args)
 			printf("  [empty command]\n");
 		else
 		{
-			printf("Cmd tab: ");
+			printf("Cmd tab: \n");
 			i = 0;
 			while (current_cmd->cmd_tab[i])
 			{
-				printf("[%s] ", current_cmd->cmd_tab[i]);
+				printf("Cmd tab[%d]: [%s]", i, current_cmd->cmd_tab[i]);
+				if (current_cmd->sq && current_cmd->sq[i])
+					printf(" (single quoted)");
+				if (current_cmd->dq && current_cmd->dq[i])
+					printf(" (double quoted)");
+				printf("\n");
 				i++;
 			}
-			printf("\n");
 		}
-		if (current_cmd->sq)
-			printf("There is single quote\n");
-		if (current_cmd->dq)
-			printf("There is double quote\n");
 		if (current_cmd->infile)
 			printf("Input File         : %s\n",current_cmd->infile);
 		if (current_cmd->outfile)
