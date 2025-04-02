@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/01 15:13:50 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/02 09:29:51 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,6 +241,7 @@ void	pipex(t_args *args, t_env **env_list)
     if (args->cmd_count == 1 && !ft_check_buildin(args))
     {
 		single_builtin(args, env_list);
+		printf("the last exit status: %d\n", WEXITSTATUS(args->e_status));
         return ;
     }
 	//setting the input for here_doc

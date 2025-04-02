@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/01 15:34:28 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/02 09:32:20 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <signal.h>
+# include <stdbool.h>
 # include <sys/wait.h>
 # include <string.h>
 # include <readline/readline.h>
@@ -51,30 +52,26 @@ typedef struct s_cmd	t_cmd;
 
 struct s_cmd
 {
-	char	**cmd_tab;
-	char	*cmd_path;
-	int		sq_count;//is there are tow single quates, whatever inside will be an absolute string, if there are (even number) of them, it becomes 2 dowble quates
-	int		dq_count;//1 for there is quate, 0 for not
-	int		here_doc_fd;
-	char	*infile;
-	char	*outfile;
-	char	*append_outfile;
-	t_cmd	*prev;
-	t_cmd	*next;
+	char		**cmd_tab;
+	char		*cmd_path;
+	bool		sq;//check with "if(cmd->sq)"-> it means the cmd has well closed single quote
+	bool		dq;
+	int			here_doc_fd;
+	char		*infile;
+	char		*outfile;
+	char		*append_outfile;
+	t_cmd		*prev;
+	t_cmd		*next;
 };
 
 typedef struct s_args
 {
 	t_cmd			*cmd;
 	int				cmd_count;
-	// char			*infile;
-	// char			*outfile;
-	// char			*append_outfile;
 	char			**limiter;
 	int				here_doc_count;
 	int				pipe;
 	int				e_status;
-	// struct s_args	*next;
 }	t_args;
 
 typedef struct s_env
