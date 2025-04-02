@@ -6,7 +6,7 @@
 #    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/04/01 15:16:55 by ryada            ###   ########.fr        #
+#    Updated: 2025/04/02 10:45:47 by ryada            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ INCLUDE_DIR = includes/
 SRC = $(SRC_DIR)builtin/ft_cd.c \
 	$(SRC_DIR)builtin/ft_echo.c \
 	$(SRC_DIR)builtin/ft_env.c \
+	$(SRC_DIR)builtin/ft_exit.c \
 	$(SRC_DIR)builtin/ft_pwd.c \
 	$(SRC_DIR)builtin/ft_export.c \
 	$(SRC_DIR)builtin/ft_unset.c \

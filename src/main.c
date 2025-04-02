@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/31 16:55:46 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/02 10:35:28 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,13 @@ int	parsing(char *input, t_token **tokens, t_args **args)
 		free(input);
 		return (0);
 	}
+	(*args) = create_new_args();
 	if (!check_syntax_error(*tokens))
 	{
 		free_token(*tokens);
 		tokens = NULL;
 		free(input);
+		(*args)->e_status = 2;
 		return (0);
 	}
 	*args = parse_token(*tokens);
@@ -87,7 +89,6 @@ void	minishell(t_env **env_list)
 		}
 		else
 			continue ;
-		// ft_exec(args, env_list);
 		if (args)
 			free_cmd_list(args);
 		if (tokens)

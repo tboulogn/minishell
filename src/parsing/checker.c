@@ -6,12 +6,22 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:44:18 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/01 15:11:39 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/02 10:31:17 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
+void	syntax_error_message(int type)
+{
+	ft_putstr_fd("Syntax error:", 2);
+	if (type == -1)
+		ft_putstr_fd(" pipe at start\n", 2);
+	else if (type == -2)
+		ft_putstr_fd(" invalid pipe placement\n", 2);
+	else if (type == -3)
+		ft_putstr_fd(" redirection with no target\n", 2);
+}
 
 int	check_syntax_error(t_token *tokens)
 {
@@ -21,49 +31,17 @@ int	check_syntax_error(t_token *tokens)
 	if (!current)
 		return (1);
 	if (current->type == PIPE)
-	{
-		printf("Syntax error: pipe at start\n");
-		return (0);
-	}
+		return (syntax_error_message(-1), 0);
 	while (current)
 	{
 		if ((current->type == PIPE)
 			&& (!current->next || current->next->type != WORD))
-		{
-			printf("Syntax error: invalid pipe placement\n");
-			return (0);
-		}
-		// else if ((current->type == WORD && current->prev->type == HEREDOC) && (current->next->type != PIPE && current->next->type == WORD))
-		// {
-		//     printf("Syntax error: invalid cmd placement\n\n");
-		//     return (0);
-		// }
-		// else if (current->type == HEREDOC)
-		// {
-		//     if (!current->next || current->next->type != WORD)
-		//     {
-		//         printf("Syntax error: heredoc with no limiter\n\n");
-		//         return (0);
-		//     }
-		//     // Disallow extra words after the limiter if no pipe follows
-		//     if (current->next->next && current->next->next->type == WORD)
-		//     {
-		//         printf("Syntax error: unexpected token '%s' after heredoc limiter\n\n",
-		//             current->next->next->value);
-		//         return (0);
-		//     }
-		// }
+			return (syntax_error_message(-2), 0);
 		else if ((current->type == REDIR_IN || current->type == REDIR_OUT
-				|| current->type == APPEND || current->type == HEREDOC))
-		{
-			if (!current->next || current->next->type != WORD)
-			{
-				printf("Syntax error: redirection with no target\n");
-				return (0);
-			}
-		}
+				|| current->type == APPEND || current->type == HEREDOC)
+			&& (!current->next || current->next->type != WORD))
+			return (syntax_error_message(-3), 0);
 		current = current->next;
 	}
 	return (1);
 }
-//need to check the place of limiter as well, meaning check the pipe placement related to this too

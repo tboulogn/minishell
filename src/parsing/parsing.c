@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/02 09:54:09 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/02 10:42:20 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char	*extract_word(char *input, int *i)
 	int		start;
 	char	quote;
 
-	while (input[*i] && is_whitespace(input[*i])) // Skip spaces
+	while (input[*i] && is_whitespace(input[*i]))
 		(*i)++;
 	start = *i;
 	quote = 0;
@@ -27,16 +27,21 @@ char	*extract_word(char *input, int *i)
 		if (input[*i] == '"' || input[*i] == '\'')
 		{
 			if (quote == 0)
-				quote = input[*i];  // Open quote
+				quote = input[*i];
 			else if (quote == input[*i])
-				quote = 0;  // Close quote
+				quote = 0;
 		}
 		else if (is_special_char(input[*i]) && !quote)
-			break ;  // Stop if encountering `|`, `<`, `>` outside of quotes
+			break ;
 		(*i)++;
 	}
 	return (ft_strndup(input + start, *i - start));
 }
+
+// void	define_tokens(char c, t_token *tokens)
+// {
+
+// }
 
 t_token	*tokenize(char *input)
 {
