@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/02 10:42:20 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/02 10:58:04 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,35 @@ char	*extract_word(char *input, int *i)
 	return (ft_strndup(input + start, *i - start));
 }
 
-// void	define_tokens(char c, t_token *tokens)
+// void	define_tokens(t_token *tokens, char *str, int i)
 // {
-
+// 	if (str[i] == '|')//detect pipe
+// 	{
+// 		add_token(&tokens, "|", PIPE);
+// 		i++;
+// 	}
+// 	else if (str[i] == '>')
+// 	{
+// 		if (str[i + 1] == '>')//append output
+// 		{
+// 			add_token(&tokens, ">>", APPEND);
+// 			i++;
+// 		}
+// 		else//non_append output
+// 			add_token(&tokens, ">", REDIR_OUT);
+// 		i++;
+// 	}
+// 	else if (inpstut[i] == '<')
+// 	{
+// 		if (input[i + 1] == '<')//here_doc
+// 		{
+// 			add_token(&tokens, "<<", HEREDOC);
+// 			i++;
+// 		}
+// 		else//normal redir_in
+// 			add_token(&tokens, "<", REDIR_IN);
+// 		i++;
+// 	}
 // }
 
 t_token	*tokenize(char *input)
