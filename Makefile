@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
+#    By: ryada <ryada@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/17 14:58:53 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/04/02 10:45:47 by ryada            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,8 +17,25 @@ OBJ_DIR = obj/
 LIBFT_DIR = libft_master/
 INCLUDE_DIR = includes/
 
-SRC_FILES = 
-SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+SRC = $(SRC_DIR)builtin/ft_cd.c \
+	$(SRC_DIR)builtin/ft_echo.c \
+	$(SRC_DIR)builtin/ft_env.c \
+	$(SRC_DIR)builtin/ft_exit.c \
+	$(SRC_DIR)builtin/ft_pwd.c \
+	$(SRC_DIR)builtin/ft_export.c \
+	$(SRC_DIR)builtin/ft_unset.c \
+	$(SRC_DIR)env/env_list.c \
+	$(SRC_DIR)execution/exec.c \
+	$(SRC_DIR)free/free.c \
+	$(SRC_DIR)parsing/checker.c \
+	$(SRC_DIR)parsing/parsing.c \
+	$(SRC_DIR)pipe/here_doc.c \
+	$(SRC_DIR)pipe/pipe.c \
+	$(SRC_DIR)signals/signals.c \
+	$(SRC_DIR)utils/utils.c \
+	$(SRC_DIR)utils/utils_2.c \
+	$(SRC_DIR)utils/utils_3.c \
+	$(SRC_DIR)main.c \
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
@@ -57,7 +74,7 @@ $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
 $(NAME): $(OBJ) $(LIBFT)
-	@$(CC) $(OBJ) $(LIBFT) -o $(NAME)
+	@$(CC) $(OBJ) $(LIBFT) -o $(NAME) -lreadline -lhistory
 	@echo "$(GREEN)✅ Compilation terminée !$(RESET)"
 
 clean:
@@ -71,3 +88,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
+
