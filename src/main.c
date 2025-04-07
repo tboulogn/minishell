@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/02 10:35:28 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/07 14:44:27 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ int	parsing(char *input, t_token **tokens, t_args **args)
 		free_token(*tokens);
 		tokens = NULL;
 		free(input);
-		(*args)->e_status = 2;
 		return (0);
 	}
 	*args = parse_token(*tokens);
@@ -79,16 +78,23 @@ void	minishell(t_env **env_list)
 	t_args		*args;
 
 	input = NULL;
+	g_signal = 0;
 	while (1)
 	{
+		init_signals();
+		args = ft_secure_malloc(1 * sizeof(t_args));
+		tokens = NULL;
 		put_prompt(&input, *env_list);
+		if (!input)
+		{
+			write(1, "exit\n", 5);
+			exit(0);
+		}
 		if (parsing(input, &tokens, &args))
 		{
 			print_cmd_list(args);
 			pipex(args, env_list);
 		}
-		else
-			continue ;
 		if (args)
 			free_cmd_list(args);
 		if (tokens)

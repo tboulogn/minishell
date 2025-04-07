@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/02 10:58:04 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/07 15:13:51 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,88 +31,12 @@ char	*extract_word(char *input, int *i)
 			else if (quote == input[*i])
 				quote = 0;
 		}
-		else if (is_special_char(input[*i]) && !quote)
+		if (is_special_char(input[*i]) && !quote)
 			break ;
 		(*i)++;
 	}
 	return (ft_strndup(input + start, *i - start));
 }
-
-// void	define_tokens(t_token *tokens, char *str, int i)
-// {
-// 	if (str[i] == '|')//detect pipe
-// 	{
-// 		add_token(&tokens, "|", PIPE);
-// 		i++;
-// 	}
-// 	else if (str[i] == '>')
-// 	{
-// 		if (str[i + 1] == '>')//append output
-// 		{
-// 			add_token(&tokens, ">>", APPEND);
-// 			i++;
-// 		}
-// 		else//non_append output
-// 			add_token(&tokens, ">", REDIR_OUT);
-// 		i++;
-// 	}
-// 	else if (inpstut[i] == '<')
-// 	{
-// 		if (input[i + 1] == '<')//here_doc
-// 		{
-// 			add_token(&tokens, "<<", HEREDOC);
-// 			i++;
-// 		}
-// 		else//normal redir_in
-// 			add_token(&tokens, "<", REDIR_IN);
-// 		i++;
-// 	}
-// }
-
-t_token	*tokenize(char *input)
-{
-	t_token	*tokens;
-	int		i;
-
-	tokens = NULL;//init t_token
-	i = 0;
-	while (input[i])
-	{
-		while (input[i] && is_whitespace(input[i]))//skip spaces
-			i++;
-		if (input[i] == '|')//detect pipe
-		{
-			add_token(&tokens, "|", PIPE);
-			i++;
-		}
-		else if (input[i] == '>')
-		{
-			if (input[i + 1] == '>')//append output
-			{
-				add_token(&tokens, ">>", APPEND);
-				i++;
-			}
-			else//non_append output
-				add_token(&tokens, ">", REDIR_OUT);
-			i++;
-		}
-		else if (input[i] == '<')
-		{
-			if (input[i + 1] == '<')//here_doc
-			{
-				add_token(&tokens, "<<", HEREDOC);
-				i++;
-			}
-			else//normal redir_in
-				add_token(&tokens, "<", REDIR_IN);
-			i++;
-		}
-		else if (input[i])//Everything else is a word(cmd/filename/limiter)
-			add_token(&tokens, extract_word(input, &i), WORD);
-	}
-	return (tokens);
-}
-
 
 //init token, set up the next and prev(cahin-list)
 void	add_token(t_token **tokens, char *value, t_token_type type)
@@ -139,6 +63,47 @@ void	add_token(t_token **tokens, char *value, t_token_type type)
 	}
 }
 
+int	define_tokens(t_token *tokens, char *str, int i)
+{
+	if (str[i] == '|')
+		return(add_token(&tokens, "|", PIPE), 1);
+	else if (str[i] == '>')
+	{
+		if (str[i + 1] == '>')
+			return (add_token(&tokens, ">>", APPEND), 2);
+		else
+			return (add_token(&tokens, ">", REDIR_OUT), 1);
+	}
+	else if (str[i] == '<')
+	{
+		if (str[i + 1] == '<')
+			return (add_token(&tokens, "<<", HEREDOC), 2);
+		else
+			return (add_token(&tokens, "<", REDIR_IN), 1);
+	}
+	return (0);
+}
+
+t_token	*tokenize(char *input)
+{
+	t_token	*tokens;
+	int		i;
+
+	tokens = NULL;
+	i = 0;
+	while (input[i])
+	{
+		while (input[i] && is_whitespace(input[i]))
+			i++;
+		i += define_tokens(tokens, input, i);
+		if (input[i])
+			add_token(&tokens, extract_word(input, &i), WORD);
+	}
+	return (tokens);
+}
+
+
+
 //Initialize the argument infos we pass
 t_args	*create_new_args(void)
 {
@@ -146,9 +111,6 @@ t_args	*create_new_args(void)
 
 	new_args = ft_secure_malloc(sizeof(t_args));
 	new_args->cmd_count = 0;
-	// new_args->infile = NULL;
-	// new_args->outfile = NULL;
-	// new_args->append_outfile = NULL;
 	new_args->limiter = NULL;
 	new_args->here_doc_count = 0;
 	new_args->pipe = 0;
@@ -181,7 +143,7 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 	new_cmd->prev = last;
 }
 
-int	count_char(char *str, char c)
+int	count_char(const char *str, char c)
 {
 	int i;
 	int count;
@@ -206,18 +168,11 @@ char	*ft_strdup_exept(const char *s, char c)
 	int		j;
 
 	i = 0;
-	c_count = 0;
-	while (s[i])
-	{
-		if (s[i] == c)
-			c_count++;
-		i++;
-	}
+	c_count = count_char(s, c);
 	len = ft_strlen(s) - c_count;
 	new_str = malloc(len + 1 * sizeof(char));
 	if (!new_str)
 		return (NULL);
-	i = 0;
 	j = 0;
 	while(s[i])
 	{
@@ -232,105 +187,48 @@ char	*ft_strdup_exept(const char *s, char c)
 	return (new_str);
 }
 
-//set t_cmd cmd_tab by using t_list
-// t_cmd *create_cmd_from_list(t_list *words)
-// {
-// 	t_cmd	*cmd;
-// 	t_list	*tmp;
-// 	int		count;
-// 	int		i;
-	
-// 	cmd = ft_secure_malloc(sizeof(t_cmd));
-// 	count = ft_lstsize(words);
-// 	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (count + 1));//+ 1 for NULL
-// 	i = 0;
-// 	while (words)
-// 	{
-// 		cmd->sq_count = count_char((char *)words->content, '\'');
-// 		cmd->dq_count = count_char((char *)words->content, '"');
-// 		if (cmd->sq_count)
-// 			cmd->cmd_tab[i] = ft_strdup_exept((char *)words->content, '\'');
-// 		else if (cmd->dq_count)
-// 			cmd->cmd_tab[i] = ft_strdup_exept((char *)words->content, '"');
-// 		else
-// 			cmd->cmd_tab[i] = ft_strdup((char *)words->content);
-// 		tmp = words;
-// 		words = words->next;
-// 		free(tmp);
-// 		i++;
-// 	}
-// 	cmd->cmd_tab[i] = NULL;
-// 	cmd->cmd_path = NULL;
-// 	return (cmd);
-// }
-
-
-// bool	quotes_closed(t_cmd *cmd, const char *str)
-// {
-// 	bool s_open;
-// 	bool d_open;
-// 	int i;
-
-// 	s_open = false;
-// 	d_open = false;
-// 	i = 0;
-// 	cmd->sq = false;
-// 	cmd->dq = false;
-// 	while (str[i])
-// 	{
-// 		if (str[i] == '\'' && !d_open)
-// 		{
-// 			if (s_open)
-// 				cmd->sq = true; //closing single quote
-// 			s_open = !s_open;
-// 		}
-// 		else if (str[i] == '"' && !s_open)
-// 		{
-// 			if (d_open)
-// 				cmd->dq = true; //closing double quote
-// 			d_open = !d_open;
-// 		}
-// 		i++;
-// 	}
-// 	return (!s_open && !d_open);
-// }
-
-bool	quotes_closed(t_cmd *cmd, const char *str)
+void	handel_quoates(bool *open, bool *has_content, bool *has, bool other_quote_open)
 {
-	bool	s_open = false;
-	bool	d_open = false;
-	bool	has_single_content = false;
-	bool	has_double_content = false;
-	int		i = 0;
+	if (!other_quote_open)
+	{
+		if (*open && *has_content)
+			*has = true;
+		*open = !*open;
+		if (!*open)
+			*has_content = false;
+	}
+}
 
-	cmd->sq = false;
-	cmd->dq = false;
+void	update_content(bool *s_open, bool *d_open, bool *s_content, bool *d_content)
+{
+	if (s_open)
+		*s_content = true;
+	if (d_open)
+		*d_content = true;
+}
 
+bool	quotes_closed_str(const char *str, bool *has_sq, bool *has_dq)
+{
+	bool	s_open;
+	bool	d_open;
+	bool	s_content;
+	bool	d_content;
+	int		i;
+
+	s_open = false;
+	d_open = false;
+	s_content = false;
+	d_content = false;
+	*has_sq = false;
+	*has_dq = false;
+	i = 0;
 	while (str[i])
 	{
 		if (str[i] == '\'' && !d_open)
-		{
-			if (s_open && has_single_content)
-				cmd->sq = true;
-			s_open = !s_open;
-			if (!s_open)
-				has_single_content = false;
-		}
+			handel_quoates(&s_open, &s_content, has_sq, d_open);
 		else if (str[i] == '"' && !s_open)
-		{
-			if (d_open && has_double_content)
-				cmd->dq = true;
-			d_open = !d_open;
-			if (!d_open)
-				has_double_content = false;
-		}
-		else
-		{
-			if (s_open)
-				has_single_content = true;
-			if (d_open)
-				has_double_content = true;
-		}
+			handel_quoates(&d_open, &d_content, has_dq, s_open);
+		update_content(&s_open, &d_open, &s_content, &d_content);
 		i++;
 	}
 	return (!s_open && !d_open);
@@ -338,45 +236,56 @@ bool	quotes_closed(t_cmd *cmd, const char *str)
 
 char *clean_word_quotes(const char *str)
 {
-	if ((ft_strncmp(str, "''", 3) == 0) || (ft_strncmp(str, "\"\"", 3) == 0))
+	size_t len;
+	char *tmp;
+	char *cleaned;
+	char *final;
+
+	len = ft_strlen(str);
+	if ((ft_strcmp(str, "''") == 0) || (ft_strcmp(str, "\"\"") == 0))
 		return (ft_strdup(""));
-	if (str[0] == '\'' && str[ft_strlen(str) - 1] == '\'' && ft_strlen(str) > 2)
-		return ft_strdup_exept(str, '\'');
-	else if (str[0] == '"' && str[ft_strlen(str) - 1] == '"' && ft_strlen(str) > 2)
-		return ft_strdup_exept(str, '"');
-	return ft_strdup(str);
+	if (str[0] == '\'' && str[len - 1] == '\'' && len >= 2)
+		return (ft_strdup_exept(str, '\''));
+	else if (str[0] == '"' && str[len - 1] == '"' && len >= 2)
+		return (ft_strdup_exept(str, '"'));
+	if (ft_strnstr(str, "''", len) || ft_strnstr(str, "\"\"", len))
+	{
+		tmp = ft_strdup(str);
+		cleaned = ft_strdup_exept(tmp, '\'');
+		final = ft_strdup_exept(cleaned, '"');
+		free(tmp);
+		free(cleaned);
+		return final;
+	}
+	return (ft_strdup(str));
 }
 
-
-t_cmd *create_cmd_from_list(t_list *words)
+t_cmd	*create_cmd_from_list(t_list *words)
 {
 	t_cmd	*cmd;
-	t_list	*tmp;
-	int		count;
 	int		i;
-	char 	*content;
-	
+	t_list	*next;
+
 	cmd = ft_secure_malloc(sizeof(t_cmd));
-	count = ft_lstsize(words);
-	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (count + 1));//+ 1 for NULL
+	i = ft_lstsize(words);
+	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (i + 1));
+	cmd->sq = ft_calloc(i, sizeof(bool));
+	cmd->dq = ft_calloc(i, sizeof(bool));
 	i = 0;
 	while (words)
 	{
-		content = (char *)words->content;
-		if (!quotes_closed(cmd, content))
+		if (!quotes_closed_str(words->content, &cmd->sq[i], &cmd->dq[i]))
 		{
 			ft_putstr_fd("Syntax error: unclosed quote\n", 2);
-			//think about free
-			return (cmd);
+			// ft_free_cmd(cmd);
+			return (NULL);
 		}
-		cmd->cmd_tab[i] = clean_word_quotes(content);
-		tmp = words;
-		words = words->next;
-		free(tmp);
-		i++;
+		cmd->cmd_tab[i++] = clean_word_quotes(words->content);
+		next = words->next;
+		free(words);
+		words = next;
 	}
 	cmd->cmd_tab[i] = NULL;
-	cmd->cmd_path = NULL;
 	return (cmd);
 }
 
@@ -527,19 +436,19 @@ void	print_cmd_list(t_args *args)
 			printf("  [empty command]\n");
 		else
 		{
-			printf("Cmd tab: ");
+			printf("Cmd tab: \n");
 			i = 0;
 			while (current_cmd->cmd_tab[i])
 			{
-				printf("[%s] ", current_cmd->cmd_tab[i]);
+				printf("Cmd tab[%d]: [%s]", i, current_cmd->cmd_tab[i]);
+				if (current_cmd->sq && current_cmd->sq[i])
+					printf(" (single quoted)");
+				if (current_cmd->dq && current_cmd->dq[i])
+					printf(" (double quoted)");
+				printf("\n");
 				i++;
 			}
-			printf("\n");
 		}
-		if (current_cmd->sq)
-			printf("There is single quote\n");
-		if (current_cmd->dq)
-			printf("There is double quote\n");
 		if (current_cmd->infile)
 			printf("Input File         : %s\n",current_cmd->infile);
 		if (current_cmd->outfile)

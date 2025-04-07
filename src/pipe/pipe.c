@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/02 09:29:51 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/07 14:43:59 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,11 +186,21 @@ void	wait_children(t_args *args, t_pipe *pro)
 	while (i < args->cmd_count)
 	{
 		waitpid(pro->pid[i], &status, 0);
-		if (WIFEXITED(status))
-			last_exit = status;
-		i++;
+		if (i++ == args->cmd_count - 1)
+		{
+			if (WIFEXITED(status))
+				last_exit = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+			{
+				if (WTERMSIG(status) == SIGQUIT)
+					write(1, "Quit (core dumped)\n", 20);
+				else if (WTERMSIG(status) == SIGINT)
+					write(1, "\n", 1);
+				last_exit = 128 + WTERMSIG(status);
+			}
+		}
 	}
-	args->e_status = last_exit;
+	g_signal = last_exit;
 }
 
 void	single_builtin(t_args *args, t_env **env_list)
@@ -241,7 +251,6 @@ void	pipex(t_args *args, t_env **env_list)
     if (args->cmd_count == 1 && !ft_check_buildin(args))
     {
 		single_builtin(args, env_list);
-		printf("the last exit status: %d\n", WEXITSTATUS(args->e_status));
         return ;
     }
 	//setting the input for here_doc
@@ -277,6 +286,5 @@ void	pipex(t_args *args, t_env **env_list)
     }
     close_pipe(pro.prev);
 	wait_children(args, &pro);
-	printf("the last exit status: %d\n", WEXITSTATUS(args->e_status));
     free(pro.pid);
 }
