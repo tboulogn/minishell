@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/29 14:29:31 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/07 16:41:05 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*pwd_str(t_env *env_list)
 {
 	char	*pwd;
 	char	*prompt;
-	char 	*user;
+	char	*user;
 
 	pwd = get_env_value(env_list, "PWD");
 	user = get_env_value(env_list, "USER");// ->ryada
@@ -29,12 +29,12 @@ char	*pwd_str(t_env *env_list)
 	prompt = ft_strjoin(prompt, "$ ");
 	if (!pwd)
 		return (NULL);
-	return (prompt);	
+	return (prompt);
 }
 
 void	put_prompt(char **input, t_env *env_list)
 {
-	char *prompt;
+	char	*prompt;
 
 	prompt = pwd_str(env_list);
 	*input = readline(prompt);
@@ -44,7 +44,7 @@ void	put_prompt(char **input, t_env *env_list)
 		add_history(*input);
 }
 
-int parsing(char *input, t_token **tokens, t_args **args)
+int	parsing(char *input, t_token **tokens, t_args **args)
 {
 	*tokens = tokenize(input);
 	if (!*tokens)
@@ -52,6 +52,7 @@ int parsing(char *input, t_token **tokens, t_args **args)
 		free(input);
 		return (0);
 	}
+	(*args) = create_new_args();
 	if (!check_syntax_error(*tokens))
 	{
 		free_token(*tokens);
@@ -70,7 +71,6 @@ int parsing(char *input, t_token **tokens, t_args **args)
 	return (1);
 }
 
-
 void	minishell(t_env **env_list)
 {
 	char		*input;
@@ -78,27 +78,33 @@ void	minishell(t_env **env_list)
 	t_args		*args;
 
 	input = NULL;
+	g_signal = 0;
 	while (1)
 	{
+		init_signals();
+		args = ft_secure_malloc(1 * sizeof(t_args));
+		tokens = NULL;
 		put_prompt(&input, *env_list);
+		if (!input)
+		{
+			write(1, "exit\n", 5);
+			exit(0);
+		}
 		if (parsing(input, &tokens, &args))
 		{
 			print_cmd_list(args);
 			pipex(args, env_list);
 		}
-		else
-			continue;
-		// ft_exec(args, env_list);
-		if (args)
-			free_cmd_list(args);
-		if (tokens)
-			free_token(tokens);
-		if (input)
-			free(input);
+		// if (args)
+		// 	free_cmd_list(args);
+		// if (tokens)
+		// 	free_token(tokens);
+		// if (input)
+		// 	free(input);
 	}
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env_list;
 

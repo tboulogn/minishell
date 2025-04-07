@@ -6,11 +6,12 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 10:18:11 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/28 16:19:56 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/01 15:13:40 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
+
 
 void	ft_handle_here_doc_child(int *pipe_fd, char *limiter)
 {
@@ -21,12 +22,12 @@ void	ft_handle_here_doc_child(int *pipe_fd, char *limiter)
 	{
 		line = get_next_line(STDIN_FILENO);
 		if (!line)
-			break;
+			break ;
 		if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0
 			&& line[ft_strlen(limiter)] == '\n')
 		{
 			free(line);
-			break;
+			break ;
 		}
 		write(pipe_fd[1], line, ft_strlen(line));
 		free(line);
@@ -46,14 +47,12 @@ int	ft_here_doc(char *limiter)
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
-
 	pid = fork();
 	if (pid < 0)
 	{
 		perror("fork");
 		exit(EXIT_FAILURE);
 	}
-
 	if (pid == 0)
 		ft_handle_here_doc_child(pipe_fd, limiter);
 	else

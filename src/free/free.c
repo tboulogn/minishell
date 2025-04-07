@@ -6,17 +6,17 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/29 11:59:02 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/01 15:12:17 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 //everytime you finish the execution, free EVERYTHING!!
 
 void	free_token(t_token *tokens)
 {
-	t_token *tmp;
+	t_token	*tmp;
 
 	while (tokens)
 	{
@@ -34,7 +34,7 @@ void	free_cmd_list(t_args *args)
 	int		i;
 
 	if (!args)
-		return;
+		return ;
 	tmp_cmd = args->cmd;
 	while (tmp_cmd)
 	{

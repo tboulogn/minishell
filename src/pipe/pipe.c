@@ -6,13 +6,13 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/29 14:45:17 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/07 16:51:43 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
-void init_pipe_struct(t_pipe *pro, int cmd_count)
+void	init_pipe_struct(t_pipe *pro, int cmd_count)
 {
 	pro->pid = malloc(sizeof(pid_t) * cmd_count);
 	if (!pro->pid)
@@ -26,49 +26,60 @@ void init_pipe_struct(t_pipe *pro, int cmd_count)
 	pro->next[1] = -1;
 }
 
-void close_pipe(int *pipefd)
+void	close_all_pipe(t_pipe *pro)
 {
-	if (pipefd[0] != -1)
-		close(pipefd[0]);
-	if (pipefd[1] != -1)
-		close(pipefd[1]);
+	if (pro->prev[0] != -1)
+		close(pro->prev[0]);
+	if (pro->prev[1] != -1)
+		close(pro->prev[1]);
+	if (pro->next[0] != -1)
+		close(pro->prev[0]);
+	if (pro->next[1] != -1)
+		close(pro->prev[1]);
 }
 
-void update_pipe(int *prev, int *next)
+void	update_pipe(int *prev, int *next)
 {
 	prev[0] = next[0];
 	prev[1] = next[1];
 }
 
-void single_child(t_args *args, t_cmd *cmd, t_env *env_list)
+void	read_files(t_cmd *cmd, int fd, int type)
+{
+	if (type == 1)//infile
+	{
+		fd= open(cmd->infile, O_RDONLY);
+		if (fd < 0)
+			perror(cmd->infile);
+		redirect_and_close(fd, STDIN_FILENO);
+	}
+	else if (type == 2)//outfile (non-append)
+	{
+		fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (fd < 0)
+			perror(cmd->outfile);
+		redirect_and_close(fd, STDOUT_FILENO);
+	}
+	else if (type == 3)//outfile (append)
+	{
+		fd = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if (fd < 0)
+			perror(cmd->append_outfile);
+		redirect_and_close(fd, STDOUT_FILENO);
+	}
+}
+
+void	single_child(t_args *args, t_cmd *cmd, t_env *env_list)
 {
 	int fd_in;
 	int fd_out;
 
 	if (cmd->infile)
-	{
-		fd_in = open(cmd->infile, O_RDONLY);
-		if (fd_in < 0)
-			perror(cmd->infile);
-		dup2(fd_in, STDIN_FILENO);
-		close(fd_in);
-	}
+		read_files(cmd, fd_in, 1);
 	if (cmd->outfile)
-	{
-		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd_out < 0)
-			perror(cmd->outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
-	}
+		read_files(cmd, fd_out, 2);
 	if (cmd->append_outfile)
-	{
-		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		if (fd_out < 0)
-			perror(cmd->append_outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
-	}
+		read_files(cmd, fd_out, 3);
 	ft_exec(args, &env_list);
 }
 
@@ -78,15 +89,8 @@ void	first_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 
 	close(pro.next[0]);
 	if (cmd->infile)
-	{
-		fd = open(cmd->infile, O_RDONLY);
-		if (fd < 0)
-			perror(cmd->infile);
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-	}
-	dup2(pro.next[1], STDOUT_FILENO);
-	close(pro.next[1]);
+		read_files(cmd, fd, 1);
+	redirect_and_close(pro.next[1], STDOUT_FILENO);
 	ft_exec(args, &env_list);
 }
 
@@ -96,35 +100,14 @@ void	middle_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 	int fd_out;
 
 	if (cmd->infile)
-	{
-		fd_in = open(cmd->infile, O_RDONLY);
-		if (fd_in < 0)
-			perror(cmd->infile);
-		dup2(fd_in, STDIN_FILENO);
-		close(fd_in);
-	}
+		read_files(cmd, fd_in, 1);
 	if (cmd->outfile)
-	{
-		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd_out < 0)
-			perror(cmd->outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
-	}
+		read_files(cmd, fd_out, 2);
 	if (cmd->append_outfile)
-	{
-		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		if (fd_out < 0)
-			perror(cmd->append_outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
-	}
-	close(pro.prev[1]);
+		read_files(cmd, fd_out, 3);
 	dup2(pro.prev[0], STDIN_FILENO);
-	close(pro.prev[0]);
 	dup2(pro.next[1], STDOUT_FILENO);
-	close(pro.next[1]);
-	close(pro.next[0]);
+	close_all_pipe(&pro);
 	ft_exec(args, &env_list);
 }
 
@@ -135,32 +118,14 @@ void	last_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 
 	close(pro.prev[1]);
 	if (cmd->infile)
-	{
-		fd_in = open(cmd->infile, O_RDONLY);
-		if (fd_in < 0)
-			perror(cmd->infile);
-		dup2(fd_in, STDIN_FILENO);
-		close(fd_in);
-	}
+		read_files(cmd, fd_in, 1);
 	else
 		dup2(pro.prev[0], STDIN_FILENO);
 	close(pro.prev[0]);
 	if (cmd->outfile)
-	{
-		fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd_out < 0)
-			perror(cmd->outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
-	}
+		read_files(cmd, fd_out, 2);
 	if (cmd->append_outfile)
-	{
-		fd_out = open(cmd->append_outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		if (fd_out < 0)
-			perror(cmd->append_outfile);
-		dup2(fd_out, STDOUT_FILENO);
-		close(fd_out);
-	}
+		read_files(cmd, fd_out, 3);
 	ft_exec(args, &env_list);
 }
 
@@ -196,11 +161,21 @@ void	wait_children(t_args *args, t_pipe *pro)
 	while (i < args->cmd_count)
 	{
 		waitpid(pro->pid[i], &status, 0);
-		if (WIFEXITED(status))
-			last_exit = status;
-		i++;
+		if (i++ == args->cmd_count - 1)
+		{
+			if (WIFEXITED(status))
+				last_exit = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+			{
+				if (WTERMSIG(status) == SIGQUIT)
+					write(1, "Quit (core dumped)\n", 20);
+				else if (WTERMSIG(status) == SIGINT)
+					write(1, "\n", 1);
+				last_exit = 128 + WTERMSIG(status);
+			}
+		}
 	}
-	args->e_status = last_exit;
+	g_signal = last_exit;
 }
 
 void	single_builtin(t_args *args, t_env **env_list)
@@ -279,13 +254,12 @@ void	pipex(t_args *args, t_env **env_list)
         }
         if (pro.pid[i] == 0)
             child_process(&temp, current, *env_list, pro, i);
-        close_pipe(pro.prev);
+        close_all_pipe(&pro);
         update_pipe(pro.prev, pro.next);
         i++;
         current = current->next;
     }
-    close_pipe(pro.prev);
+    close_all_pipe(&pro);
 	wait_children(args, &pro);
-	printf("the last exit status: %d\n", WEXITSTATUS(args->e_status));
     free(pro.pid);
 }
