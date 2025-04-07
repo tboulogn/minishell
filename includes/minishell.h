@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/02 12:13:01 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/07 15:02:25 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef enum e_token_type
 	REDIR_OUT,// '>'
 	HEREDOC,// '<<'
 	APPEND,// '>>'
+	// DOLLAR,// '$'
 }	t_token_type;
 
 typedef struct s_token
