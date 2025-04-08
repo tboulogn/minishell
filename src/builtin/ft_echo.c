@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:31:10 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/26 14:55:21 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 16:21:07 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 char	*get_var_key(const char *str, int *i)
 {
 	int	start;
-	
+
 	start = *i;
-	while(str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
+	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
 	return (ft_substr(str, start, *i - start));
 }
@@ -26,15 +26,15 @@ char	*extract_text(const char *str, int *i)
 {
 	int		start;
 	char	*text;
-	
+
 	start = *i;
-	while (str[*i]  && str[*i] != '$')
+	while (str[*i] && str[*i] != '$')
 		(*i)++;
 	text = ft_substr(str, start, *i - start);
 	return (text);
 }
 
-char	*expand_dollar(const char *str, int *i, t_env *env, int e_status)
+char	*expand_dollar(const char *str, int *i, t_env *env)
 {
 	char	*key;
 	char	*value;
@@ -43,7 +43,18 @@ char	*expand_dollar(const char *str, int *i, t_env *env, int e_status)
 	if (str[*i] == '?')
 	{
 		(*i)++;
-		return (ft_itoa((e_status)));
+		char *status = ft_itoa(g_signal);
+		if (!status)
+			return (ft_strdup("0"));
+		for (int j = 0; status[j]; j++)
+		{
+			if (!ft_isdigit(status[j]))
+			{
+				free(status);
+				return (ft_strdup("0"));
+			}
+		}
+		return (status);
 	}
 	key = get_var_key(str, i);
 	node = get_env_var(env, key);
@@ -55,21 +66,26 @@ char	*expand_dollar(const char *str, int *i, t_env *env, int e_status)
 	return (value);
 }
 
-char	*expand_vars(const char *str, t_env *env_list, int e_status)
+char	*expand_vars(const char *str, t_env *env_list)
 {
 	int		i;
 	char	*res;
 	char	*chunk;
-	char 	*tmp;
+	char	*tmp;
 
 	i = 0;
 	res = ft_strdup("");
 	while (str[i])
 	{
-		if (str[i] == '$')
+		if (str[i] == '$' && str[i + 1] != '\0')
 		{
 			i++;
-			chunk = expand_dollar(str, &i, env_list, e_status);
+			chunk = expand_dollar(str, &i, env_list);
+		}
+		else if (str[i] == '$')
+		{
+			i++;
+			chunk = ft_strdup("$");
 		}
 		else
 			chunk = extract_text(str, &i);
@@ -97,7 +113,10 @@ int	ft_echo(t_args *args, t_env *env_list)
 		n_flag = 1;
 	while (argv[i])
 	{
-		expanded = expand_vars(argv[i], env_list, args->e_status);
+		if (args->cmd->sq[i])
+			expanded = ft_strdup(argv[i]);
+		else
+			expanded = expand_vars(argv[i], env_list);
 		ft_putstr_fd(expanded, 1);
 		free(expanded);
 		if (argv[i + 1])
@@ -108,4 +127,3 @@ int	ft_echo(t_args *args, t_env *env_list)
 		ft_putstr_fd("\n", 1);
 	return (0);
 }
-

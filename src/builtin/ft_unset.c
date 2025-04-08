@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 17:10:40 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/26 14:58:07 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 16:21:19 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ int	unset_env_var(t_env **env, const char *key)
 
 int	ft_unset(t_args *args, t_env **env)
 {
-	char **argv;
-	int i;
+	char	**argv;
+	int		i;
 
 	if (!args || !args->cmd || !args->cmd->cmd_tab)
 		return (1);

@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 23:54:33 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 16:20:32 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,3 +200,4 @@ void	pipex(t_args *args, t_env **env_list)
 	close_pipe(pro.prev);
     free(pro.pid);
 }
+

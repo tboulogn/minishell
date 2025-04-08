@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/03/26 21:34:43 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 16:21:50 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,27 @@ char	*pwd_str(t_env *env_list)
 {
 	char	*pwd;
 	char	*prompt;
-	char 	*user;
+	char	*user;
+	char	*tmp;
 
 	pwd = get_env_value(env_list, "PWD");
 	user = get_env_value(env_list, "USER");// ->ryada
-	user = ft_strjoin("/home/", user);// ->/home/ryada
-	pwd = pwd + (ft_strlen(user));
-	prompt = ft_strjoin(PROMPT, pwd);
-	prompt = ft_strjoin(prompt, "$ ");
-	if (!pwd)
+	tmp = ft_strjoin("/home/", user);// ->/home/ryada
+	if (!tmp || !pwd)
 		return (NULL);
-	return (prompt);	
+	pwd = pwd + (ft_strlen(tmp));
+	free (tmp);
+	tmp = ft_strjoin(PROMPT, pwd);
+	if (!tmp)
+		return(NULL);
+	prompt = ft_strjoin(tmp, "$ ");
+	free(tmp);
+	return (prompt);
 }
 
 void	put_prompt(char **input, t_env *env_list)
 {
-	char *prompt;
+	char	*prompt;
 
 	printf(">>> Prompt lance\n");
 	prompt = pwd_str(env_list);
@@ -44,28 +49,33 @@ void	put_prompt(char **input, t_env *env_list)
 		return ;
 	if (*input && **input)
 		add_history(*input);
+	free(prompt);
 }
 
-void parsing(char *input, t_token **tokens, t_args **args)
+int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 {
 	*tokens = tokenize(input);
 	if (!*tokens)
 	{
 		free(input);
-		return;
+		return (0);
 	}
 	if (!check_syntax_error(*tokens))
 	{
 		free_token(*tokens);
+		tokens = NULL;
 		free(input);
-		return;
+		return (0);
 	}
-	*args = parse_token(*tokens);
+	*args = parse_token(*tokens, env_list);
 	if (!*args)
 	{
 		free_token(*tokens);
+		tokens = NULL;
 		free(input);
+		return (0);
 	}
+	return (1);
 }
 
 void	minishell(t_env **env_list)
@@ -75,26 +85,33 @@ void	minishell(t_env **env_list)
 	t_args		*args;
 
 	input = NULL;
-	init_signals();
+	g_signal = 0;
 	while (1)
 	{
+		init_signals();
 		args = NULL;
+		tokens = NULL;
 		put_prompt(&input, *env_list);
-		parsing(input, &tokens, &args);
-		print_cmd_list(args);
-		pipex(args, env_list);
-		//ft_exec(args, env_list);
+		if (!input)
+		{
+			write(1, "exit\n", 5);
+			break ;
+		}
+		if (parsing(input, &tokens, &args, *env_list))
+		{
+			print_cmd_list(args);
+			pipex(args, env_list);
+		}
 		if (args)
 			free_cmd_list(args);
 		if (tokens)
 			free_token(tokens);
-		if (input)
-			free(input);
+		free(input);
 	}
-	
+	rl_clear_history();
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env_list;
 	
@@ -104,9 +121,9 @@ int main(int argc, char **argv, char **envp)
 	else
 	{
 		ft_putstr_fd("Invalid program name or argument number\n", 2);
+		free_env_list(env_list);
 		return (1);
 	}
-	// if (args)
-	// 		free_cmd_list(args);
+	free_env_list(env_list);
 	return (0);
 }

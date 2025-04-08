@@ -6,13 +6,13 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:33:38 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/25 14:16:41 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/03/31 16:05:11 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char **env_to_array(t_env *env)
+char	**env_to_array(t_env *env)
 {
 	int		i;
 	int		size;
@@ -21,7 +21,7 @@ char **env_to_array(t_env *env)
 
 	size = 0;
 	tmp = env;
-	while(tmp)
+	while (tmp)
 	{
 		size++;
 		tmp = tmp->next;
@@ -44,14 +44,13 @@ void	sort_env_array(char **env_array)
 	int		i;
 	int		size;
 	char	*tmp;
-	
+
 	size = 0;
 	while (env_array[size])
 		size++;
 	i = 0;
-	while(i < size - 1)
+	while (i < size - 1)
 	{
-
 		if (ft_strcmp(env_array[i], env_array[i + 1]) > 0)
 		{
 			tmp = env_array[i];
@@ -84,7 +83,7 @@ void	print_sorted_env(t_env *env)
 					printf("declare -x %s=\"%s\"\n", tmp->key, tmp->value);
 				else
 					printf("declare -x %s\n", tmp->key);
-				break;
+				break ;
 			}
 			tmp = tmp->next;
 		}
@@ -121,7 +120,6 @@ int	ft_export(t_args *args, t_env **env)
 	t_env	*new;
 
 	argv = args->cmd->cmd_tab;
-	
 	if (!argv[1])
 		return (print_sorted_env(*env), 1);
 	i = 1;
