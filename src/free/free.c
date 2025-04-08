@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/01 15:12:17 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/08 15:36:35 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,25 +43,26 @@ void	free_cmd_list(t_args *args)
 		{
 			i = 0;
 			while (tmp_cmd->cmd_tab[i])
-			{
-				free(tmp_cmd->cmd_tab[i]);
-				i++;
-			}
+				free(tmp_cmd->cmd_tab[i++]);
 			free(tmp_cmd->cmd_tab);
 		}
+		if (tmp_cmd->sq)
+			free(tmp_cmd->sq);
+		if (tmp_cmd->dq)
+			free(tmp_cmd->dq);
 		if (tmp_cmd->cmd_path)
 			free(tmp_cmd->cmd_path);
+		if (tmp_cmd->infile)
+			free(tmp_cmd->infile);
+		if (tmp_cmd->outfile)
+			free(tmp_cmd->outfile);
+		if (tmp_cmd->append_outfile)
+			free(tmp_cmd->append_outfile);
 		free(tmp_cmd);
 		tmp_cmd = next_cmd;
 	}
-	// if (args->infile)
-	// 	free(args->infile);
-	// if (args->outfile)
-	// 	free(args->outfile);
-	// if (args->append_outfile)
-	// 	free(args->append_outfile);
 	if (args->limiter)
-		free(args->limiter);
+		free_env_array(args->limiter);
 	free(args);
 }
 
@@ -87,4 +88,40 @@ void	free_env_node(t_env *node)
 	free(node->key);
 	free(node->value);
 	free(node);
+}
+
+void	free_env_list(t_env *env)
+{
+	t_env	*tmp;
+	
+	while (env)
+	{
+		tmp = env->next;
+		if (env->key)
+			free(env->key);
+		if (env->value)
+			free(env->value);
+		free(env);
+		env = tmp;
+	}
+}
+
+void	ft_free_cmd(t_cmd *cmd)
+{
+	int	i;
+	
+	i = 0;
+	if (!cmd)
+		return ;
+	if (cmd->cmd_tab)
+	{
+		while(cmd->cmd_tab[i])
+			free(cmd->cmd_tab[i++]);
+		free(cmd->cmd_tab);
+	}
+	if (cmd->sq)
+		free(cmd->sq);
+	if (cmd->dq)
+		free(cmd->dq);
+	free(cmd);
 }

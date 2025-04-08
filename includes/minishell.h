@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/07 14:43:15 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 15:37:00 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,8 @@ void		free_token(t_token *tokens);
 void		free_cmd_list(t_args *cmd);
 void		free_env_array(char **env_array);
 void		free_env_node(t_env *node);
+void		free_env_list(t_env *env);
+void		ft_free_cmd(t_cmd *cmd);
 
 /* ************************************************************************** */
 /*                                  PARSING                                   */
@@ -128,10 +130,10 @@ char		*extract_word(char *input, int *i);
 void		init_token(t_token *tokens);
 t_token		*tokenize(char *input);
 void		add_token(t_token **tokens, char *value, t_token_type type);
-t_args		*parse_token(t_token *tokens);
+t_args		*parse_token(t_token *tokens, t_env *env_list);
 t_args		*create_new_args(void);
 void		add_cmd(t_args *args, char *word);
-t_cmd		*create_cmd_from_list(t_list *words);
+t_cmd		*create_cmd_from_list(t_list *words, t_env *env_list);
 void		add_file(t_cmd *cmd, char *str, t_token_type type);
 void		print_cmd_list(t_args *args);
 
@@ -147,6 +149,7 @@ void		ft_exec(t_args *args, t_env **env_list);
 int			ft_env(t_env *env_list);
 int			ft_pwd(t_env *env_list);
 int			ft_echo(t_args *args, t_env *env_list);
+char		*expand_vars(const char *str, t_env *env_list);
 int			ft_cd(t_env **env_list, char *path);
 int			ft_export(t_args *args, t_env **env);
 int			ft_unset(t_args *args, t_env **env);

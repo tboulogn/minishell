@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:31:10 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/07 15:08:47 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:38:12 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,6 @@ int	ft_echo(t_args *args, t_env *env_list)
 			expanded = ft_strdup(argv[i]);
 		else
 			expanded = expand_vars(argv[i], env_list);
-		printf("Expanded: [%s]\n", expanded);
 		ft_putstr_fd(expanded, 1);
 		free(expanded);
 		if (argv[i + 1])
