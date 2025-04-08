@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 15:37:55 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 16:05:15 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,6 +363,8 @@ t_args *parse_token(t_token *tokens, t_env *env_list)//store the argument info i
 			if (word_list)
 			{
 				current_cmd = create_cmd_from_list(word_list, env_list);
+				if (!current_cmd)
+					return (free_cmd_list(args), NULL);
 				add_cmd_back(args, current_cmd);
 				args->cmd_count++;
 				word_list = NULL;
