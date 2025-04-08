@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_list.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 13:07:24 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/01 15:13:05 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/08 14:53:02 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,15 @@ t_env	*init_env_list(char **envp)
 		if (!new_node)
 			return (NULL);
 		if (!head)
+		{
 			head = new_node;
+			current = new_node;
+		}
 		else
+		{
 			current->next = new_node;
-		current = new_node;
+			current = new_node;
+		}
 		i++;
 	}
 	return (head);
@@ -63,7 +68,7 @@ char	*get_env_value(t_env *env, const char *key)
 {
 	while (env)
 	{
-		if (ft_strncmp(env->key, key, ft_strlen(key)) == 0)
+		if (ft_strcmp(env->key, key) == 0)
 			return (env->value);
 		env = env->next;
 	}

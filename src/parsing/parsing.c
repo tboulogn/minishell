@@ -6,11 +6,28 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/07 15:10:16 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/08 17:30:06 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+//move to free.c/////////////
+void free_words_list(t_list *words)
+{
+    t_list *tmp;
+
+    while (words)
+    {
+        tmp = words->next;
+        if (words->content)
+            free(words->content);
+        free(words);
+        words = tmp;
+    }
+}
+////////////////////////////
+
 
 char	*extract_word(char *input, int *i)
 {
@@ -88,6 +105,7 @@ t_token	*tokenize(char *input)
 {
 	t_token	*tokens;
 	int		i;
+	char	*word;
 
 	tokens = NULL;
 	i = 0;
@@ -97,12 +115,14 @@ t_token	*tokenize(char *input)
 			i++;
 		i += define_tokens(tokens, input, i);
 		if (input[i])
-			add_token(&tokens, extract_word(input, &i), WORD);
+		{
+			word = extract_word(input, &i);
+			add_token(&tokens, word, WORD);
+			free(word);
+		}
 	}
 	return (tokens);
 }
-
-
 
 //Initialize the argument infos we pass
 t_args	*create_new_args(void)
@@ -260,28 +280,55 @@ char *clean_word_quotes(const char *str)
 	return (ft_strdup(str));
 }
 
-t_cmd	*create_cmd_from_list(t_list *words)
+t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 {
 	t_cmd	*cmd;
 	int		i;
 	t_list	*next;
+	char	*cleaned;
+	char	*expanded;
 
 	cmd = ft_secure_malloc(sizeof(t_cmd));
+	if (!cmd)
+        return (NULL);
 	i = ft_lstsize(words);
 	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (i + 1));
 	cmd->sq = ft_calloc(i, sizeof(bool));
 	cmd->dq = ft_calloc(i, sizeof(bool));
+	if (!cmd->cmd_tab || !cmd->sq || !cmd->dq)
+        return (ft_free_cmd(cmd), free_words_list(words), NULL);
 	i = 0;
 	while (words)
 	{
 		if (!quotes_closed_str(words->content, &cmd->sq[i], &cmd->dq[i]))
 		{
-			ft_putstr_fd("Syntax error: unclosed quote\n", 2);
-			// ft_free_cmd(cmd);
+			ft_putstr_fd("Syntax error: unclosed quote\n", 2); 
+			ft_free_cmd(cmd);
+			free_words_list(words);
 			return (NULL);
 		}
-		cmd->cmd_tab[i++] = clean_word_quotes(words->content);
+		cleaned = clean_word_quotes(words->content);
+		if (!cleaned)
+        {
+            ft_free_cmd(cmd);
+            free_words_list(words);
+            return (NULL);
+        }
+		if (!cmd->dq[i])
+		{
+			expanded = expand_vars(cleaned, env_list);
+			free(cleaned);
+			if (!expanded)
+            {
+                ft_free_cmd(cmd);
+                free_words_list(words);
+                return (NULL);
+            }
+			cleaned = expanded;
+		}
+		cmd->cmd_tab[i++] = cleaned;
 		next = words->next;
+		free(words->content);
 		free(words);
 		words = next;
 	}
@@ -328,7 +375,7 @@ char	**add_malloc_line(char **tab, char *str, int i)
 }
 
 
-t_args *parse_token(t_token *tokens)//store the argument info into t_args by using t_token
+t_args *parse_token(t_token *tokens, t_env *env_list)//store the argument info into t_args by using t_token
 {
 	t_args *args;
 	t_cmd *current_cmd;
@@ -347,7 +394,7 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 		{
 			if (word_list)
 			{
-				current_cmd = create_cmd_from_list(word_list);
+				current_cmd = create_cmd_from_list(word_list, env_list);
 				add_cmd_back(args, current_cmd);
 				args->cmd_count++;
 				word_list = NULL;
@@ -377,7 +424,7 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 			// Make sure current_cmd exists — create if needed
 			if (!current_cmd && word_list)
 			{
-				current_cmd = create_cmd_from_list(word_list);
+				current_cmd = create_cmd_from_list(word_list, env_list);
 				add_cmd_back(args, current_cmd);
 				args->cmd_count++;
 				word_list = NULL;
@@ -397,7 +444,7 @@ t_args *parse_token(t_token *tokens)//store the argument info into t_args by usi
 	// If there are remaining command words after the last pipe
 	if (word_list)
 	{
-		current_cmd = create_cmd_from_list(word_list);
+		current_cmd = create_cmd_from_list(word_list, env_list);
 		add_cmd_back(args, current_cmd);
 		args->cmd_count++;
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/01 17:41:39 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 17:26:46 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ void	built_in(t_args *args, t_env **env_list)
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "unset", 5) == 0)
 		ft_unset(args, env_list);
 	else if (ft_strcmp(args->cmd->cmd_tab[0], "exit") == 0)
-		ft_exit(args);
+        ft_exit(args, env_list);
 }
 
 void	external(t_args *args, t_env *env_list)
