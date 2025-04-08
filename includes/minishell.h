@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/08 16:20:52 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 17:43:13 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ void		free_env_array(char **env_array);
 void		free_env_node(t_env *node);
 void		free_env_list(t_env *env);
 void		ft_free_cmd(t_cmd *cmd);
+void		free_ereaser(t_args *args, t_env *env);
 
 /* ************************************************************************** */
 /*                                  PARSING                                   */
@@ -150,12 +151,12 @@ void		ft_exec(t_args *args, t_env **env_list);
 /* ************************************************************************** */
 int			ft_env(t_env *env_list);
 int			ft_pwd(t_env *env_list);
-int			ft_echo(t_args *args, t_env *env_list);
-char		*expand_vars(const char *str, t_env *env_list);
+int			ft_echo(t_args *args, t_env *env_list, int i);
+char		*expand_vars(const char *str, t_env *env_list, int i);
 int			ft_cd(t_env **env_list, char *path);
 int			ft_export(t_args *args, t_env **env);
 int			ft_unset(t_args *args, t_env **env);
-int			ft_exit(t_args *args);
+int			ft_exit(t_args *args, t_env **env);
 
 /* ************************************************************************** */
 /*                                ENVIRONNEMENT                               */

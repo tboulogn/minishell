@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/08 16:21:40 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 17:21:16 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void	built_in(t_args *args, t_env **env_list)
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "pwd", 3) == 0)
 		ft_pwd(*env_list);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "echo", 4) == 0)
-		ft_echo(args, *env_list);
+		ft_echo(args, *env_list, -1);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "cd", 2) == 0)
 	{
 		path = NULL;
@@ -138,7 +138,7 @@ void	built_in(t_args *args, t_env **env_list)
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "unset", 5) == 0)
 		ft_unset(args, env_list);
 	else if (ft_strcmp(args->cmd->cmd_tab[0], "exit") == 0)
-		ft_exit(args);
+		ft_exit(args, env_list);
 }
 
 void	external(t_args *args, t_env *env_list)

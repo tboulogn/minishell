@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 16:05:15 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/08 17:53:42 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,7 +273,7 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 	char	*cleaned;
 	char	*expanded;
 
-	cmd = ft_secure_malloc(sizeof(t_cmd));
+	cmd = ft_calloc(1, sizeof(t_cmd));
 	i = ft_lstsize(words);
 	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (i + 1));
 	cmd->sq = ft_calloc(i, sizeof(bool));
@@ -290,7 +290,7 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 		cleaned = clean_word_quotes(words->content);
 		if (!cmd->dq[i])
 		{
-			expanded = expand_vars(cleaned, env_list);
+			expanded = expand_vars(cleaned, env_list, 0);
 			free(cleaned);
 			cleaned = expanded;
 		}
