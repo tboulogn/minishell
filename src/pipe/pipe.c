@@ -6,7 +6,7 @@
 /*   By: rei <rei@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 20:03:33 by rei              ###   ########.fr       */
+/*   Updated: 2025/04/09 20:35:14 by rei              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,6 +239,40 @@ void	close_and_update(t_pipe *pro)
 	update_pipe(pro->prev, pro->next);
 }
 
+void	pipex(t_args *args, t_env	**env_list)
+{
+	t_pipe	pro;
+	t_cmd	*current;
+	t_args	*temp;
+	int 	i;
+
+	current = args->cmd;
+	if (args->limiter)
+		set_here_doc_in(args, current);
+	else if (args->cmd_count == 1 && !ft_check_buildin(args) && no_files(current))
+		return (ft_exec(args, env_list));
+	init_pipe_struct(&pro, args->cmd_count);
+	i = 0;
+	while(current)
+	{
+		temp = malloc(sizeof(t_args));
+		init_temp_args(temp, current, args->cmd_count);
+		handle_pipe_and_fork(&pro, current, i);
+		if (pro.pid[i] == 0)
+		{
+			ignore_parent_signals();
+			child_process(temp, current, *env_list, pro, i);
+		}
+		free(temp);
+		close_and_update(&pro);
+		current = current->next;
+		i++;
+	}
+	close_parent_pipes(&pro);
+	wait_children(args, &pro);
+	free(pro.pid);
+}
+
 
 // void	init_temp_args(t_args *temp, t_cmd *current, int cmd_count)
 // {
@@ -276,37 +310,3 @@ void	close_and_update(t_pipe *pro)
 // 	wait_children(args, &pro);
 // 	free(pro.pid);
 // }
-
-void	pipex(t_args *args, t_env	**env_list)
-{
-	t_pipe	pro;
-	t_cmd	*current;
-	t_args	*temp;
-	int 	i;
-
-	current = args->cmd;
-	if (args->limiter)
-		set_here_doc_in(args, current);
-	if (args->cmd_count == 1 && !ft_check_buildin(args) && no_files(current))
-		return (ft_exec(args, env_list));
-	init_pipe_struct(&pro, args->cmd_count);
-	i = 0;
-	while(current)
-	{
-		temp = malloc(sizeof(t_args));
-		init_temp_args(temp, current, args->cmd_count);
-		handle_pipe_and_fork(&pro, current, i);
-		if (pro.pid[i] == 0)
-		{
-			ignore_parent_signals();
-			child_process(temp, current, *env_list, pro, i);
-		}
-		free(temp);
-		close_and_update(&pro);
-		current = current->next;
-		i++;
-	}
-	close_parent_pipes(&pro);
-	wait_children(args, &pro);
-	free(pro.pid);
-}

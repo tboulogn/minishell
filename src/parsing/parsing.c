@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rei <rei@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/09 14:57:29 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 20:47:54 by rei              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,30 +317,62 @@ void	add_file(t_cmd *cmd, char *str, t_token_type type)
 		cmd->append_outfile = ft_strdup(str);
 }
 
-char	**add_malloc_line(char **tab, char *str, int i)
-{
-	char	**new_tab;
-	int		j;
+// char	**add_malloc_line(char **tab, char *str, int i)
+// {
+// 	char	**new_tab;
+// 	int		j;
 
-	new_tab = malloc(sizeof(char *) * (i + 1));
-	if (!new_tab)
-		return (NULL);
-	j = 0;
-	if (i == 0)
-		new_tab[j] = ft_strdup(str);
-	else
+// 	new_tab = malloc(sizeof(char *) * (i + 1));
+// 	if (!new_tab)
+// 		return (NULL);
+// 	j = 0;
+// 	if (i == 0)
+// 		new_tab[j] = ft_strdup(str);
+// 	else
+// 	{
+// 		while (j < i)
+// 		{
+// 			new_tab[j] = ft_strdup(tab[j]);
+// 			free(tab[j]);
+// 			j++;
+// 		}
+// 		new_tab[j] = ft_strdup(str);
+// 		free(tab);
+// 	}
+// 	new_tab[j + 1] = NULL;
+// 	return (new_tab);
+// }
+
+void	add_malloc_line(char ***arr, char *line)
+{
+	int		i;
+	char	**new_arr;
+
+	i = 0;
+	if (!*arr)
 	{
-		while (j < i)
-		{
-			new_tab[j] = ft_strdup(tab[j]);
-			free(tab[j]);
-			j++;
-		}
-		new_tab[j] = ft_strdup(str);
-		free(tab);
+		*arr = malloc(sizeof(char *) * 2);
+		if (!*arr)
+			return ;
+		(*arr)[0] = ft_strdup(line);
+		(*arr)[1] = NULL;
+		return ;
 	}
-	new_tab[j + 1] = NULL;
-	return (new_tab);
+	while ((*arr)[i])
+		i++;
+	new_arr = malloc(sizeof(char *) * (i + 2));
+	if (!new_arr)
+		return ;
+	i = 0;
+	while ((*arr)[i])
+	{
+		new_arr[i] = (*arr)[i];
+		i++;
+	}
+	new_arr[i] = ft_strdup(line);
+	new_arr[i + 1] = NULL;
+	free(*arr);
+	*arr = new_arr;
 }
 
 
@@ -379,7 +411,7 @@ t_args *parse_token(t_token *tokens, t_env *env_list)//store the argument info i
 		if (tokens->type == HEREDOC && tokens->next && tokens->next->type == WORD)
 		{
 			args->here_doc_count++;
-			args->limiter = add_malloc_line(args->limiter, tokens->next->value, i++);
+			add_malloc_line(&(args->limiter), tokens->next->value);
 			tokens = tokens->next;
 		}
 		// If it's a WORD not used in redirection, store it for command creation
