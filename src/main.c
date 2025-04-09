@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/08 15:10:24 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 16:46:26 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,26 +43,22 @@ void	put_prompt(char **input, t_env *env_list)
 
 	prompt = pwd_str(env_list);
 	*input = readline(prompt);
-	if (!*input)
-		printf("exit\n");
-	if (**input)
-		add_history(*input);
 	free(prompt);
+	if (!*input)
+		return ;
+	if (*input && **input)
+		add_history(*input);
 }
 
 int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 {
 	*tokens = tokenize(input);
 	if (!*tokens)
-	{
-		free(input);
 		return (0);
-	}
 	if (!check_syntax_error(*tokens))
 	{
 		free_token(*tokens);
 		tokens = NULL;
-		free(input);
 		return (0);
 	}
 	*args = parse_token(*tokens, env_list);
@@ -70,7 +66,6 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 	{
 		free_token(*tokens);
 		tokens = NULL;
-		free(input);
 		return (0);
 	}
 	return (1);
@@ -78,9 +73,9 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 
 void	minishell(t_env **env_list)
 {
-	char		*input;
-	t_token		*tokens;
-	t_args		*args;
+	char	*input;
+	t_token	*tokens;
+	t_args	*args;
 
 	input = NULL;
 	g_signal = 0;
@@ -97,22 +92,30 @@ void	minishell(t_env **env_list)
 		}
 		if (parsing(input, &tokens, &args, *env_list))
 		{
+			if (args && args->cmd && args->cmd->cmd_tab
+			&& ft_strcmp(args->cmd->cmd_tab[0], "exit") == 0)
+				free_token(tokens);
 			print_cmd_list(args);
 			pipex(args, env_list);
 		}
 		if (args)
+		{
 			free_cmd_list(args);
+			args = NULL;
+		}
 		if (tokens)
+		{
 			free_token(tokens);
+			tokens = NULL;
+		}
 		free(input);
 	}
-	rl_clear_history();
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env_list;
-
+	
 	env_list = init_env_list(envp);
 	if (ft_strncmp(argv[0], "./minishell", 11) == 0 && argc == 1)
 		minishell(&env_list);

@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/08 16:00:09 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 16:39:14 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,13 +226,6 @@ void	handle_pipe_and_fork(t_pipe	*pro, t_cmd *current, int i)
 	}
 }
 
-void	init_temp_args(t_args *temp, t_cmd *current, int cmd_count)
-{
-	ft_memset(temp, 0, sizeof(t_args));
-	temp->cmd = current;
-	temp->cmd_count = cmd_count;
-}
-
 void	close_and_update(t_pipe *pro)
 {
 	close_parent_pipes(pro);
@@ -243,7 +236,6 @@ void	pipex(t_args *args, t_env	**env_list)
 {
 	t_pipe	pro;
 	t_cmd	*current;
-	t_args	temp;
 	int 	i;
 
 	current = args->cmd;
@@ -255,10 +247,12 @@ void	pipex(t_args *args, t_env	**env_list)
 	i = 0;
 	while(current)
 	{
-		init_temp_args(&temp, current, args->cmd_count);
 		handle_pipe_and_fork(&pro, current, i);
 		if (pro.pid[i] == 0)
-			child_process(&temp, current, *env_list, pro, i);
+		{
+			ignore_parent_signals();
+			child_process(args, current, *env_list, pro, i);
+		}
 		close_and_update(&pro);
 		current = current->next;
 		i++;

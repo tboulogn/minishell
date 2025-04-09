@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 15:37:55 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 14:57:29 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,8 @@ t_args	*create_new_args(void)
 {
 	t_args	*new_args;
 
-	new_args = ft_secure_malloc(sizeof(t_args));
+	// new_args = ft_secure_malloc(sizeof(t_args));
+	new_args = ft_calloc(1, sizeof(t_args));
 	new_args->cmd_count = 0;
 	new_args->limiter = NULL;
 	new_args->here_doc_count = 0;
@@ -273,7 +274,7 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 	char	*cleaned;
 	char	*expanded;
 
-	cmd = ft_secure_malloc(sizeof(t_cmd));
+	cmd = ft_calloc(1, sizeof(t_cmd));
 	i = ft_lstsize(words);
 	cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (i + 1));
 	cmd->sq = ft_calloc(i, sizeof(bool));
@@ -288,9 +289,9 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 			return (NULL);
 		}
 		cleaned = clean_word_quotes(words->content);
-		if (!cmd->dq[i])
+		if (!cmd->sq[i])
 		{
-			expanded = expand_vars(cleaned, env_list);
+			expanded = expand_vars(cleaned, env_list, 0);
 			free(cleaned);
 			cleaned = expanded;
 		}
@@ -363,6 +364,8 @@ t_args *parse_token(t_token *tokens, t_env *env_list)//store the argument info i
 			if (word_list)
 			{
 				current_cmd = create_cmd_from_list(word_list, env_list);
+				if (!current_cmd)
+					return (free_cmd_list(args), NULL);
 				add_cmd_back(args, current_cmd);
 				args->cmd_count++;
 				word_list = NULL;

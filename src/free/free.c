@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 15:36:35 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 16:35:01 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ void	free_cmd_list(t_args *args)
 			free(tmp_cmd->outfile);
 		if (tmp_cmd->append_outfile)
 			free(tmp_cmd->append_outfile);
-		free(tmp_cmd);
+		if (tmp_cmd)
+			free(tmp_cmd);
 		tmp_cmd = next_cmd;
 	}
 	if (args->limiter)
@@ -124,4 +125,10 @@ void	ft_free_cmd(t_cmd *cmd)
 	if (cmd->dq)
 		free(cmd->dq);
 	free(cmd);
+}
+
+void	free_ereaser(t_args *args, t_env *env)
+{
+	free_cmd_list(args);
+	free_env_list(env);
 }

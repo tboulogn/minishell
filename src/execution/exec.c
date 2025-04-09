@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/01 17:41:39 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 16:21:37 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void	built_in(t_args *args, t_env **env_list)
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "pwd", 3) == 0)
 		ft_pwd(*env_list);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "echo", 4) == 0)
-		ft_echo(args, *env_list);
+		ft_echo(args, *env_list, 0);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "cd", 2) == 0)
 	{
 		path = NULL;
@@ -138,7 +138,35 @@ void	built_in(t_args *args, t_env **env_list)
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "unset", 5) == 0)
 		ft_unset(args, env_list);
 	else if (ft_strcmp(args->cmd->cmd_tab[0], "exit") == 0)
-		ft_exit(args);
+		ft_exit(args, env_list);
+}
+
+int	check_cmd_path(char *path)
+{
+	struct stat s;
+	
+	if (stat(path, &s) != 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		return (127);
+	}
+	if (S_ISDIR(s.st_mode))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": Not a directory\n", 2);
+		return (127);
+	}
+	if (access(path, X_OK) != 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": Permission denied\n", 2);
+		return (126);
+	}
+	return (0);
 }
 
 void	external(t_args *args, t_env *env_list)
@@ -146,14 +174,25 @@ void	external(t_args *args, t_env *env_list)
 	char	*cmd_path;
 	char	**cmd_tab;
 	char	**envp_arr;
+	int		err;
 
 	cmd_tab = args->cmd->cmd_tab;
 	if (!cmd_tab || !cmd_tab[0])
 	{
+		free(cmd_path);
+		free_env_array(envp_arr);
+		free_cmd_list(args);
+		free_env_list(env_list);
 		printf("command not found\n");
 		exit(127);
 	}
 	envp_arr = env_list_to_envp(env_list);
+	if (!envp_arr)
+	{
+		free_cmd_list(args);
+		free_env_list(env_list);
+		exit(1);
+	}
 	if (ft_strchr(cmd_tab[0], '/'))
 		cmd_path = ft_strdup(cmd_tab[0]);
 	else
@@ -161,9 +200,29 @@ void	external(t_args *args, t_env *env_list)
 	if (!cmd_path)
 	{
 		printf("%s: command not found\n", cmd_tab[0]);
+		free(cmd_path);
+		free_env_array(envp_arr);
+		free_cmd_list(args);
+		free_env_list(env_list);
+		// free_token(args->tokens);
 		exit(127);
 	}
+	err = check_cmd_path(cmd_path);
+	if (err)
+	{
+		free(cmd_path);
+		free_env_array(envp_arr);
+		free_cmd_list(args);
+		free_env_list(env_list);
+		exit(err);
+	}
 	execve(cmd_path, cmd_tab, envp_arr);
+	perror("execve");
+	free(cmd_path);
+	free_env_array(envp_arr);
+	free_cmd_list(args);
+	free_env_list(env_list);
+	exit(1);
 }
 
 //without any frees
