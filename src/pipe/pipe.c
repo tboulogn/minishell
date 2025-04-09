@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rei <rei@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 17:47:46 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 20:03:33 by rei              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,7 +281,7 @@ void	pipex(t_args *args, t_env	**env_list)
 {
 	t_pipe	pro;
 	t_cmd	*current;
-	t_args	temp;
+	t_args	*temp;
 	int 	i;
 
 	current = args->cmd;
@@ -293,13 +293,15 @@ void	pipex(t_args *args, t_env	**env_list)
 	i = 0;
 	while(current)
 	{
-		init_temp_args(&temp, current, args->cmd_count);
+		temp = malloc(sizeof(t_args));
+		init_temp_args(temp, current, args->cmd_count);
 		handle_pipe_and_fork(&pro, current, i);
 		if (pro.pid[i] == 0)
 		{
 			ignore_parent_signals();
-			child_process(&temp, current, *env_list, pro, i);
+			child_process(temp, current, *env_list, pro, i);
 		}
+		free(temp);
 		close_and_update(&pro);
 		current = current->next;
 		i++;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rei <rei@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 17:45:47 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 19:50:22 by rei              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,13 +220,15 @@ void	external(t_args *args, t_env *env_list)
 		// free(pro->pid);
 		exit(err);
 	}
-	execve(cmd_path, cmd_tab, envp_arr);
-	perror("execve");
+	if (!execve(cmd_path, cmd_tab, envp_arr))
+	{
+		perror("execve");
 	free(cmd_path);
 	free_env_array(envp_arr);
 	free_cmd_list(args);
 	free_env_list(env_list);
 	exit(1);
+	}
 }
 
 //without any frees
