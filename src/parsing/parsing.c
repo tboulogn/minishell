@@ -6,7 +6,7 @@
 /*   By: rei <rei@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/09 20:47:54 by rei              ###   ########.fr       */
+/*   Updated: 2025/04/09 21:13:55 by rei              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ void	add_token(t_token **tokens, char *value, t_token_type type)
 	t_token	*new;
 	t_token	*tmp;
 
-	new = ft_secure_malloc(sizeof(t_token));
+	// new = ft_secure_malloc(sizeof(t_token));
+	new = ft_calloc(1, sizeof(t_token));
 	if (!new)
 		return ;
 	new->value = ft_strdup(value);//call strdup for malloc
