@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/09 10:03:34 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 14:57:29 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,8 @@ t_args	*create_new_args(void)
 {
 	t_args	*new_args;
 
-	new_args = ft_secure_malloc(sizeof(t_args));
+	// new_args = ft_secure_malloc(sizeof(t_args));
+	new_args = ft_calloc(1, sizeof(t_args));
 	new_args->cmd_count = 0;
 	new_args->limiter = NULL;
 	new_args->here_doc_count = 0;

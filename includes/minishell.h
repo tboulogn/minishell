@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 11:46:49 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 16:26:42 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,6 @@ int			ft_here_doc(char *limiter);
 void		init_signals(void);
 void		sigint_handler(int sig);
 void		sigquit_handler(int sig);
-void		ignore__parent_signals(void);
+void		ignore_parent_signals(void);
 
 #endif
