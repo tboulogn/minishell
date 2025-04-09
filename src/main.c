@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 16:46:26 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 17:12:35 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,16 +97,16 @@ void	minishell(t_env **env_list)
 				free_token(tokens);
 			print_cmd_list(args);
 			pipex(args, env_list);
-		}
-		if (args)
-		{
-			free_cmd_list(args);
-			args = NULL;
-		}
-		if (tokens)
-		{
-			free_token(tokens);
-			tokens = NULL;
+			if (args)
+			{
+				free_cmd_list(args);
+				args = NULL;
+			}
+			if (tokens)
+			{
+				free_token(tokens);
+				tokens = NULL;
+			}
 		}
 		free(input);
 	}
