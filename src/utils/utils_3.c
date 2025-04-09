@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 17:06:31 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/01 17:36:44 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 09:36:23 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,33 @@ long long	ft_atoll(const char *str)
 	while (*str && isdigit(*str))
 		result = result * 10 + (*str++ - '0');
 	return (result * sign);
+}
+
+char	*expand_vars(const char *str, t_env *env_list, int i)
+{
+	char	*res;
+	char	*chunk;
+	char	*tmp;
+
+	res = ft_strdup("");
+	while (str[i])
+	{
+		if (str[i] == '$' && str[i + 1] != '\0')
+		{
+			i++;
+			chunk = expand_dollar(str, &i, env_list, -1);
+		}
+		else if (str[i] == '$')
+		{
+			i++;
+			chunk = ft_strdup("$");
+		}
+		else
+			chunk = extract_text(str, &i);
+		tmp = res;
+		res = ft_strjoin(res, chunk);
+		free(chunk);
+		free(tmp);
+	}
+	return (res);
 }

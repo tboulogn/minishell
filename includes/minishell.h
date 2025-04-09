@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/08 17:43:13 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 11:46:49 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,12 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include  <signal.h>
+# include <signal.h>
 # include <fcntl.h>
 # include <signal.h>
 # include <stdbool.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include <string.h>
 # include <wait.h>
 # include <readline/readline.h>
@@ -152,6 +153,8 @@ void		ft_exec(t_args *args, t_env **env_list);
 int			ft_env(t_env *env_list);
 int			ft_pwd(t_env *env_list);
 int			ft_echo(t_args *args, t_env *env_list, int i);
+char		*expand_dollar(const char *str, int *i, t_env *env, int j);
+char		*extract_text(const char *str, int *i);
 char		*expand_vars(const char *str, t_env *env_list, int i);
 int			ft_cd(t_env **env_list, char *path);
 int			ft_export(t_args *args, t_env **env);
@@ -189,5 +192,6 @@ int			ft_here_doc(char *limiter);
 void		init_signals(void);
 void		sigint_handler(int sig);
 void		sigquit_handler(int sig);
+void		ignore__parent_signals(void);
 
 #endif

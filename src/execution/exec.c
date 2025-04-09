@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/08 17:21:16 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 14:03:33 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void	built_in(t_args *args, t_env **env_list)
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "pwd", 3) == 0)
 		ft_pwd(*env_list);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "echo", 4) == 0)
-		ft_echo(args, *env_list, -1);
+		ft_echo(args, *env_list, 0);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "cd", 2) == 0)
 	{
 		path = NULL;
@@ -141,15 +141,46 @@ void	built_in(t_args *args, t_env **env_list)
 		ft_exit(args, env_list);
 }
 
+int	check_cmd_path(char *path)
+{
+	struct stat s;
+	
+	if (stat(path, &s) != 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		return (127);
+	}
+	if (S_ISDIR(s.st_mode))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": Not a directory\n", 2);
+		return (127);
+	}
+	if (access(path, X_OK) != 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": Permission denied\n", 2);
+		return (126);
+	}
+	return (0);
+}
+
 void	external(t_args *args, t_env *env_list)
 {
 	char	*cmd_path;
 	char	**cmd_tab;
 	char	**envp_arr;
+	int		err;
 
 	cmd_tab = args->cmd->cmd_tab;
 	if (!cmd_tab || !cmd_tab[0])
 	{
+		free(cmd_path);
+		free_env_array(envp_arr);
 		printf("command not found\n");
 		exit(127);
 	}
@@ -161,9 +192,21 @@ void	external(t_args *args, t_env *env_list)
 	if (!cmd_path)
 	{
 		printf("%s: command not found\n", cmd_tab[0]);
+		free_env_array(envp_arr);
 		exit(127);
 	}
+	err = check_cmd_path(cmd_path);
+	if (err)
+	{
+		free(cmd_path);
+		free_env_array(envp_arr);
+		exit(err);
+	}
 	execve(cmd_path, cmd_tab, envp_arr);
+	perror("execve");
+	free(cmd_path);
+	free_env_array(envp_arr);
+	exit(1);
 }
 
 //without any frees

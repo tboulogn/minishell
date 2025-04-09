@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/08 17:59:10 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 13:55:36 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ void	put_prompt(char **input, t_env *env_list)
 {
 	char	*prompt;
 
-	printf(">>> Prompt lance\n");
 	prompt = pwd_str(env_list);
 	*input = readline(prompt);
 	free(prompt);
@@ -55,15 +54,11 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 {
 	*tokens = tokenize(input);
 	if (!*tokens)
-	{
-		free(input);
 		return (0);
-	}
 	if (!check_syntax_error(*tokens))
 	{
 		free_token(*tokens);
 		tokens = NULL;
-		free(input);
 		return (0);
 	}
 	*args = parse_token(*tokens, env_list);
@@ -71,7 +66,6 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 	{
 		free_token(*tokens);
 		tokens = NULL;
-		free(input);
 		return (0);
 	}
 	return (1);
@@ -106,11 +100,11 @@ void	minishell(t_env **env_list)
 		}
 		if (args)
 			free_cmd_list(args);
+			args = NULL;
 		if (tokens)
 			free_token(tokens);
 		free(input);
 	}
-	rl_clear_history();
 }
 
 int	main(int argc, char **argv, char **envp)

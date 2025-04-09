@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 17:53:42 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 10:03:34 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,7 +288,7 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 			return (NULL);
 		}
 		cleaned = clean_word_quotes(words->content);
-		if (!cmd->dq[i])
+		if (!cmd->sq[i])
 		{
 			expanded = expand_vars(cleaned, env_list, 0);
 			free(cleaned);

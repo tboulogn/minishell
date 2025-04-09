@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:31:10 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 17:30:33 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/09 09:53:06 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,33 +63,20 @@ char	*expand_dollar(const char *str, int *i, t_env *env, int j)
 	return (free(key), value);
 }
 
-char	*expand_vars(const char *str, t_env *env_list, int i)
+int	check_n_flag(char *str)
 {
-	char	*res;
-	char	*chunk;
-	char	*tmp;
+	int	i;
 
-	res = ft_strdup("");
+	if (!str || str[0] != '-' || str[1] != 'n')
+		return (0);
+	i = 2;
 	while (str[i])
 	{
-		if (str[i] == '$' && str[i + 1] != '\0')
-		{
-			i++;
-			chunk = expand_dollar(str, &i, env_list, -1);
-		}
-		else if (str[i] == '$')
-		{
-			i++;
-			chunk = ft_strdup("$");
-		}
-		else
-			chunk = extract_text(str, &i);
-		tmp = res;
-		res = ft_strjoin(res, chunk);
-		free(chunk);
-		free(tmp);
+		if (str[i] != 'n')
+			return (0);
+		i++;
 	}
-	return (res);
+	return (1);
 }
 
 int	ft_echo(t_args *args, t_env *env_list, int i)
@@ -102,9 +89,9 @@ int	ft_echo(t_args *args, t_env *env_list, int i)
 		return (1);
 	argv = args->cmd->cmd_tab;
 	n_flag = 0;
-	while (argv[++i] && ft_strncmp(argv[i], "-n", 2) == 0)
+	while (argv[++i] && check_n_flag(argv[i]))
 		n_flag = 1;
-	while (argv[++i])
+	while (argv[i])
 	{
 		if (args->cmd->sq[i])
 			expanded = ft_strdup(argv[i]);
@@ -114,6 +101,7 @@ int	ft_echo(t_args *args, t_env *env_list, int i)
 		free(expanded);
 		if (argv[i + 1])
 			ft_putstr_fd(" ", 1);
+		i++;
 	}
 	if (!n_flag)
 		ft_putstr_fd("\n", 1);
