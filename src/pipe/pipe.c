@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 17:08:11 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 17:47:46 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	read_files(t_cmd *cmd, int fd, int type)
 	}
 }
 
-void	single_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
+void	single_child(t_args *args, t_cmd *cmd, t_env *env_list)
 {
 	int fd_in;
 	int fd_out;
@@ -88,7 +88,7 @@ void	single_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 		read_files(cmd, fd_out, 2);
 	if (cmd->append_outfile)
 		read_files(cmd, fd_out, 3);
-	ft_exec(args, &env_list, &pro);
+	ft_exec(args, &env_list);
 }
 
 void	first_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
@@ -101,7 +101,7 @@ void	first_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 	else
 		dup2(pro.prev[0], STDIN_FILENO);
 	redirect_and_close(pro.next[1], STDOUT_FILENO);
-	ft_exec(args, &env_list, &pro);
+	ft_exec(args, &env_list);
 }
 
 void	middle_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
@@ -118,7 +118,7 @@ void	middle_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 	dup2(pro.prev[0], STDIN_FILENO);
 	dup2(pro.next[1], STDOUT_FILENO);
 	close_child_pipes(&pro);
-	ft_exec(args, &env_list, &pro);
+	ft_exec(args, &env_list);
 }
 
 void	last_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
@@ -136,7 +136,7 @@ void	last_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 		read_files(cmd, fd_out, 2);
 	if (cmd->append_outfile)
 		read_files(cmd, fd_out, 3);
-	ft_exec(args, &env_list, &pro);
+	ft_exec(args, &env_list);
 }
 
 void	child_process(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro, int i)
@@ -149,7 +149,7 @@ void	child_process(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro, int i)
 	if (i == 0)
 	{ 
 		if (args->cmd_count == 1)
-			single_child(args, cmd, env_list, pro);
+			single_child(args, cmd, env_list);
 		else
 			first_child(args, cmd, env_list, pro);
 	}
@@ -226,32 +226,79 @@ void	handle_pipe_and_fork(t_pipe	*pro, t_cmd *current, int i)
 	}
 }
 
+void	init_temp_args(t_args *temp, t_cmd *current, int cmd_count)
+{
+	ft_memset(temp, 0, sizeof(t_args));
+	temp->cmd = current;
+	temp->cmd_count = cmd_count;
+}
+
 void	close_and_update(t_pipe *pro)
 {
 	close_parent_pipes(pro);
 	update_pipe(pro->prev, pro->next);
 }
 
+
+// void	init_temp_args(t_args *temp, t_cmd *current, int cmd_count)
+// {
+// 	ft_memset(temp, 0, sizeof(t_args));
+// 	temp->cmd = current;
+// 	temp->cmd_count = cmd_count;
+// }
+
+// void	pipex(t_args *args, t_env	**env_list)
+// {
+// 	t_pipe	pro;
+// 	t_cmd	*current;
+// 	int 	i;
+
+// 	current = args->cmd;
+// 	if (args->limiter)
+// 		set_here_doc_in(args, current);
+// 	if (args->cmd_count == 1 && !ft_check_buildin(args) && no_files(current))
+// 		return (ft_exec(args, env_list));
+// 	init_pipe_struct(&pro, args->cmd_count);
+// 	i = 0;
+// 	while(current)
+// 	{
+// 		handle_pipe_and_fork(&pro, current, i);
+// 		if (pro.pid[i] == 0)
+// 		{
+// 			ignore_parent_signals();
+// 			child_process(args, current, *env_list, pro, i);
+// 		}
+// 		close_and_update(&pro);
+// 		current = current->next;
+// 		i++;
+// 	}
+// 	close_parent_pipes(&pro);
+// 	wait_children(args, &pro);
+// 	free(pro.pid);
+// }
+
 void	pipex(t_args *args, t_env	**env_list)
 {
 	t_pipe	pro;
 	t_cmd	*current;
+	t_args	temp;
 	int 	i;
 
 	current = args->cmd;
 	if (args->limiter)
 		set_here_doc_in(args, current);
 	if (args->cmd_count == 1 && !ft_check_buildin(args) && no_files(current))
-		return (ft_exec(args, env_list, &pro));
+		return (ft_exec(args, env_list));
 	init_pipe_struct(&pro, args->cmd_count);
 	i = 0;
 	while(current)
 	{
+		init_temp_args(&temp, current, args->cmd_count);
 		handle_pipe_and_fork(&pro, current, i);
 		if (pro.pid[i] == 0)
 		{
 			ignore_parent_signals();
-			child_process(args, current, *env_list, pro, i);
+			child_process(&temp, current, *env_list, pro, i);
 		}
 		close_and_update(&pro);
 		current = current->next;

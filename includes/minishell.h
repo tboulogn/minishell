@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 17:06:20 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 17:37:32 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void		print_cmd_list(t_args *args);
 /*                                  EXEC                                      */
 /* ************************************************************************** */
 int			ft_check_buildin(t_args *args);
-void		ft_exec(t_args *args, t_env **env_list, t_pipe *pro);
+void		ft_exec(t_args *args, t_env **env_list);
 
 /* ************************************************************************** */
 /*                                   BUILTIN                                  */

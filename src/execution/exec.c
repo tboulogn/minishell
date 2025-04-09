@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 17:05:52 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 17:45:47 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ int	check_cmd_path(char *path)
 	return (0);
 }
 
-void	external(t_args *args, t_env *env_list, t_pipe *pro)
+void	external(t_args *args, t_env *env_list)
 {
 	char	*cmd_path;
 	char	**cmd_tab;
@@ -191,7 +191,7 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 	{
 		free_cmd_list(args);
 		free_env_list(env_list);
-		free(pro->pid);
+		// free(pro->pid);
 		exit(1);
 	}
 	if (ft_strchr(cmd_tab[0], '/'))
@@ -203,9 +203,10 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 		printf("%s: command not found\n", cmd_tab[0]);
 		free(cmd_path);
 		free_env_array(envp_arr);
-		free_cmd_list(args);
+		if (args)
+			free_cmd_list(args);
 		free_env_list(env_list);
-		free(pro->pid);
+		// free(pro->pid);
 		// free_token(args->tokens);
 		exit(127);
 	}
@@ -216,7 +217,7 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 		free_env_array(envp_arr);
 		free_cmd_list(args);
 		free_env_list(env_list);
-		free(pro->pid);
+		// free(pro->pid);
 		exit(err);
 	}
 	execve(cmd_path, cmd_tab, envp_arr);
@@ -229,12 +230,12 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 }
 
 //without any frees
-void	ft_exec(t_args *args, t_env **env_list, t_pipe *pro)
+void	ft_exec(t_args *args, t_env **env_list)
 {
 	if (!args || !args->cmd || !args->cmd->cmd_tab || !args->cmd->cmd_tab[0])
 		return ;
 	if (!ft_check_buildin(args))
 		built_in(args, env_list);
 	else
-		external(args, *env_list, pro);
+		external(args, *env_list);
 }
