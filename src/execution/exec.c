@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/10 09:13:49 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/10 15:29:29 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,10 +179,9 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 	cmd_tab = args->cmd->cmd_tab;
 	if (!cmd_tab || !cmd_tab[0])
 	{
-		free(cmd_path);
-		free_env_array(envp_arr);
 		free_cmd_list(args);
 		free_env_list(env_list);
+		free(pro->pid);
 		printf("command not found\n");
 		exit(127);
 	}
@@ -201,13 +200,10 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 	if (!cmd_path)
 	{
 		printf("%s: command not found\n", cmd_tab[0]);
-		free(cmd_path);
 		free_env_array(envp_arr);
-		if (args)
-			free_cmd_list(args);
 		free_env_list(env_list);
 		free(pro->pid);
-		// free_token(args->tokens);
+		free_cmd_list(args);
 		exit(127);
 	}
 	err = check_cmd_path(cmd_path);
@@ -223,11 +219,12 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 	if (!execve(cmd_path, cmd_tab, envp_arr))
 	{
 		perror("execve");
-	free(cmd_path);
-	free_env_array(envp_arr);
-	free_cmd_list(args);
-	free_env_list(env_list);
-	exit(1);
+		free(cmd_path);
+		free_env_array(envp_arr);
+		free_cmd_list(args);
+		free_env_list(env_list);
+		free(pro->pid); 
+		exit(1);
 	}
 }
 

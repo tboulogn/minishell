@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/10 09:03:08 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/10 15:36:31 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,12 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 	{
 		free_token(*tokens);
 		tokens = NULL;
+		if (*args)
+		{
+			printf("YES YES\n");
+			free_cmd_list(*args);
+			*args = NULL;
+		}
 		return (0);
 	}
 	return (1);
@@ -92,20 +98,17 @@ void	minishell(t_env **env_list)
 		}
 		if (parsing(input, &tokens, &args, *env_list))
 		{
-			if (args && args->cmd && args->cmd->cmd_tab
-			&& ft_strcmp(args->cmd->cmd_tab[0], "exit") == 0)
-				free_token(tokens);
 			print_cmd_list(args);
+			if (tokens)//free BEFORE pipex in case of none exist cmds
+			{
+				free_token(tokens);
+				tokens = NULL;
+			}
 			pipex(args, env_list);
 			if (args)
 			{
 				free_cmd_list(args);
 				args = NULL;
-			}
-			if (tokens)
-			{
-				free_token(tokens);
-				tokens = NULL;
 			}
 		}
 		free(input);

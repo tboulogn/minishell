@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/10 09:09:05 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/10 15:59:49 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,8 @@ void		free_ereaser(t_args *args, t_env *env);
 /* ************************************************************************** */
 /*                                  PARSING                                   */
 /* ************************************************************************** */
-
+void	handel_quoates(bool *open, bool *has_content, bool *has, bool other_quote_open);
+void	update_content(bool *s_open, bool *d_open, bool *s_content, bool *d_content);
 char		*extract_word(char *input, int *i);
 void		init_token(t_token *tokens);
 t_token		*tokenize(char *input);
@@ -172,6 +173,7 @@ int			set_env_value(t_env **env, const char *key, const char *value);
 /*                                   CHCKER                                   */
 /* ************************************************************************** */
 int			check_syntax_error(t_token *tokens);
+bool	quotes_closed_str(const char *str, bool *has_sq, bool *has_dq);
 
 /* ************************************************************************** */
 /*                                     PIPE                                   */

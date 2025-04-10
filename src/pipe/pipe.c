@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/10 09:12:04 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/10 15:34:07 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,14 +239,27 @@ void	close_and_update(t_pipe *pro)
 	update_pipe(pro->prev, pro->next);
 }
 
-void	pipex(t_args *args, t_env	**env_list)
+void	pipex(t_args *args, t_env **env_list)
 {
 	t_pipe	pro;
 	t_cmd	*current;
 	t_args	*temp;
 	int 	i;
+	int 	j;
+	int 	fd;
 
 	current = args->cmd;
+	if (args->limiter && args->cmd_count == 0)
+	{
+		j = 0;
+		while (args->limiter[j])
+		{
+			fd = ft_here_doc(args->limiter[j]);
+			close(fd);
+			j++;
+		}
+		return ;
+	}
 	if (args->limiter)
 		set_here_doc_in(args, current);
 	else if (args->cmd_count == 1 && !ft_check_buildin(args) && no_files(current))

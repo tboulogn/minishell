@@ -1,0 +1,3 @@
+- ctrl + \
+- cat (without arguments) -> ctrl + C -> behaives strange
+- ~bin/ls
