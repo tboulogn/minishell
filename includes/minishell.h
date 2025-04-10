@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/09 17:37:32 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/10 09:09:05 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,21 +51,19 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
-typedef struct s_cmd	t_cmd;
-
-struct s_cmd
+typedef struct s_cmd
 {
-	char		**cmd_tab;
-	char		*cmd_path;
-	bool		*sq;//check with "if(cmd->sq)"-> it means the cmd has well closed single quote
-	bool		*dq;
-	int			here_doc_fd;
-	char		*infile;
-	char		*outfile;
-	char		*append_outfile;
-	t_cmd		*prev;
-	t_cmd		*next;
-};
+	char			**cmd_tab;
+	char			*cmd_path;
+	bool			*sq;//check with "if(cmd->sq)"-> it means the cmd has well closed single quote
+	bool			*dq;
+	int				here_doc_fd;
+	char			*infile;
+	char			*outfile;
+	char			*append_outfile;
+	struct s_cmd	*prev;
+	struct s_cmd	*next;
+}	t_cmd;
 
 typedef struct s_args
 {
@@ -85,9 +83,9 @@ typedef struct s_env
 
 typedef struct s_pipe
 {
-	int		prev[2];
-	int		next[2];
-	pid_t	*pid;
+	int				prev[2];
+	int				next[2];
+	pid_t			*pid;
 }	t_pipe;
 
 /* ************************************************************************** */
@@ -145,7 +143,7 @@ void		print_cmd_list(t_args *args);
 /*                                  EXEC                                      */
 /* ************************************************************************** */
 int			ft_check_buildin(t_args *args);
-void		ft_exec(t_args *args, t_env **env_list);
+void		ft_exec(t_args *args, t_env **env_list, t_pipe *pro);
 
 /* ************************************************************************** */
 /*                                   BUILTIN                                  */
