@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/10 15:29:29 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/11 11:45:57 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,12 +177,14 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 	int		err;
 
 	cmd_tab = args->cmd->cmd_tab;
-	if (!cmd_tab || !cmd_tab[0])
+	if (!cmd_tab || !cmd_tab[0] || cmd_tab[0][0] == '\0')
 	{
 		free_cmd_list(args);
 		free_env_list(env_list);
 		free(pro->pid);
-		printf("command not found\n");
+		// printf("command not found\n");
+		ft_putstr_fd(cmd_tab[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 		exit(127);
 	}
 	envp_arr = env_list_to_envp(env_list);
@@ -199,7 +201,8 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 		cmd_path = ft_get_path(cmd_tab[0], env_list);
 	if (!cmd_path)
 	{
-		printf("%s: command not found\n", cmd_tab[0]);
+		ft_putstr_fd(cmd_tab[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 		free_env_array(envp_arr);
 		free_env_list(env_list);
 		free(pro->pid);
@@ -216,7 +219,7 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 		free(pro->pid);
 		exit(err);
 	}
-	if (!execve(cmd_path, cmd_tab, envp_arr))
+	if (execve(cmd_path, cmd_tab, envp_arr) == -1)
 	{
 		perror("execve");
 		free(cmd_path);

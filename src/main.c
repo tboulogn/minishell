@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/10 15:36:31 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/11 09:50:17 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,13 +62,12 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 		return (0);
 	}
 	*args = parse_token(*tokens, env_list);
-	if (!*args)
+	if (!*args || !(*args)->cmd || (*args)->cmd->cmd_tab == NULL || (*args)->cmd->cmd_tab[0] == NULL)
 	{
 		free_token(*tokens);
 		tokens = NULL;
 		if (*args)
 		{
-			printf("YES YES\n");
 			free_cmd_list(*args);
 			*args = NULL;
 		}

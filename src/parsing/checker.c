@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:44:18 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/10 15:49:27 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/11 10:12:40 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,11 @@ void	syntax_error_message(int type)
 		ft_putstr_fd(" invalid pipe placement\n", 2);
 	else if (type == -3)
 		ft_putstr_fd(" redirection with no target\n", 2);
+	else if (type == -4)
+		ft_putstr_fd(" unclosed quotes\n", 2);
+	else if (type == -5)
+		ft_putstr_fd(" unexpected token after redirection\n", 2);
+	g_signal = 1;
 }
 
 int	check_syntax_error(t_token *tokens)
@@ -64,10 +69,7 @@ int	check_syntax_error(t_token *tokens)
 	while (current)
 	{
 		if (!quotes_closed_str(current->value, &has_sq, &has_dq)) // <== ADD THIS
-        {
-            ft_putstr_fd("Syntax error: unclosed quotes\n", 2);   // <== Nice error
-            return (0);
-        }
+			return (syntax_error_message(-4), 0);
 		if ((current->type == PIPE)
 			&& (!current->next || current->next->type != WORD))
 			// || (current->type == REDIR_IN && current->next->next->type != PIPE))
@@ -76,6 +78,10 @@ int	check_syntax_error(t_token *tokens)
 				|| current->type == APPEND || current->type == HEREDOC)
 			&& (!current->next || current->next->type != WORD))
 			return (syntax_error_message(-3), 0);
+		else if ((current->prev && (current->prev->type == REDIR_IN || current->prev->type == REDIR_OUT
+				|| current->prev->type == APPEND || current->prev->type == HEREDOC))
+			&& current->next && current->next->type == WORD)
+			return (syntax_error_message(-5), 0);
 		current = current->next;
 	}
 	return (1);

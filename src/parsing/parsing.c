@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/10 16:02:41 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/11 11:07:09 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,10 +263,52 @@ void	quotes_update(const char *str, bool *has_sq, bool *has_dq)
 			handel_quoates(&s_open, &s_content, has_sq, d_open);
 		else if (str[i] == '"' && !s_open)
 			handel_quoates(&d_open, &d_content, has_dq, s_open);
-		update_content(&s_open, &d_open, &s_content, &d_content);
+		if ((s_open && str[i] != '\'') || (d_open && str[i] != '"'))
+		{
+			if (s_open)
+				s_content = true;
+			if (d_open)
+				d_content = true;
+		}
 		i++;
 	}
 }
+
+bool	is_inside_sigle_quote(const char *str, int dollar_index)
+{
+	bool	s_open;
+	bool	d_open;
+	int		i;
+
+	s_open = false;
+	d_open = false;
+	i = 0;
+	while (i < dollar_index)
+	{
+		if (str[i] == '\'' && !d_open)
+			s_open = !s_open;
+		else if (str[i] == '"' && !s_open)
+			d_open = !d_open;
+		i++;
+	}
+	return (s_open);
+}
+
+int		find_char_pos(char *str, char c)
+{
+	int 	i;
+
+	i = 0;
+	while(str[i])
+	{
+		if (str[i] == c)
+			return (i);
+		i++;
+	}
+	return (0);
+}
+
+
 
 t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 {
@@ -275,6 +317,7 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 	t_list	*next;
 	char	*cleaned;
 	char	*expanded;
+	int		dollar_pos;
 
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	i = ft_lstsize(words);
@@ -286,17 +329,16 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 	while (words)
 	{
 		quotes_update(words->content, &cmd->sq[i], &cmd->dq[i]);
-		// {
-		// 	ft_putstr_fd("Syntax error: unclosed quote\n", 2); 
-		// 	ft_free_cmd(cmd);
-		// 	return (NULL);
-		// }
 		cleaned = clean_word_quotes(words->content);
-		if (cmd->dq[i])
+		if (ft_strchr(cleaned, '$') && !cmd->cmd_tab[0])
 		{
-			expanded = expand_vars(cleaned, env_list, 0);
-			free(cleaned);
-			cleaned = expanded;
+			dollar_pos = find_char_pos(cleaned, '$');
+			if (dollar_pos >= 0 && !is_inside_sigle_quote(cleaned, dollar_pos))
+			{
+				expanded = expand_vars(cleaned, env_list, 0);
+				free(cleaned);
+				cleaned = expanded;
+			}
 		}
 		cmd->cmd_tab[i++] = cleaned;
 		next = words->next;
@@ -417,6 +459,7 @@ t_args *parse_token(t_token *tokens, t_env *env_list)//store the argument info i
 			}
 			add_file(current_cmd, tokens->value, tokens->prev->type);
 		}
+		
 		tokens = tokens->next;
 	}
 	// If there are remaining command words after the last pipe
