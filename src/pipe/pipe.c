@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/11 11:32:42 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/12 15:11:29 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,7 +273,7 @@ void	pipex(t_args *args, t_env **env_list)
 		handle_pipe_and_fork(&pro, current, i);
 		if (pro.pid[i] == 0)
 		{
-			ignore_parent_signals();
+			set_signal_child();
 			child_process(temp, current, *env_list, pro, i);
 		}
 		free(temp);
@@ -282,7 +282,9 @@ void	pipex(t_args *args, t_env **env_list)
 		i++;
 	}
 	close_parent_pipes(&pro);
+	signal(SIGINT, SIG_IGN);
 	wait_children(args, &pro);
+	init_signals();
 	free(pro.pid);
 }
 

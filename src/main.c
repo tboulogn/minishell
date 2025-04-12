@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/11 09:50:17 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/12 17:02:55 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ void	minishell(t_env **env_list)
 
 	input = NULL;
 	g_signal = 0;
+	init_signals();
 	while (1)
 	{
-		init_signals();
 		args = NULL;
 		tokens = NULL;
 		put_prompt(&input, *env_list);
@@ -117,8 +117,18 @@ void	minishell(t_env **env_list)
 int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env_list;
+	char	*lvl_str;
+	char	*new_lvl;
+	int		shlvl;
 	
 	env_list = init_env_list(envp);
+	lvl_str = get_env_value(env_list, "SHLVL");
+	if (lvl_str)
+		shlvl = ft_atoi(lvl_str) +1;
+	else
+		shlvl = 1;
+	new_lvl = ft_itoa(shlvl);
+	set_env_value(&env_list, "SHLVL", new_lvl);
 	if (ft_strncmp(argv[0], "./minishell", 11) == 0 && argc == 1)
 		minishell(&env_list);
 	else

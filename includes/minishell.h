@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/10 15:59:49 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/12 15:46:23 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ char		*ft_itoa(int nb);
 int			redirect_and_close(int old_fd, int new_fd);
 int			is_number(const char *str);
 long long	ft_atoll(const char *str);
+char 		*ft_strjoin_and_free(char *s1, const char *s2, int free_s1);
 
 /* ************************************************************************** */
 /*                                    FREE                                    */
@@ -127,8 +128,8 @@ void		free_ereaser(t_args *args, t_env *env);
 /* ************************************************************************** */
 /*                                  PARSING                                   */
 /* ************************************************************************** */
-void	handel_quoates(bool *open, bool *has_content, bool *has, bool other_quote_open);
-void	update_content(bool *s_open, bool *d_open, bool *s_content, bool *d_content);
+void		handel_quoates(bool *open, bool *has_content, bool *has, bool other_quote_open);
+void		update_content(bool *s_open, bool *d_open, bool *s_content, bool *d_content);
 char		*extract_word(char *input, int *i);
 void		init_token(t_token *tokens);
 t_token		*tokenize(char *input);
@@ -159,6 +160,7 @@ int			ft_cd(t_env **env_list, char *path);
 int			ft_export(t_args *args, t_env **env);
 int			ft_unset(t_args *args, t_env **env);
 int			ft_exit(t_args *args, t_env **env);
+char		**env_to_array(t_env *env);
 
 /* ************************************************************************** */
 /*                                ENVIRONNEMENT                               */
@@ -173,7 +175,7 @@ int			set_env_value(t_env **env, const char *key, const char *value);
 /*                                   CHCKER                                   */
 /* ************************************************************************** */
 int			check_syntax_error(t_token *tokens);
-bool	quotes_closed_str(const char *str, bool *has_sq, bool *has_dq);
+bool		quotes_closed_str(const char *str, bool *has_sq, bool *has_dq);
 
 /* ************************************************************************** */
 /*                                     PIPE                                   */
@@ -192,6 +194,6 @@ int			ft_here_doc(char *limiter);
 void		init_signals(void);
 void		sigint_handler(int sig);
 void		sigquit_handler(int sig);
-void		ignore_parent_signals(void);
+void		set_signal_child(void);
 
 #endif

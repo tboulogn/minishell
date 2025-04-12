@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 17:06:31 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/09 09:36:23 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/12 15:41:48 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,5 +83,20 @@ char	*expand_vars(const char *str, t_env *env_list, int i)
 		free(chunk);
 		free(tmp);
 	}
+	return (res);
+}
+
+char *ft_strjoin_and_free(char *s1, const char *s2, int free_s1)
+{
+	char	*res;
+	size_t	len1 = ft_strlen(s1);
+	size_t	len2 = ft_strlen(s2);
+
+	res = ft_secure_malloc((len1 + len2 + 1) * sizeof(char));
+	ft_memcpy(res, s1, len1);
+	ft_memcpy(res + len1, s2, len2);
+	res[len1 + len2] = '\0';
+	if (free_s1)
+		free(s1);
 	return (res);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/11 11:45:57 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/12 16:04:54 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,10 @@ char	**env_list_to_envp(t_env *env)
 		return (NULL);
 	while (env)
 	{
-		envp[i] = ft_strjoin_3(env->key, "=", env->value); // custom join function
+		if (env->value)
+			envp[i] = ft_strjoin_3(env->key, "=", env->value); // custom join function
+		else
+			envp[i] = ft_strjoin(env->key, "=");
 		i++;
 		env = env->next;
 	}
@@ -133,7 +136,7 @@ void	built_in(t_args *args, t_env **env_list)
 			path = args->cmd->cmd_tab[1];
 		ft_cd(env_list, path);
 	}
-	else if (ft_strncmp(args->cmd->cmd_tab[0], "export", 6) == 0)
+	else if (ft_strcmp(args->cmd->cmd_tab[0], "export") == 0)
 		ft_export(args, env_list);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "unset", 5) == 0)
 		ft_unset(args, env_list);

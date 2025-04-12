@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:33:38 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/03/31 16:05:11 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/12 15:58:36 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,21 @@
 
 char	**env_to_array(t_env *env)
 {
-	int		i;
-	int		size;
+	int		size = 0;
+	t_env	*tmp = env;
 	char	**env_array;
-	t_env	*tmp;
+	int		i = 0;
 
-	size = 0;
-	tmp = env;
 	while (tmp)
 	{
 		size++;
 		tmp = tmp->next;
 	}
 	env_array = ft_secure_malloc(sizeof(char *) * (size + 1));
-	i = 0;
 	tmp = env;
 	while (tmp)
 	{
-		env_array[i] = ft_strdup(tmp->key);
-		i++;
+		env_array[i++] = ft_strdup(tmp->key);
 		tmp = tmp->next;
 	}
 	env_array[i] = NULL;
@@ -106,6 +102,7 @@ int	export_with_equal(char *arg, t_env **env)
 		printf("minishell: export: `%s': not a valid identifier\n", key);
 		free(key);
 		free(value);
+		return (1);
 	}
 	set_env_value(env, key, value);
 	free(key);
@@ -118,6 +115,7 @@ int	ft_export(t_args *args, t_env **env)
 	int		i;
 	char	**argv;
 	t_env	*new;
+	t_env 	*var;
 
 	argv = args->cmd->cmd_tab;
 	if (!argv[1])
@@ -127,11 +125,15 @@ int	ft_export(t_args *args, t_env **env)
 	{
 		if (ft_strchr(argv[i], '='))
 			export_with_equal(argv[i], env);
-		else if (!get_env_var(*env, argv[i]))
+		else
 		{
-			new = create_env_node(argv[i]);
-			new->next = *env;
-			*env = new;
+			var = get_env_var(*env, argv[i]);
+			if (!var)
+			{
+				new = create_env_node(argv[i]);
+				new->next = *env;
+				*env = new;
+			}
 		}
 		i++;
 	}
