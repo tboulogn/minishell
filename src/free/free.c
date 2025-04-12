@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/09 16:35:01 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/10 13:52:01 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,53 @@
 
 void	free_token(t_token *tokens)
 {
-	t_token	*tmp;
+	t_token	*next_token;
 
 	while (tokens)
 	{
-		tmp = tokens->next;
+		next_token = tokens->next;
 		free(tokens->value);
 		free(tokens);
-		tokens = tmp;
+		tokens = next_token;
 	}
 }
+
+// void	free_t_cmd(t_cmd *cmds)
+// {
+// 	t_cmd	*next_cmd;
+// 	int		i;
+
+// 	next_cmd = cmds->next;
+// 	while(cmds)
+// 	{
+// 		if (cmds->cmd_tab)
+// 			free_env_array(cmds->cmd_tab);
+// 		if (cmds->sq)
+// 			free(cmds->sq);
+// 		if (cmds->dq)
+// 			free(cmds->dq);
+// 		if (cmds->cmd_path)
+// 			free(cmds->cmd_path);
+// 		if (cmds->infile)
+// 			free(cmds->infile);
+// 		if (cmds->outfile)
+// 			free(cmds->outfile);
+// 		if (cmds->append_outfile)
+// 			free(cmds->append_outfile);
+// 		free(cmds);
+// 		cmds = next_cmd;
+// 		next_cmd = cmds->next;
+// 	}
+// }
+
+// void	free_cmd_list(t_args *args)
+// {
+// 	free_t_cmd(args->cmd);
+// 	if (args->limiter)
+// 		free_env_array(args->limiter);
+// 	if (args)
+// 		free(args);
+// }
 
 void	free_cmd_list(t_args *args)
 {
@@ -58,12 +95,10 @@ void	free_cmd_list(t_args *args)
 			free(tmp_cmd->outfile);
 		if (tmp_cmd->append_outfile)
 			free(tmp_cmd->append_outfile);
-		if (tmp_cmd)
-			free(tmp_cmd);
+		free(tmp_cmd);
 		tmp_cmd = next_cmd;
 	}
-	if (args->limiter)
-		free_env_array(args->limiter);
+	free_env_array(args->limiter);
 	free(args);
 }
 

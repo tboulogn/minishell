@@ -3,99 +3,115 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 11:45:37 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/02/05 16:14:43 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:24:20 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-char	*next_line(char *str)
+char	*ft_read_and_update_remainder(int fd, char *remainder, char *buffer)
 {
-	char	*new_line;
-	int		i;
-	int		j;
-
-	i = 0;
-	while (str[i] && str[i] != '\n')
-		i++;
-	if (!str[i])
-		return (free(str), NULL);
-	new_line = ft_calloc(sizeof(char), (ft_strlen(str) - i + 1));
-	if (!new_line)
-		return (free(str), NULL);
-	i++;
-	j = 0;
-	while (str[i])
-		new_line[j++] = str[i++];
-	return (free(str), new_line);
-}
-
-char	*read_and_store(int fd, char *str)
-{
-	char	*buffer;
-	char	*tmp;
 	int		bytes_read;
+	char	*temp;
 
-	if (!str)
-		str = ft_calloc(1, 1);
-	buffer = ft_calloc(sizeof(char), BUFFER_SIZE + 1);
-	if (!buffer)
-		return (NULL);
+	temp = NULL;
 	bytes_read = 1;
-	while (!ft_strchr(str, '\n') && bytes_read != 0)
+	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read == -1)
-			return (free(buffer), free(str), NULL);
-		buffer[bytes_read] = 0;
-		tmp = ft_strjoin(str, buffer);
-		free(str);
-		str = tmp;
+		if (bytes_read <= 0)
+			break ;
+		buffer[bytes_read] = '\0';
+		temp = ft_strjoin(remainder, buffer);
+		if (!temp)
+			return (free(remainder), NULL);
+		free(remainder);
+		remainder = temp;
+		if (ft_strchr(remainder, '\n'))
+			break ;
 	}
-	return (free(buffer), str);
+	if (bytes_read < 0)
+	{
+		free(remainder);
+		remainder = NULL;
+	}
+	return (remainder);
 }
 
-char	*extract_line(char *str)
+char	*ft_extract_line_from_remainder(char **remainder)
 {
-	char	*new_line;
-	int		i;
+	char	*line;
+	char	*newline_ptr;
+	char	*temp;
+	size_t	line_length;
 
-	i = 0;
-	if (!str[i])
+	newline_ptr = ft_strchr(*remainder, '\n');
+	if (!newline_ptr)
 		return (NULL);
-	while (str[i] && str[i] != '\n')
-		i++;
-	new_line = ft_calloc(sizeof(char), i + 2);
-	if (!new_line)
+	line_length = newline_ptr - *remainder + 1;
+	line = (char *)malloc(sizeof(char) * (line_length + 1));
+	if (!line)
 		return (NULL);
-	i = 0;
-	while (str[i] && str[i] != '\n')
+	ft_strlcpy(line, *remainder, line_length + 1);
+	temp = ft_strdup(newline_ptr + 1);
+	if (!temp)
+		return (free(line), NULL);
+	free(*remainder);
+	*remainder = temp;
+	if ((*remainder)[0] == '\0')
 	{
-		new_line[i] = str[i];
-		i++;
+		free(*remainder);
+		*remainder = NULL;
 	}
-	if (str[i] == '\n')
+	return (line);
+}
+
+char	*ft_finalize_line(char **remainder, char *buffer)
+{
+	char	*line;
+
+	if (*remainder && **remainder)
 	{
-		new_line[i] = '\n';
-		i++;
+		line = ft_strdup(*remainder);
+		if (!line)
+		{
+			free(*remainder);
+			*remainder = NULL;
+		}
 	}
-	return (new_line);
+	else
+		line = NULL;
+	free(*remainder);
+	*remainder = NULL;
+	free(buffer);
+	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
+	static char	*remainder;
+	char		*buffer;
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = read_and_store(fd, buffer);
+	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
 		return (NULL);
-	line = extract_line(buffer);
-	buffer = next_line(buffer);
-	return (line);
+	if (!remainder)
+	{
+		remainder = ft_strdup("");
+		if (!remainder)
+			return (free(buffer), NULL);
+	}
+	remainder = ft_read_and_update_remainder(fd, remainder, buffer);
+	if (!remainder)
+		return (free(buffer), NULL);
+	line = ft_extract_line_from_remainder(&remainder);
+	if (line)
+		return (free(buffer), line);
+	return (ft_finalize_line(&remainder, buffer));
 }

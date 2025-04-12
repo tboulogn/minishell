@@ -1,0 +1,32 @@
+//////DEBUG////////////
+- ctrl + \
+- cat (without arguments) -> ctrl + C -> behaives strange
+- exit + (none numeric character) -> echo $? -> now it is 255 but on bash it is 2 -> I changed it into 2 :)
+- export NEW_VAR (without any value) -> env -> we cannot execute some cmds like "clear", it shows "TERM environment variable not set."
+    -> Idk if it is important but you can have a look!
+- SO PROUD we can do "export VAR1=one VAR2=two VAR3=three"
+    -> if you have some time...... maybe you can try the same for unset? "unset VAR1=one VAR2=two VAR3=three"
+
+/////////NOTE//////////
+- quotes
+    Before, we were checking if the quotes are well closed or not on parsing (parse_token) but
+    we can have some valgrind errors since we need to exit there even if we already allocateed 
+    some structures.
+    -> I changed it so we do it on the syntax error check (heck_syntax_error) BEFORE we actually
+        do parsing, so we just print as error if we pass unclosed quotes (This matches to the subject).
+
+    Now, echo "$PATH"'', echo '$PATH'"" are also working.
+
+- still reachable
+    - when we pass cmds with pipes but one of them are builtin.
+    - when we pass none-exist cmds (with or without pipes).
+    - when we do here_doc
+
+- gnl
+    - there were some leaks from gnl we had so I chnaged into mine (just in case!)
+
+- dir1
+    - I just made this dir to try some cmds with relatibe path so no worries about it!
+
+-_note.c
+    - I saved my previous version of some files so I can go back and check if I face some issues haha

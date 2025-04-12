@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rei <rei@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/11 11:45:57 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/09 19:50:22 by rei              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ int	check_cmd_path(char *path)
 	return (0);
 }
 
-void	external(t_args *args, t_env *env_list, t_pipe *pro)
+void	external(t_args *args, t_env *env_list)
 {
 	char	*cmd_path;
 	char	**cmd_tab;
@@ -177,14 +177,13 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 	int		err;
 
 	cmd_tab = args->cmd->cmd_tab;
-	if (!cmd_tab || !cmd_tab[0] || cmd_tab[0][0] == '\0')
+	if (!cmd_tab || !cmd_tab[0])
 	{
+		free(cmd_path);
+		free_env_array(envp_arr);
 		free_cmd_list(args);
 		free_env_list(env_list);
-		free(pro->pid);
-		// printf("command not found\n");
-		ft_putstr_fd(cmd_tab[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
+		printf("command not found\n");
 		exit(127);
 	}
 	envp_arr = env_list_to_envp(env_list);
@@ -192,7 +191,7 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 	{
 		free_cmd_list(args);
 		free_env_list(env_list);
-		free(pro->pid);
+		// free(pro->pid);
 		exit(1);
 	}
 	if (ft_strchr(cmd_tab[0], '/'))
@@ -201,12 +200,14 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 		cmd_path = ft_get_path(cmd_tab[0], env_list);
 	if (!cmd_path)
 	{
-		ft_putstr_fd(cmd_tab[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
+		printf("%s: command not found\n", cmd_tab[0]);
+		free(cmd_path);
 		free_env_array(envp_arr);
+		if (args)
+			free_cmd_list(args);
 		free_env_list(env_list);
-		free(pro->pid);
-		free_cmd_list(args);
+		// free(pro->pid);
+		// free_token(args->tokens);
 		exit(127);
 	}
 	err = check_cmd_path(cmd_path);
@@ -216,28 +217,27 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 		free_env_array(envp_arr);
 		free_cmd_list(args);
 		free_env_list(env_list);
-		free(pro->pid);
+		// free(pro->pid);
 		exit(err);
 	}
-	if (execve(cmd_path, cmd_tab, envp_arr) == -1)
+	if (!execve(cmd_path, cmd_tab, envp_arr))
 	{
 		perror("execve");
-		free(cmd_path);
-		free_env_array(envp_arr);
-		free_cmd_list(args);
-		free_env_list(env_list);
-		free(pro->pid); 
-		exit(1);
+	free(cmd_path);
+	free_env_array(envp_arr);
+	free_cmd_list(args);
+	free_env_list(env_list);
+	exit(1);
 	}
 }
 
 //without any frees
-void	ft_exec(t_args *args, t_env **env_list, t_pipe *pro)
+void	ft_exec(t_args *args, t_env **env_list)
 {
 	if (!args || !args->cmd || !args->cmd->cmd_tab || !args->cmd->cmd_tab[0])
 		return ;
 	if (!ft_check_buildin(args))
 		built_in(args, env_list);
 	else
-		external(args, *env_list, pro);
+		external(args, *env_list);
 }
