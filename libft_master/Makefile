@@ -6,13 +6,13 @@
 #    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/05 16:38:57 by tboulogn          #+#    #+#              #
-#    Updated: 2025/03/24 19:03:42 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/04/14 13:43:35 by tboulogn         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft_master.a
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 SRC_DIR = src/
 OBJ_DIR = obj/
 

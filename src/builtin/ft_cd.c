@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:55:34 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 17:27:38 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/14 13:50:04 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ int	ft_cd(t_env **env_list, char *path)
 {
 	char	current_dir[4096];
 	t_env	*home_var;
-	t_env	*oldpwd_var;
 
 	if (getcwd(current_dir, sizeof(current_dir)) == NULL)
 		ft_strlcpy(current_dir,

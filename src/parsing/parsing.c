@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/11 11:07:09 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/14 13:51:06 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -400,7 +400,6 @@ t_args *parse_token(t_token *tokens, t_env *env_list)//store the argument info i
 	t_args *args;
 	t_cmd *current_cmd;
 	t_list *word_list;//linked chain (char *) of cmds
-	t_cmd *final_cmd;
 	int i;
 
 	args = create_new_args();//initialize t_args

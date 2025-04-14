@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/12 17:02:55 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/14 14:00:15 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,12 +114,11 @@ void	minishell(t_env **env_list)
 	}
 }
 
-int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp, int shlvl)
 {
 	t_env	*env_list;
 	char	*lvl_str;
 	char	*new_lvl;
-	int		shlvl;
 	
 	env_list = init_env_list(envp);
 	lvl_str = get_env_value(env_list, "SHLVL");
@@ -135,8 +134,10 @@ int	main(int argc, char **argv, char **envp)
 	{
 		ft_putstr_fd("Invalid program name or argument number\n", 2);
 		free_env_list(env_list);
+		free(new_lvl);
 		return (1);
 	}
 	free_env_list(env_list);
+	free(new_lvl);
 	return (0);
 }

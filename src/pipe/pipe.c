@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/12 15:11:29 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/14 13:53:20 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ void	single_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 	int fd_in;
 	int fd_out;
 
+	fd_in = 0;
+	fd_out = 0;
 	if (cmd->infile)
 		read_files(cmd, fd_in, 1);
 	if (cmd->outfile)
@@ -95,6 +97,7 @@ void	first_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 {
 	int	fd;
 
+	fd = 0;
 	close(pro.next[0]);
 	if (cmd->infile)
 		read_files(cmd, fd, 1);
@@ -109,6 +112,8 @@ void	middle_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 	int fd_in;
 	int fd_out;
 
+	fd_in = 0;
+	fd_out = 0;
 	if (cmd->infile)
 		read_files(cmd, fd_in, 1);
 	if (cmd->outfile)
@@ -126,6 +131,8 @@ void	last_child(t_args *args, t_cmd *cmd, t_env *env_list, t_pipe pro)
 	int fd_in;
 	int fd_out;
 
+	fd_in = 0;
+	fd_out = 0;
 	close(pro.prev[1]);
 	if (cmd->infile)
 		read_files(cmd, fd_in, 1);
