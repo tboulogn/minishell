@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:42:02 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/12 16:04:54 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/14 19:42:17 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ char	*ft_get_path(char *cmd, t_env *env_list)
 		exec = ft_check_exec_path(all_paths[i], cmd);
 		i++;
 	}
-	ft_free_tab(all_paths); // free the split array
+	ft_free_tab(all_paths);
 	return (exec);
 }
 
@@ -85,29 +85,36 @@ int	ft_check_buildin(t_args *args)
 	return (1);
 }
 
-//Bc we need an array of array for execve
-char	**env_list_to_envp(t_env *env)
+int	count_env_line(t_env *env)
 {
-	int		count;
 	t_env	*temp;
-	char	**envp;
-	int		i;
+	int 	count;
 
-	count = 0;
-	i = 0;
 	temp = env;
+	count = 0;
 	while (temp)
 	{
 		count++;
 		temp = temp->next;
 	}
+	return (count);
+}
+
+char	**env_list_to_envp(t_env *env)
+{
+	int		count;
+	char	**envp;
+	int		i;
+
+	i = 0;
+	count = count_env_line(env);
 	envp = malloc(sizeof(char *) * (count + 1));
 	if (!envp)
 		return (NULL);
 	while (env)
 	{
 		if (env->value)
-			envp[i] = ft_strjoin_3(env->key, "=", env->value); // custom join function
+			envp[i] = ft_strjoin_3(env->key, "=", env->value);
 		else
 			envp[i] = ft_strjoin(env->key, "=");
 		i++;
@@ -121,8 +128,6 @@ void	built_in(t_args *args, t_env **env_list)
 {
 	char	*path;
 
-	printf("BUILT_IN CMD\n");//modify this
-	printf("================\n");
 	if (ft_strncmp(args->cmd->cmd_tab[0], "env", 3) == 0)
 		ft_env(*env_list);
 	else if (ft_strncmp(args->cmd->cmd_tab[0], "pwd", 3) == 0)
@@ -172,6 +177,24 @@ int	check_cmd_path(char *path)
 	return (0);
 }
 
+void	error_cmd_not_found(t_args *args, t_env *env_list, t_pipe *pro, char **envp_arr)
+{
+	char **cmd_tab;
+
+	cmd_tab = args->cmd->cmd_tab;
+	if (envp_arr)
+		free_env_array(envp_arr);
+	if (cmd_tab && cmd_tab[0])
+	{
+		ft_putstr_fd(cmd_tab[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
+	}
+	else
+		ft_putstr_fd(": command not found\n", 2);
+	free_ereaser(args, env_list, pro); 
+	exit(127);
+}
+
 void	external(t_args *args, t_env *env_list, t_pipe *pro)
 {
 	char	*cmd_path;
@@ -181,21 +204,11 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 
 	cmd_tab = args->cmd->cmd_tab;
 	if (!cmd_tab || !cmd_tab[0] || cmd_tab[0][0] == '\0')
-	{
-		free_cmd_list(args);
-		free_env_list(env_list);
-		free(pro->pid);
-		// printf("command not found\n");
-		ft_putstr_fd(cmd_tab[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		exit(127);
-	}
+		error_cmd_not_found(args, env_list, pro, NULL);
 	envp_arr = env_list_to_envp(env_list);
 	if (!envp_arr)
 	{
-		free_cmd_list(args);
-		free_env_list(env_list);
-		free(pro->pid);
+		free_ereaser(args, env_list, pro);
 		exit(1);
 	}
 	if (ft_strchr(cmd_tab[0], '/'))
@@ -203,36 +216,76 @@ void	external(t_args *args, t_env *env_list, t_pipe *pro)
 	else
 		cmd_path = ft_get_path(cmd_tab[0], env_list);
 	if (!cmd_path)
-	{
-		ft_putstr_fd(cmd_tab[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		free_env_array(envp_arr);
-		free_env_list(env_list);
-		free(pro->pid);
-		free_cmd_list(args);
-		exit(127);
-	}
+		error_cmd_not_found(args, env_list, pro, envp_arr);
 	err = check_cmd_path(cmd_path);
 	if (err)
 	{
-		free(cmd_path);
 		free_env_array(envp_arr);
-		free_cmd_list(args);
-		free_env_list(env_list);
-		free(pro->pid);
+		free_ereaser(args, env_list, pro);
+		free(cmd_path);
 		exit(err);
 	}
 	if (execve(cmd_path, cmd_tab, envp_arr) == -1)
 	{
-		perror("execve");
-		free(cmd_path);
 		free_env_array(envp_arr);
-		free_cmd_list(args);
-		free_env_list(env_list);
-		free(pro->pid); 
+		free_ereaser(args, env_list, pro);
+		free(cmd_path);
+		perror("execve");
 		exit(1);
 	}
 }
+
+
+// void	external(t_args *args, t_env *env_list, t_pipe *pro)
+// {
+// 	char	*cmd_path;
+// 	char	**cmd_tab;
+// 	char	**envp_arr;
+// 	int		err;
+
+// 	cmd_tab = args->cmd->cmd_tab;
+// 	if (!cmd_tab || !cmd_tab[0] || cmd_tab[0][0] == '\0')
+// 	{
+// 		free_ereaser(args, env_list, pro);
+// 		ft_putstr_fd(cmd_tab[0], 2);
+// 		ft_putstr_fd(": command not found\n", 2);
+// 		exit(127);
+// 	}
+// 	envp_arr = env_list_to_envp(env_list);
+// 	if (!envp_arr)
+// 	{
+// 		free_ereaser(args, env_list, pro);
+// 		exit(1);
+// 	}
+// 	if (ft_strchr(cmd_tab[0], '/'))
+// 		cmd_path = ft_strdup(cmd_tab[0]);
+// 	else
+// 		cmd_path = ft_get_path(cmd_tab[0], env_list);
+// 	if (!cmd_path)
+// 	{
+// 		free_env_array(envp_arr);
+// 		free_ereaser(args, env_list, pro);
+// 		ft_putstr_fd(cmd_tab[0], 2);
+// 		ft_putstr_fd(": command not found\n", 2);
+// 		exit(127);
+// 	}
+// 	err = check_cmd_path(cmd_path);
+// 	if (err)
+// 	{
+// 		free_env_array(envp_arr);
+// 		free_ereaser(args, env_list, pro);
+// 		free(cmd_path);
+// 		exit(err);
+// 	}
+// 	if (execve(cmd_path, cmd_tab, envp_arr) == -1)
+// 	{
+// 		free_env_array(envp_arr);
+// 		free_ereaser(args, env_list, pro);
+// 		perror("execve");
+// 		free(cmd_path);
+// 		exit(1);
+// 	}
+// }
 
 //without any frees
 void	ft_exec(t_args *args, t_env **env_list, t_pipe *pro)

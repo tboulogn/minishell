@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/14 14:00:15 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:46:47 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,30 +114,59 @@ void	minishell(t_env **env_list)
 	}
 }
 
-int	main(int argc, char **argv, char **envp, int shlvl)
-{
-	t_env	*env_list;
-	char	*lvl_str;
-	char	*new_lvl;
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	t_env	*env_list;
+// 	char	*lvl_str;
+// 	char	*new_lvl;
+// 	int 	shlvl;
 	
-	env_list = init_env_list(envp);
-	lvl_str = get_env_value(env_list, "SHLVL");
-	if (lvl_str)
-		shlvl = ft_atoi(lvl_str) +1;
-	else
-		shlvl = 1;
-	new_lvl = ft_itoa(shlvl);
-	set_env_value(&env_list, "SHLVL", new_lvl);
-	if (ft_strncmp(argv[0], "./minishell", 11) == 0 && argc == 1)
-		minishell(&env_list);
-	else
-	{
-		ft_putstr_fd("Invalid program name or argument number\n", 2);
-		free_env_list(env_list);
-		free(new_lvl);
-		return (1);
-	}
-	free_env_list(env_list);
-	free(new_lvl);
-	return (0);
+// 	env_list = init_env_list(envp);
+// 	lvl_str = get_env_value(env_list, "SHLVL");
+// 	if (lvl_str)
+// 		shlvl = ft_atoi(lvl_str) +1;
+// 	else
+// 		shlvl = 1;
+// 	new_lvl = ft_itoa(shlvl);
+// 	set_env_value(&env_list, "SHLVL", new_lvl);
+// 	if (ft_strncmp(argv[0], "./minishell", 11) == 0 && argc == 1)
+// 		minishell(&env_list);
+// 	else
+// 	{
+// 		ft_putstr_fd("Invalid program name or argument number\n", 2);
+// 		free_env_list(env_list);
+// 		free(new_lvl);
+// 		return (1);
+// 	}
+// 	free_env_list(env_list);
+// 	free(new_lvl);
+// 	return (0);
+// }
+
+int    main(int argc, char **argv, char **envp)
+{
+    t_env    *env_list;
+    char    *lvl_str;
+    char    *new_lvl;
+    int        shlvl;
+    
+    env_list = init_env_list(envp);
+    lvl_str = get_env_value(env_list, "SHLVL");
+    if (lvl_str)
+        shlvl = ft_atoi(lvl_str) +1;
+    else
+        shlvl = 1;
+    new_lvl = ft_itoa(shlvl);
+    set_env_value(&env_list, "SHLVL", new_lvl);
+    free(new_lvl);
+    if (ft_strncmp(argv[0], "./minishell", 11) == 0 && argc == 1)
+        minishell(&env_list);
+    else
+    {
+        ft_putstr_fd("Invalid program name or argument number\n", 2);
+        free_env_list(env_list);
+        return (1);
+    }
+    free_env_list(env_list);
+    return (0);
 }

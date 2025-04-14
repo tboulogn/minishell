@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/12 15:46:23 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/14 15:33:25 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ void		free_env_array(char **env_array);
 void		free_env_node(t_env *node);
 void		free_env_list(t_env *env);
 void		ft_free_cmd(t_cmd *cmd);
-void		free_ereaser(t_args *args, t_env *env);
+void		free_ereaser(t_args *args, t_env *env, t_pipe *pro);
 
 /* ************************************************************************** */
 /*                                  PARSING                                   */

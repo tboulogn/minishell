@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/10 13:52:01 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/14 15:31:54 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,8 +162,9 @@ void	ft_free_cmd(t_cmd *cmd)
 	free(cmd);
 }
 
-void	free_ereaser(t_args *args, t_env *env)
+void	free_ereaser(t_args *args, t_env *env, t_pipe *pro)
 {
 	free_cmd_list(args);
 	free_env_list(env);
+	free(pro->pid);
 }

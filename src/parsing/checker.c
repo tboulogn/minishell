@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:44:18 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/11 10:12:40 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/14 16:14:05 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,32 @@ void	syntax_error_message(int type)
 	g_signal = 1;
 }
 
+int	syntax_error_code(t_token	*current)
+{
+	bool	has_sq;
+	bool	has_dq;
+
+	if (!quotes_closed_str(current->value, &has_sq, &has_dq))
+		return (syntax_error_message(-4), 0);
+	if ((current->type == PIPE)
+		&& (!current->next || current->next->type != WORD))
+		return (syntax_error_message(-2), 0);
+	else if ((current->type == REDIR_IN || current->type == REDIR_OUT
+			|| current->type == APPEND || current->type == HEREDOC)
+		&& (!current->next || current->next->type != WORD))
+		return (syntax_error_message(-3), 0);
+	else if ((current->prev && (current->prev->type == REDIR_IN
+				|| current->prev->type == REDIR_OUT
+				|| current->prev->type == APPEND
+				|| current->prev->type == HEREDOC))
+		&& current->next && current->next->type == WORD)
+		return (syntax_error_message(-5), 0);
+	return (1);
+}
+
 int	check_syntax_error(t_token *tokens)
 {
 	t_token	*current;
-	bool has_sq;
-    bool has_dq;
 
 	current = tokens;
 	if (!current)
@@ -68,20 +89,8 @@ int	check_syntax_error(t_token *tokens)
 		return (syntax_error_message(-1), 0);
 	while (current)
 	{
-		if (!quotes_closed_str(current->value, &has_sq, &has_dq)) // <== ADD THIS
-			return (syntax_error_message(-4), 0);
-		if ((current->type == PIPE)
-			&& (!current->next || current->next->type != WORD))
-			// || (current->type == REDIR_IN && current->next->next->type != PIPE))
-			return (syntax_error_message(-2), 0);
-		else if ((current->type == REDIR_IN || current->type == REDIR_OUT
-				|| current->type == APPEND || current->type == HEREDOC)
-			&& (!current->next || current->next->type != WORD))
-			return (syntax_error_message(-3), 0);
-		else if ((current->prev && (current->prev->type == REDIR_IN || current->prev->type == REDIR_OUT
-				|| current->prev->type == APPEND || current->prev->type == HEREDOC))
-			&& current->next && current->next->type == WORD)
-			return (syntax_error_message(-5), 0);
+		if (!syntax_error_code(current))
+			return (0);
 		current = current->next;
 	}
 	return (1);
