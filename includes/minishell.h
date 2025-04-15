@@ -193,6 +193,7 @@ char		*ft_strdup_exept(const char *s, char c);
 //parsing_helper_2.c//
 int			find_char_pos(char *str, char c);
 void		add_file(t_cmd *cmd, char *str, t_token_type type);
+void		add_malloc_line(char ***arr, char *line);
 //parsing1.c//
 t_token		*tokenize(char *input);
 void		add_token(t_token **tokens, char *value, t_token_type type);
@@ -262,5 +263,6 @@ int			redirect_and_close(int old_fd, int new_fd);
 int			is_number(const char *str);
 long long	ft_atoll(const char *str);
 char 		*ft_strjoin_and_free(char *s1, const char *s2, int free_s1);
+char		*expand_vars(const char *str, t_env *env_list, int i);
 
 #endif

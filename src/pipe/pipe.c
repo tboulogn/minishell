@@ -85,14 +85,12 @@ void	pipex(t_args *args, t_env **env_list)
 {
 	t_pipe	pro;
 	t_cmd	*current;
-	int		i;
 
 	current = args->cmd;
 	if (!prepare_here_doc(args, current) && args->cmd_count == 1
 		&& !ft_check_buildin(args) && no_files(current))
 		return (ft_exec(args, env_list, &pro));
 	init_pipe_struct(&pro, args->cmd_count);
-	i = 0;
 	process_loop(args, *env_list, &pro, current);
 	close_parent_pipes(&pro);
 	signal(SIGINT, SIG_IGN);
