@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/14 19:17:07 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/15 15:26:58 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ t_args	*create_new_args(void)
 	new_args->here_doc_count = 0;
 	new_args->pipe = 0;
 	new_args->cmd = NULL;
+	new_args->index = 0;
 	return (new_args);
 }
 
