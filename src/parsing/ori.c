@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/14 13:51:06 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/15 15:26:58 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,36 +38,34 @@ char	*extract_word(char *input, int *i)
 	return (ft_strndup(input + start, *i - start));
 }
 
-//init token, set up the next and prev(cahin-list)
 void	add_token(t_token **tokens, char *value, t_token_type type)
 {
 	t_token	*new;
 	t_token	*tmp;
 
-	// new = ft_secure_malloc(sizeof(t_token));
 	new = ft_calloc(1, sizeof(t_token));
 	if (!new)
 		return ;
-	new->value = ft_strdup(value);//call strdup for malloc
+	new->value = ft_strdup(value);
 	new->type = type;
 	new->next = NULL;
 	new->prev = NULL;
-	if (!*tokens)//if it is the new token
-		*tokens = new;//set it as the start of the chain list
+	if (!*tokens)
+		*tokens = new;
 	else
 	{
 		tmp = *tokens;
 		while (tmp->next)
 			tmp = tmp->next;
-		tmp->next = new;//add the new one as the next one of the last node
-		new->prev = tmp;//the last node will be the prev of the new node
+		tmp->next = new;
+		new->prev = tmp;
 	}
 }
 
 int	define_tokens(t_token **tokens, char *str, int i)
 {
 	if (str[i] == '|')
-		return(add_token(tokens, "|", PIPE), 1);
+		return (add_token(tokens, "|", PIPE), 1);
 	else if (str[i] == '>')
 	{
 		if (str[i + 1] == '>')
@@ -105,17 +103,13 @@ t_token	*tokenize(char *input)
 			free(word);
 		}
 	}
-		return (tokens);
+	return (tokens);
 }
 
-
-
-//Initialize the argument infos we pass
 t_args	*create_new_args(void)
 {
 	t_args	*new_args;
 
-	// new_args = ft_secure_malloc(sizeof(t_args));
 	new_args = ft_calloc(1, sizeof(t_args));
 	if (!new_args)
 		return (NULL);
@@ -124,10 +118,10 @@ t_args	*create_new_args(void)
 	new_args->here_doc_count = 0;
 	new_args->pipe = 0;
 	new_args->cmd = NULL;
+	new_args->index = 0;
 	return (new_args);
 }
 
-//to init t_cmd and set prev/next of t_cmd
 void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 {
 	t_cmd	*last;
@@ -154,12 +148,12 @@ void	add_cmd_back(t_args *args, t_cmd *new_cmd)
 
 int	count_char(const char *str, char c)
 {
-	int i;
-	int count;
+	int	i;
+	int	count;
 
 	i = 0;
 	count = 0;
-	while(str[i])
+	while (str[i])
 	{
 		if (str[i] == c)
 			count++;
@@ -183,7 +177,7 @@ char	*ft_strdup_exept(const char *s, char c)
 	if (!new_str)
 		return (NULL);
 	j = 0;
-	while(s[i])
+	while (s[i])
 	{
 		if (s[i] != c)
 		{
@@ -196,7 +190,8 @@ char	*ft_strdup_exept(const char *s, char c)
 	return (new_str);
 }
 
-void	handel_quoates(bool *open, bool *has_content, bool *has, bool other_quote_open)
+void	handel_quoates(bool *open, bool *has_content,
+			bool *has, bool other_quote_open)
 {
 	if (!other_quote_open)
 	{
@@ -208,7 +203,8 @@ void	handel_quoates(bool *open, bool *has_content, bool *has, bool other_quote_o
 	}
 }
 
-void	update_content(bool *s_open, bool *d_open, bool *s_content, bool *d_content)
+void	update_content(bool *s_open, bool *d_open,
+			bool *s_content, bool *d_content)
 {
 	if (s_open)
 		*s_content = true;
@@ -216,12 +212,12 @@ void	update_content(bool *s_open, bool *d_open, bool *s_content, bool *d_content
 		*d_content = true;
 }
 
-char *clean_word_quotes(const char *str)
+char	*clean_word_quotes(const char *str)
 {
-	size_t len;
-	char *tmp;
-	char *cleaned;
-	char *final;
+	size_t	len;
+	char	*tmp;
+	char	*cleaned;
+	char	*final;
 
 	len = ft_strlen(str);
 	if ((ft_strcmp(str, "''") == 0) || (ft_strcmp(str, "\"\"") == 0))
@@ -237,9 +233,18 @@ char *clean_word_quotes(const char *str)
 		final = ft_strdup_exept(cleaned, '"');
 		free(tmp);
 		free(cleaned);
-		return final;
+		return (final);
 	}
 	return (ft_strdup(str));
+}
+
+void	update_open_bool(bool *s_open, bool	*d_open,
+			bool *s_content, bool *d_content)
+{
+	if (*s_open)
+		*s_content = true;
+	if (*d_open)
+		*d_content = true;
 }
 
 void	quotes_update(const char *str, bool *has_sq, bool *has_dq)
@@ -264,12 +269,7 @@ void	quotes_update(const char *str, bool *has_sq, bool *has_dq)
 		else if (str[i] == '"' && !s_open)
 			handel_quoates(&d_open, &d_content, has_dq, s_open);
 		if ((s_open && str[i] != '\'') || (d_open && str[i] != '"'))
-		{
-			if (s_open)
-				s_content = true;
-			if (d_open)
-				d_content = true;
-		}
+			update_open_bool(&s_open, &d_open, &s_content, &d_content);
 		i++;
 	}
 }
@@ -294,12 +294,12 @@ bool	is_inside_sigle_quote(const char *str, int dollar_index)
 	return (s_open);
 }
 
-int		find_char_pos(char *str, char c)
+int	find_char_pos(char *str, char c)
 {
-	int 	i;
+	int	i;
 
 	i = 0;
-	while(str[i])
+	while (str[i])
 	{
 		if (str[i] == c)
 			return (i);
@@ -308,7 +308,29 @@ int		find_char_pos(char *str, char c)
 	return (0);
 }
 
+char	*update_quotes_and_clean(char *content, bool *sq, bool *dq)
+{
+	quotes_update(content, sq, dq);
+	return (clean_word_quotes(content));
+}
 
+char	*expand_if_needed(char *cleaned, t_env *env_list)
+{
+	char	*expanded;
+	int		dollar_pos;
+
+	if (ft_strchr(cleaned, '$'))
+	{
+		dollar_pos = find_char_pos(cleaned, '$');
+		if (dollar_pos >= 0 && !is_inside_sigle_quote(cleaned, dollar_pos))
+		{
+			expanded = expand_vars(cleaned, env_list, 0);
+			free(cleaned);
+			return (expanded);
+		}
+	}
+	return (cleaned);
+}
 
 t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 {
@@ -316,32 +338,21 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 	int		i;
 	t_list	*next;
 	char	*cleaned;
-	char	*expanded;
-	int		dollar_pos;
 
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	i = ft_lstsize(words);
-	// cmd->cmd_tab = ft_secure_malloc(sizeof(char *) * (i + 1));
 	cmd->cmd_tab = ft_calloc(i + 1, sizeof(char *));
 	cmd->sq = ft_calloc(i, sizeof(bool));
 	cmd->dq = ft_calloc(i, sizeof(bool));
 	i = 0;
 	while (words)
 	{
-		quotes_update(words->content, &cmd->sq[i], &cmd->dq[i]);
-		cleaned = clean_word_quotes(words->content);
-		if (ft_strchr(cleaned, '$') && !cmd->cmd_tab[0])
-		{
-			dollar_pos = find_char_pos(cleaned, '$');
-			if (dollar_pos >= 0 && !is_inside_sigle_quote(cleaned, dollar_pos))
-			{
-				expanded = expand_vars(cleaned, env_list, 0);
-				free(cleaned);
-				cleaned = expanded;
-			}
-		}
-		cmd->cmd_tab[i++] = cleaned;
 		next = words->next;
+		cleaned = update_quotes_and_clean(words->content,
+				&cmd->sq[i], &cmd->dq[i]);
+		if (!cmd->cmd_tab[0])
+			cmd->cmd_tab[i] = expand_if_needed(cleaned, env_list);
+		cmd->cmd_tab[i++] = cleaned;
 		free(words->content);
 		free(words);
 		words = next;
@@ -353,13 +364,23 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 void	add_file(t_cmd *cmd, char *str, t_token_type type)
 {
 	if (!cmd || !str)
-		return;
+		return ;
 	if (type == REDIR_IN)
 		cmd->infile = ft_strdup(str);
 	else if (type == REDIR_OUT)
 		cmd->outfile = ft_strdup(str);
 	else if (type == APPEND)
 		cmd->append_outfile = ft_strdup(str);
+}
+
+void	first_limitter(char ***arr, char *line)
+{
+	*arr = malloc(sizeof(char *) * 2);
+	if (!*arr)
+		return ;
+	(*arr)[0] = ft_strdup(line);
+	(*arr)[1] = NULL;
+	return ;
 }
 
 void	add_malloc_line(char ***arr, char *line)
@@ -369,14 +390,7 @@ void	add_malloc_line(char ***arr, char *line)
 
 	i = 0;
 	if (!*arr)
-	{
-		*arr = malloc(sizeof(char *) * 2);
-		if (!*arr)
-			return ;
-		(*arr)[0] = ft_strdup(line);
-		(*arr)[1] = NULL;
-		return ;
-	}
+		return (first_limitter(arr, line));
 	while ((*arr)[i])
 		i++;
 	new_arr = malloc(sizeof(char *) * (i + 2));
@@ -394,80 +408,110 @@ void	add_malloc_line(char ***arr, char *line)
 	*arr = new_arr;
 }
 
-
-t_args *parse_token(t_token *tokens, t_env *env_list)//store the argument info into t_args by using t_token
+int	parse_pipe(t_args *args, t_cmd **current_cmd,
+			t_env *env_list, t_list **word_list)
 {
-	t_args *args;
-	t_cmd *current_cmd;
-	t_list *word_list;//linked chain (char *) of cmds
-	int i;
-
-	args = create_new_args();//initialize t_args
-	current_cmd = NULL;
-	word_list = NULL;
-	i = 0;
-	while (tokens)
+	if (*word_list)
 	{
-		if (tokens->type == PIPE)
-		{
-			if (word_list)
-			{
-				current_cmd = create_cmd_from_list(word_list, env_list);
-				if (!current_cmd)
-					return (free_cmd_list(args), NULL);
-				add_cmd_back(args, current_cmd);
-				args->cmd_count++;
-				word_list = NULL;
-			}
-			args->pipe++;
-			tokens = tokens->next;
-			current_cmd = NULL;
-			continue;
-		}
-		// Handle heredoc (collect limiter string)
-		if (tokens->type == HEREDOC && tokens->next && tokens->next->type == WORD)
-		{
-			args->here_doc_count++;
-			add_malloc_line(&(args->limiter), tokens->next->value);
-			tokens = tokens->next;
-		}
-		// If it's a WORD not used in redirection, store it for command creation
-		else if (tokens->type == WORD && (!tokens->prev ||
-				(tokens->prev->type != REDIR_IN && tokens->prev->type != REDIR_OUT &&
-				tokens->prev->type != APPEND && tokens->prev->type != HEREDOC)))
-			ft_lstadd_back(&word_list, ft_lstnew(ft_strdup(tokens->value)));
-		// Handle redirection target (filename after <, >, etc.)
-		else if (tokens->type == WORD && tokens->prev &&
-				(tokens->prev->type == REDIR_IN || tokens->prev->type == REDIR_OUT ||
-				tokens->prev->type == APPEND))
-		{
-			// Make sure current_cmd exists — create if needed
-			if (!current_cmd && word_list)
-			{
-				current_cmd = create_cmd_from_list(word_list, env_list);
-				add_cmd_back(args, current_cmd);
-				args->cmd_count++;
-				word_list = NULL;
-			}
-			if (!current_cmd)
-			{
-				current_cmd = ft_calloc(1, sizeof(t_cmd));
-				current_cmd->here_doc_fd = -1;
-				add_cmd_back(args, current_cmd);
-				args->cmd_count++;
-			}
-			add_file(current_cmd, tokens->value, tokens->prev->type);
-		}
-		
-		tokens = tokens->next;
+		*current_cmd = create_cmd_from_list(*word_list, env_list);
+		if (!*current_cmd)
+			return (free_cmd_list(args), 0);
+		add_cmd_back(args, *current_cmd);
+		args->cmd_count++;
+		*word_list = NULL;
 	}
-	// If there are remaining command words after the last pipe
-	if (word_list)
+	args->pipe++;
+	*current_cmd = NULL;
+	return (1);
+}
+
+int	parse_redir(t_args *args, t_cmd **current_cmd,
+			t_env *env_list, t_list **word_list)
+{
+	if (!*current_cmd && *word_list)
 	{
-		current_cmd = create_cmd_from_list(word_list, env_list);
-		add_cmd_back(args, current_cmd);
+		*current_cmd = create_cmd_from_list(*word_list, env_list);
+		add_cmd_back(args, *current_cmd);
+		args->cmd_count++;
+		*word_list = NULL;
+	}
+	if (!*current_cmd)
+	{
+		*current_cmd = ft_calloc(1, sizeof(t_cmd));
+		if (!*current_cmd)
+			return (0);
+		(*current_cmd)->here_doc_fd = -1;
+		add_cmd_back(args, *current_cmd);
 		args->cmd_count++;
 	}
+	return (1);
+}
+
+int	parsing_type(t_token *tokens)
+{
+	if (tokens->type == PIPE)
+		return (1);
+	else if (tokens->type == HEREDOC && tokens->next
+		&& tokens->next->type == WORD)
+		return (2);
+	else if (tokens->type == WORD && (!tokens->prev
+			|| (tokens->prev->type != REDIR_IN
+				&& tokens->prev->type != REDIR_OUT
+				&& tokens->prev->type != APPEND
+				&& tokens->prev->type != HEREDOC)))
+		return (3);
+	else if (tokens->type == WORD && tokens->prev
+		&& (tokens->prev->type == REDIR_IN
+			|| tokens->prev->type == REDIR_OUT
+			|| tokens->prev->type == APPEND))
+		return (4);
+	return (0);
+}
+
+void	parse_here_doc(t_token *tokens, t_args *args)
+{
+	args->here_doc_count++;
+	add_malloc_line(&(args->limiter), tokens->next->value);
+	tokens = tokens->next;
+}
+
+void	parse_last_cmd(t_list **word_list, t_cmd **current_cmd,
+			t_args *args, t_env *env_list)
+{
+	if (word_list)
+	{
+		*current_cmd = create_cmd_from_list(*word_list, env_list);
+		add_cmd_back(args, *current_cmd);
+		args->cmd_count++;
+	}
+}
+
+t_args	*parse_token(t_token *tokens, t_env *env)
+{
+	t_args	*args;
+	t_cmd	*cur_cmd;
+	t_list	*word;
+	int		parse_type;
+
+	args = create_new_args();
+	cur_cmd = NULL;
+	word = NULL;
+	while (tokens)
+	{
+		parse_type = parsing_type(tokens);
+		if ((parse_type == 1 && !parse_pipe(args, &cur_cmd, env, &word))
+			|| (parse_type == 4 && !parse_redir(args, &cur_cmd, env, &word)))
+			return (NULL);
+		if (parse_type == 2)
+			parse_here_doc(tokens, args);
+		else if (parse_type == 3)
+			ft_lstadd_back(&word, ft_lstnew(ft_strdup(tokens->value)));
+		if (parse_type == 4)
+			add_file(cur_cmd, tokens->value, tokens->prev->type);
+		tokens = tokens->next;
+	}
+	if (word)
+		parse_last_cmd(&word, &cur_cmd, args, env);
 	return (args);
 }
 

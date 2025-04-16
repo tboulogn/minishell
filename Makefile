@@ -6,7 +6,7 @@
 #    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/04/14 13:48:21 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/04/16 16:11:17 by tboulogn         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,11 +27,24 @@ SRC = $(SRC_DIR)builtin/ft_cd.c \
 	$(SRC_DIR)builtin/ft_export.c \
 	$(SRC_DIR)builtin/ft_unset.c \
 	$(SRC_DIR)env/env_list.c \
+	$(SRC_DIR)execution/exec_error.c \
+	$(SRC_DIR)execution/exec_helper.c \
+	$(SRC_DIR)execution/exec_path.c \
 	$(SRC_DIR)execution/exec.c \
 	$(SRC_DIR)free/free.c \
-	$(SRC_DIR)parsing/checker.c \
-	$(SRC_DIR)parsing/parsing.c \
-	$(SRC_DIR)pipe/here_doc.c \
+	$(SRC_DIR)free/free_2.c \
+	$(SRC_DIR)parsing/parsing_checker.c \
+	$(SRC_DIR)parsing/parsing_helper_1.c \
+	$(SRC_DIR)parsing/parsing_helper_2.c \
+	$(SRC_DIR)parsing/parsing_quotes_1.c \
+	$(SRC_DIR)parsing/parsing_quotes_2.c \
+	$(SRC_DIR)parsing/parsing_redir_pipe.c \
+	$(SRC_DIR)parsing/parsing1.c \
+	$(SRC_DIR)parsing/parsing2.c \
+	$(SRC_DIR)pipe/pipe_helper_1.c \
+	$(SRC_DIR)pipe/pipe_helper_2.c \
+	$(SRC_DIR)pipe/pipe_here_doc.c \
+	$(SRC_DIR)pipe/pipe_process.c \
 	$(SRC_DIR)pipe/pipe.c \
 	$(SRC_DIR)signals/signals.c \
 	$(SRC_DIR)utils/utils.c \

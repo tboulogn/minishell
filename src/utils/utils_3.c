@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 17:06:31 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/12 15:41:48 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/16 16:34:39 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	is_number(const char *str)
 		return (0);
 	if (*str == '+' || *str == '-')
 		str++;
-	while(*str)
+	while (*str)
 	{
 		if (!isdigit(*str))
 			return (0);
@@ -45,7 +45,7 @@ long long	ft_atoll(const char *str)
 
 	sign = 1;
 	result = 0;
-	while((*str >= 9 && *str <= 13) || *str == ' ')
+	while ((*str >= 9 && *str <= 13) || *str == ' ')
 		str++;
 	if (*str == '-' || *str == '+')
 	{
@@ -86,17 +86,19 @@ char	*expand_vars(const char *str, t_env *env_list, int i)
 	return (res);
 }
 
-char *ft_strjoin_and_free(char *s1, const char *s2, int free_s1)
+void	parse_and_exec(char *input, t_env **env_list)
 {
-	char	*res;
-	size_t	len1 = ft_strlen(s1);
-	size_t	len2 = ft_strlen(s2);
+	t_token	*tokens;
+	t_args	*args;
 
-	res = ft_secure_malloc((len1 + len2 + 1) * sizeof(char));
-	ft_memcpy(res, s1, len1);
-	ft_memcpy(res + len1, s2, len2);
-	res[len1 + len2] = '\0';
-	if (free_s1)
-		free(s1);
-	return (res);
+	tokens = NULL;
+	args = NULL;
+	if (!parsing(input, &tokens, &args, *env_list))
+		return ;
+	print_cmd_list(args);
+	if (tokens)
+		free_token(tokens);
+	pipex(args, env_list);
+	if (args)
+		free_cmd_list(args);
 }

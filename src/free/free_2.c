@@ -1,43 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   free_2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/31 17:22:56 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/16 16:13:23 by tboulogn         ###   ########.fr       */
+/*   Created: 2025/04/16 16:09:10 by tboulogn          #+#    #+#             */
+/*   Updated: 2025/04/16 16:17:34 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-volatile sig_atomic_t	g_signal;
-
-void	init_signals(void)
+void	free_env_list(t_env *env)
 {
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, SIG_IGN);
+	t_env	*tmp;
+
+	while (env)
+	{
+		tmp = env->next;
+		if (env->key)
+			free(env->key);
+		if (env->value)
+			free(env->value);
+		free(env);
+		env = tmp;
+	}
 }
 
-void	sigint_handler(int sig)
+void	free_ereaser(t_args *args, t_env *env, t_pipe *pro)
 {
-	(void)sig;
-	g_signal = 130;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
-void	sigquit_handler(int sig)
-{
-	(void)sig;
-	g_signal = 131;
-}
-
-void	set_signal_child(void)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	free_cmd_list(args);
+	free_env_list(env);
+	free(pro->pid);
 }

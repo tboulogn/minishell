@@ -6,14 +6,11 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/14 14:00:15 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/16 16:42:52 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-//need to modify the prompt as the username, and exit etc
-//need to fix a problem which exit the program after executing a cmd
 
 char	*pwd_str(t_env *env_list)
 {
@@ -23,15 +20,15 @@ char	*pwd_str(t_env *env_list)
 	char	*tmp;
 
 	pwd = get_env_value(env_list, "PWD");
-	user = get_env_value(env_list, "USER");// ->ryada
-	tmp = ft_strjoin("/home/", user);// ->/home/ryada
+	user = get_env_value(env_list, "USER");
+	tmp = ft_strjoin("/home/", user);
 	if (!tmp || !pwd)
 		return (NULL);
 	pwd = pwd + (ft_strlen(tmp));
 	free (tmp);
 	tmp = ft_strjoin(PROMPT, pwd);
 	if (!tmp)
-		return(NULL);
+		return (NULL);
 	prompt = ft_strjoin(tmp, "$ ");
 	free(tmp);
 	return (prompt);
@@ -62,7 +59,8 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 		return (0);
 	}
 	*args = parse_token(*tokens, env_list);
-	if (!*args || !(*args)->cmd || (*args)->cmd->cmd_tab == NULL || (*args)->cmd->cmd_tab[0] == NULL)
+	if (!*args || !(*args)->cmd || (*args)->cmd->cmd_tab == NULL
+		|| (*args)->cmd->cmd_tab[0] == NULL)
 	{
 		free_token(*tokens);
 		tokens = NULL;
@@ -95,49 +93,35 @@ void	minishell(t_env **env_list)
 			write(1, "exit\n", 5);
 			break ;
 		}
-		if (parsing(input, &tokens, &args, *env_list))
-		{
-			print_cmd_list(args);
-			if (tokens)//free BEFORE pipex in case of none exist cmds
-			{
-				free_token(tokens);
-				tokens = NULL;
-			}
-			pipex(args, env_list);
-			if (args)
-			{
-				free_cmd_list(args);
-				args = NULL;
-			}
-		}
+		parse_and_exec(input, env_list);
 		free(input);
 	}
 }
 
-int	main(int argc, char **argv, char **envp, int shlvl)
+int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env_list;
 	char	*lvl_str;
 	char	*new_lvl;
-	
+	int		shlvl;
+
 	env_list = init_env_list(envp);
 	lvl_str = get_env_value(env_list, "SHLVL");
 	if (lvl_str)
-		shlvl = ft_atoi(lvl_str) +1;
+		shlvl = ft_atoi(lvl_str) + 1;
 	else
 		shlvl = 1;
 	new_lvl = ft_itoa(shlvl);
 	set_env_value(&env_list, "SHLVL", new_lvl);
+	free(new_lvl);
 	if (ft_strncmp(argv[0], "./minishell", 11) == 0 && argc == 1)
 		minishell(&env_list);
 	else
 	{
 		ft_putstr_fd("Invalid program name or argument number\n", 2);
 		free_env_list(env_list);
-		free(new_lvl);
 		return (1);
 	}
 	free_env_list(env_list);
-	free(new_lvl);
 	return (0);
 }

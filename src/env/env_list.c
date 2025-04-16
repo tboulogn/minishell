@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 13:07:24 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 16:21:32 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/14 15:35:42 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,6 @@ int	set_env_value(t_env **env, const char *key, const char *value)
 	{
 		if (ft_strcmp(current->key, key) == 0)
 		{
-			printf("[DEBUG] Adding variable: key='%s', value='%s'\n", key, value);
 			free(current->value);
 			current->value = ft_strdup(value);
 			return (current->value == NULL);

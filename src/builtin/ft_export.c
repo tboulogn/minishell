@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:33:38 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/12 15:58:36 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:55:21 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,14 @@
 
 char	**env_to_array(t_env *env)
 {
-	int		size = 0;
-	t_env	*tmp = env;
+	int		size;
+	t_env	*tmp;
 	char	**env_array;
-	int		i = 0;
+	int		i;
 
+	size = 0;
+	tmp = env;
+	i = 0;
 	while (tmp)
 	{
 		size++;
@@ -115,13 +118,13 @@ int	ft_export(t_args *args, t_env **env)
 	int		i;
 	char	**argv;
 	t_env	*new;
-	t_env 	*var;
+	t_env	*var;
 
 	argv = args->cmd->cmd_tab;
 	if (!argv[1])
 		return (print_sorted_env(*env), 1);
-	i = 1;
-	while (argv[i])
+	i = 0;
+	while (argv[++i])
 	{
 		if (ft_strchr(argv[i], '='))
 			export_with_equal(argv[i], env);
@@ -135,7 +138,6 @@ int	ft_export(t_args *args, t_env **env)
 				*env = new;
 			}
 		}
-		i++;
 	}
 	return (0);
 }
