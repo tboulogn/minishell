@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/17 14:59:42 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 08:44:36 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 		next = words->next;
 		cleaned = update_quotes_and_clean(words->content,
 				&cmd->sq[i], &cmd->dq[i]);
-		cleaned = expand_if_needed(cleaned, env_list);
+		cleaned = expand_if_needed(cleaned, env_list, cmd);
 		cmd->cmd_tab[i++] = cleaned;
 		free(words->content);
 		free(words);
@@ -68,7 +68,10 @@ t_args	*parse_token(t_token *tokens, t_env *env)
 			|| (parse_type == 4 && !parse_redir(args, &cur_cmd, env, &word)))
 			return (NULL);
 		if (parse_type == 2)
+		{
 			parse_here_doc(tokens, args);
+			tokens = tokens->next;
+		}
 		else if (parse_type == 3)
 			ft_lstadd_back(&word, ft_lstnew(ft_strdup(tokens->value)));
 		if (parse_type == 4)

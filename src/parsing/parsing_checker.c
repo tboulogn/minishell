@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:44:18 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/15 16:22:38 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 08:50:35 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ void	syntax_error_message(int type)
 		ft_putstr_fd(" unclosed quotes\n", 2);
 	else if (type == -5)
 		ft_putstr_fd(" unexpected token after redirection\n", 2);
-	g_signal = 1;
+	else if (type == -6)
+		ft_putstr_fd(" unexpected pipe after redirection\n", 2);
+	g_signal = 2;
 }
 
 int	syntax_error_code(t_token	*current)
@@ -75,6 +77,8 @@ int	syntax_error_code(t_token	*current)
 				|| current->prev->type == HEREDOC))
 		&& current->next && current->next->type == WORD)
 		return (syntax_error_message(-5), 0);
+	else if (current->type == HEREDOC && !current->prev && current->next->next && current->next->next->type != HEREDOC)
+		return (syntax_error_message(-6), 0);
 	return (1);
 }
 

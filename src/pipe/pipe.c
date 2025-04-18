@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/15 17:48:10 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 09:27:29 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,11 @@ void	pipex(t_args *args, t_env **env_list)
 	t_cmd	*current;
 
 	current = args->cmd;
+	if (args->limiter && args->cmd_count == 0)
+	{
+		prepare_here_doc(args, current);
+		return ;
+	}
 	if (!prepare_here_doc(args, current) && args->cmd_count == 1
 		&& !ft_check_buildin(args) && no_files(current))
 		return (ft_exec(args, env_list, &pro));

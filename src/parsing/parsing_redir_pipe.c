@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing _redire_pipe.c                             :+:      :+:    :+:   */
+/*   parsing_redir_pipe.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/15 17:17:05 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 09:27:37 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	parsing_type(t_token *tokens)
 
 void	first_limitter(char ***arr, char *line)
 {
-	*arr = malloc(sizeof(char *) * 2);
+	*arr = ft_calloc(2, sizeof(char *));
 	if (!*arr)
 		return ;
 	(*arr)[0] = ft_strdup(line);

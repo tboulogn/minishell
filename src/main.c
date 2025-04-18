@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:45:30 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/16 16:42:52 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 09:30:00 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,7 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 		return (0);
 	}
 	*args = parse_token(*tokens, env_list);
-	if (!*args || !(*args)->cmd || (*args)->cmd->cmd_tab == NULL
-		|| (*args)->cmd->cmd_tab[0] == NULL)
+	if (!*args)
 	{
 		free_token(*tokens);
 		tokens = NULL;
@@ -77,16 +76,12 @@ int	parsing(char *input, t_token **tokens, t_args **args, t_env *env_list)
 void	minishell(t_env **env_list)
 {
 	char	*input;
-	t_token	*tokens;
-	t_args	*args;
 
 	input = NULL;
 	g_signal = 0;
 	init_signals();
 	while (1)
 	{
-		args = NULL;
-		tokens = NULL;
 		put_prompt(&input, *env_list);
 		if (!input)
 		{

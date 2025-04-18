@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing _quotes_2.c                                :+:      :+:    :+:   */
+/*   parsing_quotes_2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/15 17:20:12 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/17 15:32:30 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,12 @@ char	*update_quotes_and_clean(char *content, bool *sq, bool *dq)
 	return (clean_word_quotes(content));
 }
 
-char	*expand_if_needed(char *cleaned, t_env *env_list)
+char	*expand_if_needed(char *cleaned, t_env *env_list, t_cmd *cmd)
 {
 	char	*expanded;
 	int		dollar_pos;
 
-	if (ft_strchr(cleaned, '$'))
+	if (ft_strchr(cleaned, '$') && !cmd->cmd_tab[0])
 	{
 		dollar_pos = find_char_pos(cleaned, '$');
 		if (dollar_pos >= 0 && !is_inside_sigle_quote(cleaned, dollar_pos))

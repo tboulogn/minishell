@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:15:32 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/16 16:19:06 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 09:20:49 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,10 @@ void	free_token(t_token *tokens)
 
 static void	free_one_cmd(t_cmd *cmd)
 {
-	int	i;
-
 	if (!cmd)
 		return ;
 	if (cmd->cmd_tab)
-	{
-		i = 0;
-		while (cmd->cmd_tab[i])
-			free(cmd->cmd_tab[i++]);
-		free(cmd->cmd_tab);
-	}
+		free_env_array(cmd->cmd_tab);
 	if (cmd->sq)
 		free(cmd->sq);
 	if (cmd->dq)
@@ -69,8 +62,13 @@ void	free_cmd_list(t_args *args)
 		free_one_cmd(tmp_cmd);
 		tmp_cmd = next_cmd;
 	}
-	free_env_array(args->limiter);
-	free(args);
+	if (args->limiter)
+		free_env_array(args->limiter);
+	if (args)
+	{
+		free(args);
+		args = NULL;
+	}
 }
 
 void	free_env_array(char **env_array)
