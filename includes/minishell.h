@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/17 15:32:52 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 11:05:23 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,10 +249,14 @@ void		pipex(t_args *args, t_env **env_list);
 /* ************************************************************************** */
 /*                                  SIGNALS                                   */
 /* ************************************************************************** */
+//signals.c//
 void		init_signals(void);
 void		sigint_handler(int sig);
 void		sigquit_handler(int sig);
 void		set_signal_child(void);
+//exit_status.c//
+void		set_exit_status(int status);
+int			get_exit_status(void);
 
 /* ************************************************************************** */
 /*                                   UTILS                                    */

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 14:31:13 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/18 09:27:29 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 10:27:12 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	wait_children(t_args *args, t_pipe *pro)
 			}
 		}
 	}
-	g_signal = last_exit;
+	set_exit_status(last_exit);
 }
 
 void	handle_pipe_and_fork(t_pipe	*pro, t_cmd *current, int i)

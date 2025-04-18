@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:24 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/08 16:22:57 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 10:43:02 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,10 @@ char	*ft_itoa(int nb)
 		str[0] = '-';
 		nbr = -nbr;
 	}
-	while (nb > 0)
+	while (nbr > 0)
 	{
-		str[--i] = (nb % 10) + 48;
-		nb = nb / 10;
+		str[--i] = (nbr % 10) + 48;
+		nbr = nbr / 10;
 	}
 	return (str);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
+/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:31:10 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/17 15:28:19 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 10:39:32 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ char	*expand_dollar(const char *str, int *i, t_env *env, int j)
 	if (str[*i] == '?')
 	{
 		(*i)++;
-		status = ft_itoa(g_signal);
-		if (!status)
+		status = ft_itoa(get_exit_status());
+		if (!status || status[0] == '\0')
 			return (ft_strdup("0"));
 		while (status[++j])
 		{

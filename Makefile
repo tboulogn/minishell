@@ -6,7 +6,7 @@
 #    By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 14:30:07 by tboulogn          #+#    #+#              #
-#    Updated: 2025/04/16 16:11:17 by tboulogn         ###   ########.fr        #
+#    Updated: 2025/04/18 10:34:43 by tboulogn         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,6 +46,7 @@ SRC = $(SRC_DIR)builtin/ft_cd.c \
 	$(SRC_DIR)pipe/pipe_here_doc.c \
 	$(SRC_DIR)pipe/pipe_process.c \
 	$(SRC_DIR)pipe/pipe.c \
+	$(SRC_DIR)signals/exit_status.c \
 	$(SRC_DIR)signals/signals.c \
 	$(SRC_DIR)utils/utils.c \
 	$(SRC_DIR)utils/utils_2.c \

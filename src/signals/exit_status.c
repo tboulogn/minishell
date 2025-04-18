@@ -1,43 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   exit_status.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/31 17:22:56 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/18 10:14:02 by tboulogn         ###   ########.fr       */
+/*   Created: 2025/04/18 10:19:42 by tboulogn          #+#    #+#             */
+/*   Updated: 2025/04/18 10:23:58 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-volatile sig_atomic_t	g_signal;
-
-void	init_signals(void)
+static int	exit_status(int i)
 {
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, SIG_IGN);
+	static int	status = 0;
+	
+	if (i >= 0)
+		status = i;
+	return (status);
 }
 
-void	sigint_handler(int sig)
+void	set_exit_status(int status)
 {
-	(void)sig;
-	g_signal = 130;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+	exit_status(status);
 }
 
-void	sigquit_handler(int sig)
+int	get_exit_status(void)
 {
-	(void)sig;
-	g_signal = 131;
-}
-
-void	set_signal_child(void)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	return(exit_status(-1));
 }
