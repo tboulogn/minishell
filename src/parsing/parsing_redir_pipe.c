@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/18 09:27:37 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 11:46:19 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,5 +86,5 @@ void	parse_here_doc(t_token *tokens, t_args *args)
 {
 	args->here_doc_count++;
 	add_malloc_line(&(args->limiter), tokens->next->value);
-	tokens = tokens->next;
+	tokens = tokens->next->next;
 }

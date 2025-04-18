@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/18 11:25:44 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 11:49:39 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,7 @@ t_args	*parse_token(t_token *tokens, t_env *env)
 			|| (parse_type == 4 && !parse_redir(args, &cur_cmd, env, &word)))
 			return (NULL);
 		if (parse_type == 2)
-		{
 			parse_here_doc(tokens, args);
-			tokens = tokens->next;
-		}
 		else if (parse_type == 3)
 			ft_lstadd_back(&word, ft_lstnew(ft_strdup(tokens->value)));
 		if (parse_type == 4)
@@ -84,57 +81,56 @@ t_args	*parse_token(t_token *tokens, t_env *env)
 	return (args);
 }
 
-void	print_cmd_list(t_args *args)
-{
-	t_cmd	*current_cmd;
-	int		stage = 0;
-	int		i;
-	int		j;
+// void	print_cmd_list(t_args *args)
+// {
+// 	t_cmd	*current_cmd;
+// 	int		stage = 0;
+// 	int		i;
+// 	int		j;
 
-	if (!args)
-		return;
-	printf("=== Parsing Summary ===\n");
-	printf("Total commands: %d\n", args->cmd_count);
-	printf("Total pipes   : %d\n", args->pipe);
-	printf("Total here_doc   : %d\n", args->here_doc_count);
-	if (args->limiter)
-	{
-		j = 0;
-		while (args->limiter[j])
-		{
-			printf("[%d]Heredoc Limiter    : %s\n",j, args->limiter[j]);
-			j++;
-		}
-	}
-	current_cmd = args->cmd;
-	while (current_cmd)
-	{
-		printf("=== Command %d ===\n", stage++);
-		
-		if (!current_cmd->cmd_tab || !current_cmd->cmd_tab[0])
-			printf("  [empty command]\n");
-		else
-		{
-			printf("Cmd tab: \n");
-			i = 0;
-			while (current_cmd->cmd_tab[i])
-			{
-				printf("Cmd tab[%d]: [%s]", i, current_cmd->cmd_tab[i]);
-				if (current_cmd->sq && current_cmd->sq[i])
-					printf(" (single quoted)");
-				if (current_cmd->dq && current_cmd->dq[i])
-					printf(" (double quoted)");
-				printf("\n");
-				i++;
-			}
-		}
-		if (current_cmd->infile)
-			printf("Input File         : %s\n",current_cmd->infile);
-		if (current_cmd->outfile)
-			printf("Output File        : %s\n", current_cmd->outfile);
-		if (current_cmd->append_outfile)
-			printf("Output File (>>): %s\n", current_cmd->append_outfile);
-		current_cmd = current_cmd->next;
-	}
-	printf("=======================\n");
-}
+// 	if (!args)
+// 		return;
+// 	printf("=== Parsing Summary ===\n");
+// 	printf("Total commands: %d\n", args->cmd_count);
+// 	printf("Total pipes   : %d\n", args->pipe);
+// 	printf("Total here_doc   : %d\n", args->here_doc_count);
+// 	if (args->limiter)
+// 	{
+// 		j = 0;
+// 		while (args->limiter[j])
+// 		{
+// 			printf("[%d]Heredoc Limiter    : %s\n",j, args->limiter[j]);
+// 			j++;
+// 		}
+// 	}
+// 	current_cmd = args->cmd;
+// 	while (current_cmd)
+// 	{
+// 		printf("=== Command %d ===\n", stage++);
+// 		if (!current_cmd->cmd_tab || !current_cmd->cmd_tab[0])
+// 			printf("  [empty command]\n");
+// 		else
+// 		{
+// 			printf("Cmd tab: \n");
+// 			i = 0;
+// 			while (current_cmd->cmd_tab[i])
+// 			{
+// 				printf("Cmd tab[%d]: [%s]", i, current_cmd->cmd_tab[i]);
+// 				if (current_cmd->sq && current_cmd->sq[i])
+// 					printf(" (single quoted)");
+// 				if (current_cmd->dq && current_cmd->dq[i])
+// 					printf(" (double quoted)");
+// 				printf("\n");
+// 				i++;
+// 			}
+// 		}
+// 		if (current_cmd->infile)
+// 			printf("Input File         : %s\n",current_cmd->infile);
+// 		if (current_cmd->outfile)
+// 			printf("Output File        : %s\n", current_cmd->outfile);
+// 		if (current_cmd->append_outfile)
+// 			printf("Output File (>>): %s\n", current_cmd->append_outfile);
+// 		current_cmd = current_cmd->next;
+// 	}
+// 	printf("=======================\n");
+// }

@@ -6,7 +6,7 @@
 /*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:44:18 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/18 08:50:35 by ryada            ###   ########.fr       */
+/*   Updated: 2025/04/18 11:39:21 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,8 @@ int	syntax_error_code(t_token	*current)
 				|| current->prev->type == HEREDOC))
 		&& current->next && current->next->type == WORD)
 		return (syntax_error_message(-5), 0);
-	else if (current->type == HEREDOC && !current->prev && current->next->next && current->next->next->type != HEREDOC)
+	else if (current->type == HEREDOC && !current->prev
+		&& current->next->next && current->next->next->type != HEREDOC)
 		return (syntax_error_message(-6), 0);
 	return (1);
 }

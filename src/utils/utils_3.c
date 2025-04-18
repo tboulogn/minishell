@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_3.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 17:06:31 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/18 11:21:26 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 13:02:38 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,26 @@ int	redirect_and_close(int old_fd, int new_fd)
 	return (close(old_fd));
 }
 
-int    is_number(const char *str)
+int	is_number(const char *str)
 {
-    if (!str)
-        return (0);
-    while (*str == '+' || *str == '-' || *str == ' ')
-        str++;
-    while (*str)
-    {
-        if (!isdigit(*str))
-            return (0);
-        str++;
-    }
-    return (1);
+	int	i;
+	int	end;
+
+	i = 0;
+	end = ft_strlen(str) - 1;
+	while (str[end] && str[end] == ' ')
+		end--;
+	if (!str)
+		return (0);
+	while (str[i] == '+' || str[i] == '-' || str[i] == ' ')
+		i++;
+	while (str[i] && i <= end)
+	{
+		if (!isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 long long	ft_atoll(const char *str)
@@ -66,7 +73,7 @@ char	*expand_vars(const char *str, t_env *env_list, int i)
 	res = ft_strdup("");
 	while (str[i])
 	{
-		if (str[i] == '$' && str[i + 1] != '\0')
+		if (str[i] == '$' && str[i + 1] != '\0' && str[i + 1] != ' ')
 		{
 			i++;
 			chunk = expand_dollar(str, &i, env_list, -1);
@@ -95,7 +102,6 @@ void	parse_and_exec(char *input, t_env **env_list)
 	args = NULL;
 	if (!parsing(input, &tokens, &args, *env_list))
 		return ;
-	print_cmd_list(args);
 	if (tokens)
 		free_token(tokens);
 	pipex(args, env_list);

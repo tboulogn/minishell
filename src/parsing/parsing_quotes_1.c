@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_quotes_1.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/18 10:32:14 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 11:39:54 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,17 +34,17 @@ void	update_content(bool *s_open, bool *d_open,
 		*d_content = true;
 }
 
-char    *clean_word_quotes(const char *str)
+char	*clean_word_quotes(const char *str)
 {
-    char    *tmp;
-    char    *cleaned;
+	char	*tmp;
+	char	*cleaned;
 
-    if (!str)
-        return (NULL);
-    tmp = ft_strdup_exept(str, '\'');
-    cleaned = ft_strdup_exept(tmp, '"');
-    free(tmp);
-    return (cleaned);
+	if (!str)
+		return (NULL);
+	tmp = ft_strdup_exept(str, '\'');
+	cleaned = ft_strdup_exept(tmp, '"');
+	free(tmp);
+	return (cleaned);
 }
 
 void	update_open_bool(bool *s_open, bool	*d_open,

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ryada <ryada@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/18 11:25:29 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 11:44:44 by ryada            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,8 +178,7 @@ void		quotes_update(const char *str, bool *has_sq, bool *has_dq);
 //parsing_quotes_2.c//
 bool		is_inside_sigle_quote(const char *str, int dollar_index);
 char		*update_quotes_and_clean(char *content, bool *sq, bool *dq);
-// char		*expand_if_needed(char *cleaned, t_env *env_list);
-char	*expand_if_needed(char *cleaned, t_env *env_list);
+char		*expand_if_needed(char *cleaned, t_env *env_list);
 //parsing_redir_pipe.c//
 int			parsing_type(t_token *tokens);
 void		first_limitter(char ***arr, char *line);
@@ -281,6 +280,7 @@ char		*expand_vars(const char *str, t_env *env_list, int i);
 void		parse_and_exec(char *input, t_env **env_list);
 
 //main.c
-int			parsing(char *input, t_token **tokens, t_args **args, t_env *env_list);
+int			parsing(char *input, t_token **tokens,
+				t_args **args, t_env *env_list);
 
 #endif
