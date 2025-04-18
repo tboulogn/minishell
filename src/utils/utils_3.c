@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 17:06:31 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/18 11:05:15 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 11:21:26 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,19 @@ int	redirect_and_close(int old_fd, int new_fd)
 	return (close(old_fd));
 }
 
-int	is_number(const char *str)
+int    is_number(const char *str)
 {
-	if (!str)
-		return (0);
-	if (*str == '+' || *str == '-')
-		str++;
-	while (*str)
-	{
-		if (!isdigit(*str))
-			return (0);
-		str++;
-	}
-	return (1);
+    if (!str)
+        return (0);
+    while (*str == '+' || *str == '-' || *str == ' ')
+        str++;
+    while (*str)
+    {
+        if (!isdigit(*str))
+            return (0);
+        str++;
+    }
+    return (1);
 }
 
 long long	ft_atoll(const char *str)

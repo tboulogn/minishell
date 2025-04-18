@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:39:55 by tboulogn          #+#    #+#             */
-/*   Updated: 2025/04/18 09:59:26 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 11:25:44 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_cmd	*create_cmd_from_list(t_list *words, t_env *env_list)
 		cleaned = update_quotes_and_clean(words->content,
 				&cmd->sq[i], &cmd->dq[i]);
 		if (!cmd->sq[i])
-			cleaned = expand_if_needed(cleaned, env_list, cmd);
+			cleaned = expand_if_needed(cleaned, env_list);
 		cmd->cmd_tab[i++] = cleaned;
 		free(words->content);
 		free(words);

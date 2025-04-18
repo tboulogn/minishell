@@ -6,7 +6,7 @@
 /*   By: tboulogn <tboulogn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:41:05 by ryada             #+#    #+#             */
-/*   Updated: 2025/04/18 11:05:23 by tboulogn         ###   ########.fr       */
+/*   Updated: 2025/04/18 11:25:29 by tboulogn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ void		quotes_update(const char *str, bool *has_sq, bool *has_dq);
 bool		is_inside_sigle_quote(const char *str, int dollar_index);
 char		*update_quotes_and_clean(char *content, bool *sq, bool *dq);
 // char		*expand_if_needed(char *cleaned, t_env *env_list);
-char	*expand_if_needed(char *cleaned, t_env *env_list, t_cmd *cmd);
+char	*expand_if_needed(char *cleaned, t_env *env_list);
 //parsing_redir_pipe.c//
 int			parsing_type(t_token *tokens);
 void		first_limitter(char ***arr, char *line);
